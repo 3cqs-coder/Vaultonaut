@@ -1,0 +1,17 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vaultonaut">
+  <!-- Vaultonaut: an astronaut helmet whose visor is a keyhole — vault (security) + astronaut in one flat mark.
+       Flat, single-accent, self-contained ground so it works as a favicon, an app icon, and a maskable PWA icon. -->
+  <rect width="512" height="512" rx="112" fill="#0b1220"/>
+  <!-- helmet side units (comm pods) -->
+  <rect x="60" y="206" width="46" height="96" rx="20" fill="#e9eff9"/>
+  <rect x="406" y="206" width="46" height="96" rx="20" fill="#e9eff9"/>
+  <!-- helmet shell -->
+  <circle cx="256" cy="252" r="182" fill="#e9eff9"/>
+  <!-- visor glass -->
+  <path d="M132 228 Q132 150 210 150 H302 Q380 150 380 228 V284 Q380 374 256 374 Q132 374 132 284 Z" fill="#0d1730"/>
+  <!-- keyhole — the hero of the mark, kept large and unobstructed -->
+  <g fill="#4f8cff">
+    <circle cx="256" cy="248" r="42"/>
+    <path d="M236 280 L276 280 L290 350 Q256 364 222 350 Z"/>
+  </g>
+</svg>

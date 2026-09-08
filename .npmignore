@@ -1,0 +1,30 @@
+# What NOT to ship in the published package. The package.json "files" field is the PRIMARY control — an allowlist,
+# so nothing ships unless it is listed there. This denylist is defense-in-depth: it trims development-only material
+# out of the allowlisted lib/ tree, and it names the sensitive files explicitly so they stay excluded even if the
+# allowlist is ever loosened.
+
+# Development-only material within lib/ (tests, dev scripts) and the dev hooks/docs
+lib/test/
+lib/scripts/
+.githooks/
+docs/BACKLOG.md
+docs/TEAM-VAULTS-DESIGN.md
+docs/SECURITY.md
+docs/THIRD-PARTY-LICENSES.md
+virtual-disk-backlog.md
+
+# Secrets and release-signing material — MUST NEVER ship (the private key is the whole trust root)
+release-signing-key.json
+release-manifest.json
+release-manifest.sig
+SHA256SUMS
+SHA256SUMS.sig
+
+# Runtime data, the test scratch tree, and the downloaded engine — created on a machine, never shipped
+data/
+.test-data/
+node_modules/
+package-lock.json
+
+# OS cruft
+.DS_Store

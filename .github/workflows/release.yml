@@ -1,0 +1,119 @@
+# Build the Vaultonaut desktop app on macOS, Windows, and Linux, and collect the installers.
+#
+# This is standard GitHub-Actions syntax, so it runs unchanged on GitHub's hosted runners (free for a public
+# repository, including macOS and Windows). Later it also runs on self-hosted Forgejo Actions runners — copy it
+# to .forgejo/workflows/, or point Forgejo at .github/workflows/. The same template serves other projects: change
+# the build steps, keep the shape. (A self-hosted Windows runner must provide Git Bash for the `shell: bash`
+# steps, which GitHub's hosted Windows runner already has.)
+#
+# Each runner's workspace path is already neutral (for example /Users/runner/work/...), so builds carry no
+# personal identity; the leak scan inside `npm run build` confirms it (it recognizes generic CI accounts). Builds
+# are UNSIGNED here — the private signing key is never placed in the repo or in CI. Sign separately, or add the
+# key as an encrypted secret and a signing step if you decide to.
+
+name: Build desktop apps
+
+on:
+  push:
+    tags: ['v*']        # tag a release (e.g. v1.0.0) to build all platforms and draft a release
+  workflow_dispatch:    # or start a build by hand at any time — no tag and no version change needed
+    inputs:
+      release_tag:
+        description: "Also draft/refresh a release at this tag. Leave blank to just build the installers as downloadable artifacts (no release, no version bump)."
+        required: false
+        default: ""
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            label: macos
+          - os: windows-latest
+            label: windows
+          - os: ubuntu-latest
+            label: linux
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Pin Node to the version the bundle ships. Keep this in sync with PINNED_NODE in src-tauri/prepare-sidecar.js
+      # (a drift test checks it); the build refuses to run on any other version.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.11.1
+
+      - name: Ensure a Rust toolchain
+        shell: bash
+        run: rustup default stable   # preinstalled on the hosted runners; self-hosted runners must have rustup
+
+      - name: Linux build dependencies (WebKitGTK etc.)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file \
+            libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
+
+      - name: Install app dependencies
+        shell: bash
+        run: npm install --no-audit --no-fund
+
+      - name: Install packaging dependencies
+        shell: bash
+        working-directory: src-tauri
+        run: npm install --no-audit --no-fund
+
+      - name: Build (stage, bundle, leak-scan)
+        shell: bash
+        working-directory: src-tauri
+        run: npm run build
+
+      # These globs must cover whatever `bundle.targets: "all"` produces in tauri.conf.json. If a future Tauri
+      # adds or renames an installer format, extend this list (a missing format is silent unless the whole set is
+      # empty). The current set covers macOS dmg, Windows msi + nsis exe, and Linux deb/AppImage/rpm.
+      - name: Collect installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: vaultonaut-${{ matrix.label }}
+          if-no-files-found: error
+          path: |
+            src-tauri/target/release/bundle/**/*.dmg
+            src-tauri/target/release/bundle/**/*.msi
+            src-tauri/target/release/bundle/**/*.exe
+            src-tauri/target/release/bundle/**/*.AppImage
+            src-tauri/target/release/bundle/**/*.deb
+            src-tauri/target/release/bundle/**/*.rpm
+
+  # When a version tag is pushed, gather every platform's installers and attach them to a GitHub Release. It is
+  # created as a DRAFT: nothing is published until you review it and press publish — right for a security app, and
+  # it also lets you add the host-independent signature and notes first. It uses the runner's built-in `gh` CLI
+  # rather than a third-party action, so no outside code runs in this write-access job. (This job is
+  # GitHub-specific; on Forgejo, replace it with Forgejo's release API. The build jobs above stay identical.)
+  release:
+    needs: build
+    # Runs for a version tag push, or for a manual run that supplied a release tag. A plain manual run (blank
+    # tag) skips this job — you still get the installers as build artifacts, with no release and no version bump.
+    if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.release_tag != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # allow the run's token to create the release
+    steps:
+      - name: Download all installers
+        uses: actions/download-artifact@v4
+        with:
+          path: installers
+
+      - name: Draft or refresh the release with the installers attached
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.inputs.release_tag != '' && github.event.inputs.release_tag || github.ref_name }}
+        run: |
+          # Collect into an array so a path with a space is still passed as one argument (this file is reused
+          # across projects, and another product's name could contain spaces).
+          mapfile -t FILES < <(find installers -type f)
+          # Create the draft release, or if one already exists at this tag (a rebuild of the same version),
+          # replace its attached installers rather than failing.
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --draft --title "$TAG" --generate-notes "${FILES[@]}" \
+            || gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber "${FILES[@]}"

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en" data-state="starting">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vaultonaut</title>
+    <style>
+      :root { color-scheme: light dark; }
+      html, body { height: 100%; margin: 0; }
+      body {
+        display: flex; align-items: center; justify-content: center;
+        font: 15px/1.5 -apple-system, "Segoe UI", system-ui, sans-serif;
+        background: #0f1115; color: #e8eaed;
+      }
+      @media (prefers-color-scheme: light) { body { background: #f5f6f8; color: #1a1c20; } }
+      .panel { text-align: center; max-width: 30rem; padding: 2rem; }
+      .spinner {
+        width: 2.25rem; height: 2.25rem; margin: 0 auto 1.25rem;
+        border: 3px solid currentColor; border-top-color: transparent;
+        border-radius: 50%; opacity: .65; animation: spin 0.9s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+      h1 { font-size: 1.15rem; font-weight: 600; margin: 0 0 .35rem; }
+      p { margin: 0; opacity: .7; }
+      [data-state="error"] .spinner { display: none; }
+      [data-state="starting"] .err, [data-state="error"] .starting { display: none; }
+    </style>
+  </head>
+  <body>
+    <div class="panel">
+      <div class="spinner" aria-hidden="true"></div>
+      <div class="starting">
+        <h1>Starting Vaultonaut&hellip;</h1>
+        <p>Getting the encrypted-vault engine ready.</p>
+      </div>
+      <div class="err">
+        <h1>Vaultonaut could not start</h1>
+        <p>The background engine did not come up in time. Please close this window and open Vaultonaut again.</p>
+      </div>
+    </div>
+  </body>
+</html>

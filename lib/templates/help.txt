@@ -1,0 +1,173 @@
+Virtual Disk — simple, portable, real-time encrypted drives
+
+Run a command in either of these forms ("vdisk" below means the program either way):
+  vdisk <command>                  if vdisk is on your PATH
+  node vaultonaut.js <command>     from inside the program folder
+
+Getting started:
+  vdisk ui                         Start the local web interface, then open http://localhost:7420 in your browser
+  vdisk autostart install          One-time setup: start at login AND add a clickable launcher icon
+  vdisk create   <path>            Create your first encrypted vault (it prompts for a password)
+  vdisk uninstall                  Undo autostart and the launcher (never touches your vaults)
+
+All commands:
+  vdisk create   <path>            Create a new encrypted vault (prompts for a password)
+                 [--cloud <id> --remote-path <folder>]   ...with its store on a saved cloud remote (see 'cloud')
+                 [--worm --retain-days <N> [--worm-mode governance|compliance]]   ...tamper-proof (S3): lock each version for N days
+  vdisk cloud    <list|connect|add|remove|test>   Manage cloud storage for cloud-backed vaults
+  vdisk cloud    connect <drive|dropbox|onedrive>   Sign in to a cloud account in the browser (OAuth)
+  vdisk import   <folder> [path]   Create a new vault from an existing folder (copies files in)
+  vdisk passwd   <path>            Change a vault's password (instant; no re-encryption)
+  vdisk keys     <path>            List a vault's keys (no password needed)
+  vdisk addkey   <path>            Add another password that opens the vault
+  vdisk addkeyfile <path> <file>   Add a keyfile that opens the vault (a file as the key)
+  vdisk recovery <path>            Generate a one-time recovery key for the vault
+  vdisk read-only <path>           Add a read-only password (opens the vault for reading, never to change it)
+  vdisk read-cap  <path>           Make a shareable read-only link (add --expires <days>, --label <name>; mount a copy with --read-cap)
+  vdisk share-keypair              Recipient: make a keypair; send the sender the public key, keep the private key
+  vdisk share-seal <path> --to <public-key>   Seal read-only access to a recipient's public key (post-quantum; add --expires, --out <file>)
+  vdisk share-open <bundle> --key <private-key>   Recipient: open a sealed share, revealing a read cap to mount a copy
+  vdisk team-enable <path>         Turn a vault into a team vault (you become the owner)
+  vdisk member-add <path> --to <public-key>   Add a member by their public key (add --write for read-write, --label <name>)
+  vdisk members   <path>           List a team vault's members and roster state
+  vdisk member-remove <path> <member-id>   Remove a member (re-encrypts to revoke; --soft to only drop from the roster; --yes to skip the confirm)
+  vdisk member-promote <path> <member-id>  Promote a member to owner (can manage membership)
+  vdisk member-demote <path> <member-id>   Demote an owner back to a plain member
+  vdisk member-add-device <path> <member-id> --to <device-public-key>   Enroll another device for a member
+  vdisk member-remove-device <path> <device-id>   Revoke one device, keeping the member's others (--soft to only drop from the roster; --yes to skip the confirm)
+  vdisk owner-recovery <path> --trustees <pub1,pub2,…> --threshold <k>   Split owner access so any k of the trustees can restore it
+  vdisk recovery-share <path> --key <private-key>   Trustee: reveal your recovery share to give to whoever is recovering
+  vdisk owner-recover <path> --shares <s1,s2,…>     Restore owner access from k trustee shares (choose a new password)
+  vdisk shares    <path>           Show who has access (read links handed out), with expiry and revoke state
+  vdisk revoke-share <path> <id>   Mark a share revoked and end its live viewer session (rotate to cut off a leaked key; cannot recall a copy already taken)
+  vdisk prune-shares <path>        Remove the revoked and expired entries from the access list (only tidies it)
+  vdisk rotate    <path>           Rotate keys + re-encrypt the whole vault — cut off a leaked read link for good (invalidates other keys; --yes to skip the confirm; --reason <text> to note why)
+  vdisk decoy <status|set|list|remove>   Advanced: pair a vault with a decoy opened by the decoy's password
+  vdisk travel <on|off|status>     Before travel: hide all vaults from this app and lock them (restore with a travel password)
+  vdisk rmkey    <path> <key-id>   Remove a key (unlock with a different one)
+  vdisk mount    <path>            Mount a vault as a drive (prompts for the password)
+  vdisk unmount  <path|mount>      Unmount a vault (add --force if it is stuck)
+  vdisk repair                     Release stale (crashed) mounts and clean up leftovers
+  vdisk lock                       Lock (unmount) every mounted vault now
+  vdisk autolock <minutes>         Auto-lock idle vaults after N minutes (0 = off)
+  vdisk lock-on-sleep [on|off]     Lock mounted vaults when the computer sleeps (show state if omitted)
+  vdisk auto-timestamp [on|off]    Record a trusted timestamp automatically after changes (show state if omitted)
+  vdisk bandwidth [limit]          Cap sync speed for off-site backups/mirrors (e.g. 1M, or "off")
+  vdisk status                     Show currently mounted vaults
+  vdisk list     <path>            List files in a vault without mounting it
+  vdisk search   <path> <query>    Find files by name (mounted: no password; unmounted: prompts)
+  vdisk search   <path> <query> --in   Search INSIDE files (needs a content index; vault mounted)
+  vdisk reindex  <path>            Build/refresh the content-search index (mounted; stored in the vault)
+  vdisk verify   <path>            Check a vault's manifest, password, and integrity
+  vdisk protect  <path>            Add self-healing recovery data (repairs future corruption)
+  vdisk heal     <path>            Detect and repair corruption from the recovery data (--force also rebuilds/trims a size-changed file and repairs if the recovery signature is unverified)
+  vdisk unprotect <path>           Remove a vault's recovery data
+  vdisk secure-remove <path>       Crypto-erase a vault: destroy its keys so this copy can never be opened again (--keep <file> saves a copy first | --no-keep | --panic erases now)
+  vdisk snapshot <path>            Record a signed snapshot of the vault's file set
+  vdisk audit    <path>            Report files added, removed, or modified since the baseline
+  vdisk seal     <path>            Seal the vault — flag ANY change until you accept it (tripwire)
+  vdisk unseal   <path>            Remove the seal (back to automatic tracking)
+  vdisk tamper-log <path>          Show the recorded tamper history (no password)
+  vdisk fingerprint <path>         Show the vault's identity, version, and short fingerprint (no password)
+  vdisk recovery-kit <path> [out]  Make a printable one-page Recovery Kit (add --no-key to skip the spare key)
+  vdisk attest   <path>            Timestamp the vault's state as court-grade proof (--list to see proofs, --tsa <url> for a specific authority)
+  vdisk make-bundle  <path> [--out <dir>]   Package a portable proof anyone can verify offline
+  vdisk verify-bundle <dir> [--expect <origin-identity>]   Verify a proof bundle offline -> GENUINE / TAMPERED / ROLLED-BACK
+  vdisk pack     <path> [out]      Bundle a vault into a single portable .vdisk file
+  vdisk unpack   <file> [dest]     Restore a vault from a .vdisk file
+  vdisk backup   <path> <dest>     Back up a vault (still encrypted) to a folder or drive
+  vdisk backup-schedule <vault> …  Back up on a schedule (--dest <folder|sftp:id> [--every <h> | --daily HH:MM] | off)
+  vdisk versions <path>            Browse prior versions of files kept by a backup or a mirror
+  vdisk restore-version <path> <timestamp> <file>   Restore a file from a version, as a non-clobbering copy (add --from <backup|mirror-dest|mirror-local>)
+  vdisk restore  <backup> <dest>   Restore a backed-up vault into a folder
+  vdisk mirror   <path> <dest>     Set up a two-way mirror to a folder, sftp:<id>, or webdav:<id> and prime it
+  vdisk sync     <path>            Sync the mirror now, both directions (also runs on unmount)
+  vdisk unmirror <path>            Stop mirroring (the copy at the destination is left in place)
+  vdisk serve    <path>            Serve a vault as a node another machine can mirror to (encrypted only)
+                                   Add --relay <host[:port]> --token <t> to reach it through a relay (no port forwarding)
+  vdisk relay                      Run a relay hub (on a public host) so nodes behind NAT are reachable  (--token or --token-file, --port, --ports)
+  vdisk peer-add <code|address>    Add a peer node (a served vault) to mirror to — paste its connect code, or an address  (--label, --user)
+  vdisk peers                      List saved peer nodes
+  vdisk peer-test <id>             Check a peer is reachable and the login works
+  vdisk peer-remove <id>           Remove a saved peer
+  vdisk disperse <path> --to <dir1,dir2,...> --threshold <k>   Split a vault across folders/nodes; any k rebuild it
+  vdisk reconstruct --shards <s1,s2,...> --to <folder>         Rebuild a dispersed vault from any k shards
+  vdisk shards   <shard-file…>     Check a set of shards (how many survive, still recoverable?)
+  vdisk repair-shards <shard-file…>  Re-create missing/corrupted shards from the survivors
+  vdisk verify-backup <vault>      Check that a backup is complete and restorable (no password)
+  vdisk scrub <vault> [--heal]     Check the recovery data for bit-rot (no password); --heal repairs it
+  vdisk scrub-schedule <vault> …   Scrub on a schedule (--every <h> | --daily HH:MM | off) [--heal]
+  vdisk repair-schedule <list|add|remove>   Check a shard folder set on a schedule and auto-repair (add: --folders <…> --every <h> | --daily HH:MM)
+  vdisk threshold-key <path> --shares <n> --threshold <k> [--read-only]  Split the unlock key k-of-n; any k shares mount it
+  vdisk emergency-access <path> --shares <n> --threshold <k>   Read-only inheritance access: any k of n trusted contacts can read it
+  vdisk emergency <keypair|enroll|arm|check-in|status|disarm>   Dead-man's switch: release read access to a contact if you stop checking in
+  vdisk emergency-open <sealed-file> --key <private-key>   Contact side: open released access with your private key
+  vdisk doctor                     Check the engine and the mount driver
+  vdisk install-driver             Download and launch the mount driver installer
+  vdisk open                       Open the app in your browser (starts the background service if needed)
+  vdisk ui [--port 7420]           Launch the local web interface (if it is already running, says so instead of failing; add --bind <address> to expose it to the network — a password is then required; restrict callers with --allow-ip / --deny-ip)
+  vdisk stop                       Stop the running web/background service (refuses while a vault is open; --force stops and locks open vaults)
+  vdisk web-password [set|clear]   Set or clear the web-interface login (required before --bind exposes it beyond loopback)
+  vdisk autostart <install|uninstall|status>   Start the UI at login and add a clickable launcher (install adds both; add --bind <address> to start it reachable from other devices — a password is then required; --no-shortcut skips the launcher)
+  vdisk wedge-restart <on|off|status>   Restart a HUNG (not just crashed) service automatically (off by default)
+  vdisk shortcut <create|remove|status>   Add just the clickable launcher (autostart install already adds one; use this for a launcher without autostart)
+  vdisk uninstall                  Remove the autostart and shortcut entries (never touches your vaults)
+  vdisk setup                      Download the bundled engine (one time)
+
+File and directory names are always encrypted, so a vault never reveals its structure.
+
+Mount options:
+  --mountpoint <dir>               Where to mount (default: ~/Virtual Disks/<name>)
+  --volname <name>                 Volume name shown by the OS
+  --read-only                      Mount read-only
+  --force                          Mount for writing even if the vault is in use on another machine
+                                   (may create sync-conflict copies on the next mirror sync)
+                                   By default a vault just works — you can play media,
+                                   edit files, and run apps — and its small write buffer is
+                                   kept in a RAM disk, so nothing decrypted is ever written
+                                   to the persistent disk.
+  --working-disk                   Full working disk: also buffer READS, for a database or a
+                                   VM/disk image that constantly rewrites a large file. Same
+                                   in-memory buffer, more memory. (Default buffers only files
+                                   opened for writing, which is enough for media and editing.)
+  --streaming                      Minimal mode: cache nothing at all. Lowest memory, but it
+                                   cannot rewrite a file in place (some media apps and
+                                   databases will not work).
+  --cache-size <MB>                Size of the in-memory write buffer (default 2048;
+                                   clamped to 256–8192). Raise it to copy in a single
+                                   file larger than ~2 GB (it is held in memory while
+                                   written); many smaller files in a row work at any size.
+  --cache-dir <dir>                Advanced: put the buffer at a specific path instead of a
+                                   RAM disk. Only use a persistent-disk path if you accept
+                                   decrypted data being written there while mounted.
+  --vfs-cache-mode <mode>          Advanced override: off | minimal | writes | full
+  --allow-other                    Allow other users to access the mount (on Linux this
+                                   also needs user_allow_other in /etc/fuse.conf)
+
+Unmount options:
+  --keep-cache                     Keep an explicit on-disk --cache-dir after unmount (the
+                                   in-memory RAM buffer is always freed automatically)
+  --force                          Force-release a stuck or stale mount, skipping the flush
+                                   (may discard writes that had not yet been saved)
+
+Other options:
+  protect --redundancy <level>     Recovery strength: low | medium | high  (~5 | 10 | 15%)
+  protect --thorough               Also refresh recovery after same-size in-place edits (databases, disk images)
+  create/import --kdf <level>      Password-protection strength: standard | high | max
+  mount/verify --keyfile <file>    Unlock with a keyfile instead of typing a password
+  mount --key-shares <s1,s2,...>   Unlock with k threshold-key shares (see threshold-key)
+  mount --read-cap <token>         Open a vault read-only with a shared read capability (see read-cap)
+  mount --member-key <private-key> Open a team vault with your member private key (see team-enable / member-add)
+  mount --fuse-backend smb         macOS: mount via the SMB transport if large copies fail with an I/O error (remembered)
+  verify  --quick                  Check the password and manifest only (skip the per-file scan)
+  verify  --no-password            Check only that the manifest is present (no unlock)
+  snapshot --force                 Proceed on a sealed vault (this removes the seal)
+  pack/restore --force             Overwrite an existing output file or destination folder
+  pack --keys <id,id>              Share with ONLY these key slots (ids from "vdisk keys"); a left-out password can't open the copy
+  disperse --force                 Overwrite shards already present at the target folders
+  setup   --latest                 Fetch the newest engine instead of the pinned, tested version
+  --data-dir <path>                (any command) Use a custom data directory instead of the per-user default
+  --dns-order <order>              (any command) DNS result order: ipv4first (default), ipv6first, or verbatim
+
+A vault is a self-contained folder you can copy between machines and operating
+systems; it opens anywhere with its password.

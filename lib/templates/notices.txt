@@ -1,0 +1,42 @@
+# Advisory disclosures for expert / hard-to-reverse actions, kept as text rather than sequences of console.log calls.
+# One [section] per block; the CLI prints a section with Commands.js's notice() helper, which substitutes the product
+# names at print time exactly like the help text. Lines starting with "#" outside a section are comments.
+
+[decoy-limits]
+Understand the limits first:
+  • it hides the real vault's CONTENTS under a one-time compelled unlock — NOT that the vault
+    exists (its name stays in your list), that encrypted data exists, file sizes/timestamps,
+    backups, or OS search indexes;
+  • the decoy is a real, separate vault that exists on disk — give it believable contents;
+  • the trigger is the decoy vault's password as it is now — if you later change or rotate that
+    password, re-pair so the trigger matches again;
+  • someone who watches your disk over time may still infer a hidden pairing from changing
+    bytes, and in key-disclosure jurisdictions revealing a decoy can carry legal risk. Expert-only.
+
+[travel-limits]
+Travel mode hides EVERY vault from this app and locks them all. Understand the limits first:
+  • it hides the pointer in THIS app — it does NOT remove the encrypted data from your disk
+    (the vault folders are still there for anyone who lists the disk);
+  • it cannot defeat a forensic disk image, a backup, or OS traces (recent files, thumbnails,
+    search indexes, mount history) the system keeps outside this app;
+  • in many places you can be legally compelled to disclose passwords, and hiding or wiping
+    data during an inspection can be a separate offense — the only strong protection is to NOT
+    CARRY the data (leave it home and fetch it over the network afterward);
+  • do this calmly BEFORE you travel, never at the checkpoint.
+
+[emergency-limits]
+Emergency access seals READ-ONLY access to a trusted contact. Understand the honest limits:
+  • it is READ-ONLY — the contact can read the vault, never change it, its keys, or its owner;
+  • the timer runs on THIS computer, so it cannot fire if this computer is gone — it suits
+    incapacitation more than a lost/destroyed machine (a machine-independent option is future work);
+  • once released (or if a sealed copy leaks) the contact can read that copy — true cancellation is
+    rotating the vault's keys, not just disarming;
+  • a long trip can trip it — a grace period + a check-in that vetoes release guard against that.
+
+[rotate-limits]
+Rotating this vault re-encrypts EVERY file under a new key and changes its identity — the way
+to cut off a leaked read link for good. Be aware:
+  • every OTHER password, read link, recovery key, keyfile, and security-key sign-in is invalidated; re-add the ones you keep afterward;
+  • it needs roughly DOUBLE the vault size in free space, temporarily;
+  • a mirror, backup, or served copy still holds old-key data until you re-encrypt or delete it;
+  • it is safe to interrupt — the vault is untouched unless it finishes.

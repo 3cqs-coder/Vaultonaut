@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<!--
+  Recovery Kit template. All wording lives here, not in the code — the renderer only fills in the
+  double-brace values (HTML-escaped) and strips exactly one of the KEY / NOKEY blocks. Keep it a
+  single self-contained page with inline styles and no external requests, so it opens and prints
+  anywhere, even fully offline.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{APP_NAME}} Recovery Kit — {{VAULT_NAME}}</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 32px;
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #1a1c23; background: #f4f4f6;
+  }
+  .sheet {
+    max-width: 720px; margin: 0 auto; background: #fff; border: 1px solid #d9dbe2;
+    border-radius: 10px; padding: 36px 40px; box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+  header { display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+    border-bottom: 2px solid #1a1c23; padding-bottom: 14px; margin-bottom: 20px; }
+  h1 { font-size: 20px; margin: 0; letter-spacing: .2px; }
+  h1 span { font-weight: 400; color: #6b7080; }
+  .tag { font-size: 12px; text-transform: uppercase; letter-spacing: 1.2px; color: #6b7080; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #6b7080;
+    margin: 26px 0 8px; }
+  p { margin: 8px 0; }
+  .lead { color: #3a3d47; }
+  .row { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid #eceef3; }
+  .row:last-child { border-bottom: 0; }
+  .row .k { flex: 0 0 150px; color: #6b7080; }
+  .row .v { flex: 1; }
+  code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .key-box { margin: 10px 0 4px; padding: 16px 18px; border: 2px dashed #b06a00;
+    background: #fff8ec; border-radius: 8px; }
+  .key-box .code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 19px; font-weight: 600; letter-spacing: 1px; word-spacing: 4px;
+    color: #7a4a00; word-break: break-word; }
+  .callout { background: #f0f4ff; border-left: 4px solid #3b62d9; padding: 12px 16px;
+    border-radius: 0 6px 6px 0; margin: 12px 0; }
+  .warn { background: #fff4f4; border-left-color: #d93b3b; }
+  ol { margin: 8px 0; padding-left: 22px; }
+  ol li { margin: 6px 0; }
+  footer { margin-top: 28px; padding-top: 14px; border-top: 1px solid #eceef3;
+    color: #8a8f9e; font-size: 12px; display: flex; justify-content: space-between; gap: 12px; }
+  .print-hint { text-align: center; color: #8a8f9e; font-size: 12px; margin: 14px auto 0; max-width: 720px; }
+  @media print {
+    body { background: #fff; padding: 0; }
+    .sheet { border: 0; box-shadow: none; border-radius: 0; max-width: none; padding: 0; }
+    .print-hint { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <header>
+    <h1>{{APP_NAME}} <span>Recovery Kit</span></h1>
+    <div class="tag">Keep private</div>
+  </header>
+
+  <p class="lead">This one-page kit is everything you need to prove this vault is genuinely yours and,
+  if you ever lose your password, to open it again. Print it or save the PDF, then store it somewhere
+  safe and separate from the vault itself — a locked drawer, a safe, or a trusted password manager.</p>
+
+  <h2>Vault</h2>
+  <div class="row"><div class="k">Name</div><div class="v">{{VAULT_NAME}}</div></div>
+  <div class="row"><div class="k">Folder</div><div class="v mono">{{VAULT_PATH}}</div></div>
+  <div class="row"><div class="k">Kit created</div><div class="v">{{GENERATED_AT}}</div></div>
+
+  <h2>Fingerprints</h2>
+  <p class="lead">Two short codes describe this vault. Write them down once so you can always check them
+  later.</p>
+  <div class="row">
+    <div class="k">Identity</div>
+    <div class="v"><span class="mono">{{IDENTITY}}</span><br>
+    <small style="color:#6b7080">Never changes. A matching identity proves this is authentically your
+    vault and not a look-alike copy someone else made.</small></div>
+  </div>
+  <div class="row">
+    <div class="k">Content fingerprint</div>
+    <div class="v"><span class="mono">{{FINGERPRINT}}</span> <small style="color:#6b7080">(state {{SEQ}})</small><br>
+    <small style="color:#6b7080">Changes each time the contents change. It captures the vault's exact
+    state at the moment this kit was made.</small></div>
+  </div>
+
+  <!--KEY:START-->
+  <h2>Recovery key</h2>
+  <p class="lead">This is a spare key to your vault. Enter it exactly like a password to open the vault
+  if you forget your normal one. It is shown here once — this kit is the only copy.</p>
+  <div class="key-box"><div class="code">{{RECOVERY_KEY}}</div></div>
+  <div class="callout warn">Anyone who has this key can open the vault. Treat it like the password
+  itself: keep this kit private, and do not store it in the same place as the vault.</div>
+  <!--KEY:END-->
+
+  <!--NOKEY:START-->
+  <h2>Recovery key</h2>
+  <p class="lead">This kit was created without adding a recovery key, so it records your vault's
+  identity and fingerprint only. To add a spare key you can use if you forget your password, run
+  <code>{{CLI}} recovery "{{VAULT_PATH}}"</code> and keep the key it prints with this kit.</p>
+  <!--NOKEY:END-->
+
+  <h2>If you lose your password</h2>
+  <ol>
+    <li>Open {{APP_NAME}} and choose this vault, or from a terminal run
+      <code>{{CLI}} mount "{{VAULT_PATH}}"</code>.</li>
+    <li>When asked for the password, enter the recovery key above instead.</li>
+    <li>Once the vault opens, set a new password you will remember
+      (<code>{{CLI}} passwd "{{VAULT_PATH}}"</code>), then create a fresh kit so your spare key is new
+      again.</li>
+  </ol>
+  <div class="callout">Lost the whole folder too? If you set up a mirror, a backup, or split the vault
+  across several places, restore the encrypted folder first, then follow the steps above. The identity
+  code lets you confirm the restored vault is really yours before you trust it.</div>
+
+  <footer>
+    <span>{{APP_NAME}} Recovery Kit</span>
+    <span>Identity {{IDENTITY}}</span>
+  </footer>
+</div>
+<p class="print-hint">Tip: use your browser's Print command and choose "Save as PDF," or print it on
+paper. Then close this page.</p>
+</body>
+</html>

@@ -1,0 +1,105 @@
+/* Themes mirror the desktop interface: the same four choices (auto / light / dark / sepia), the same token values,
+   and the same 'vdisk-theme' storage. LIGHT is the base :root; the dark values apply under a dark system preference
+   only when the theme is "auto", and always when it is pinned "dark"; sepia is a calm warm theme. data-theme is set
+   before paint by theme-boot.js. */
+:root {
+	--radius: 12px;
+	/* LIGHT (default) */
+	--bg: #f4f6fb; --panel: #ffffff; --panel-2: #f0f2f8; --text: #1a2233; --muted: #5b6475;
+	--border: #e2e6ef; --accent: #2f6bff; --accent-ink: #ffffff; --danger: #c0362c; --good: #0c6e3e;
+}
+@media (prefers-color-scheme: dark) {
+	:root[data-theme="auto"] {
+		--bg: #0e1117; --panel: #161b25; --panel-2: #1d2430; --text: #e6ebf5; --muted: #9aa4b6;
+		--border: #262e3d; --accent: #4d82ff; --accent-ink: #ffffff; --danger: #f87171; --good: #34d399;
+	}
+}
+:root[data-theme="dark"] {
+	--bg: #0e1117; --panel: #161b25; --panel-2: #1d2430; --text: #e6ebf5; --muted: #9aa4b6;
+	--border: #262e3d; --accent: #4d82ff; --accent-ink: #ffffff; --danger: #f87171; --good: #34d399;
+}
+:root[data-theme="sepia"] {
+	--bg: #f4ecdf; --panel: #fbf6ec; --panel-2: #efe6d5; --text: #3a2f22; --muted: #715f45;
+	--border: #e2d4b8; --accent: #a4641f; --accent-ink: #ffffff; --danger: #a8231c; --good: #2f7d4f;
+}
+* { box-sizing: border-box; }
+/* The `hidden` attribute must win over any class that sets `display` — otherwise `.viewer { display: flex }`
+   (an author rule, which beats the browser's built-in [hidden] { display: none }) keeps the full-screen file
+   viewer overlay showing on load, covering the pairing screen with an empty body and its "Back" button (a blank
+   page). This one rule keeps every hidden element (the viewer, the browse view, the toast, the status pill)
+   actually hidden until the app reveals it. */
+[hidden] { display: none !important; }
+html, body { margin: 0; height: 100%; }
+body {
+	background: var(--bg); color: var(--text);
+	font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+	-webkit-text-size-adjust: 100%;
+	padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+.topbar {
+	display: flex; align-items: center; gap: 10px;
+	padding: 12px 16px; border-bottom: 1px solid var(--border);
+	position: sticky; top: 0; background: var(--bg); z-index: 5;
+}
+.brandmark { border-radius: 6px; }
+.titles { flex: 1; min-width: 0; }
+.appname { font-weight: 700; }
+.sub { color: var(--muted); font-size: 13px; }
+.status { font-size: 12px; color: var(--muted); padding: 3px 8px; border: 1px solid var(--border); border-radius: 999px; }
+.status.ok { color: var(--good); border-color: var(--good); }
+.status.warn { color: var(--danger); border-color: var(--danger); }
+.iconbtn { flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--border); background: var(--panel); color: var(--muted); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.iconbtn:active { background: var(--panel-2); }
+main { padding: 16px; max-width: 720px; margin: 0 auto; }
+h1 { font-size: 20px; margin: 8px 0 6px; }
+.lead { color: var(--muted); margin: 0 0 18px; }
+.fine { color: var(--muted); font-size: 13px; }
+.card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+label { font-size: 13px; color: var(--muted); }
+input {
+	width: 100%; font-size: 18px; letter-spacing: 2px; text-transform: uppercase;
+	padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border);
+	background: var(--panel-2); color: var(--text);
+}
+input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+button {
+	font-size: 16px; font-weight: 600; padding: 12px 16px; border-radius: 10px; border: 0;
+	background: var(--accent); color: var(--accent-ink); cursor: pointer;
+}
+button:disabled { opacity: 0.5; }
+button.ghost { background: transparent; color: var(--text); border: 1px solid var(--border); font-weight: 500; padding: 8px 12px; font-size: 14px; min-height: 44px; } /* comfortable phone tap target */
+.error { color: var(--danger); font-size: 14px; margin: 0; }
+.toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.vaultname { font-weight: 700; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tools { display: flex; gap: 8px; }
+.crumbs { color: var(--muted); font-size: 14px; margin-bottom: 8px; word-break: break-word; }
+.crumbs a { color: var(--accent); text-decoration: none; display: inline-block; padding: 6px 0; } /* taller tap target than bare 14px text */
+.filelist { list-style: none; margin: 0; padding: 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.filelist li { display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-top: 1px solid var(--border); cursor: pointer; }
+.filelist li:first-child { border-top: 0; }
+.filelist li:active { background: var(--panel-2); }
+.filelist li:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.filelist .ic { width: 22px; text-align: center; opacity: 0.85; }
+.filelist .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.filelist .sz { color: var(--muted); font-size: 12px; }
+/* Include the LEFT/RIGHT safe-area insets: the viewer is a fixed, full-viewport overlay, so it escapes the body's
+   horizontal safe-area padding. Without these, the Back button and content sit under the notch/rounded corner on a
+   notched phone held in landscape. */
+.viewer { position: fixed; inset: 0; background: var(--bg); z-index: 20; display: flex; flex-direction: column; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+.viewer-bar { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+.viewer-name { color: var(--muted); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.viewer-body { flex: 1; overflow: auto; display: flex; align-items: flex-start; justify-content: center; padding: 12px; }
+.viewer-body img { max-width: min(100%, 1200px); height: auto; }
+.viewer-body video { max-width: min(100%, 1200px); max-height: 100%; height: auto; }
+.viewer-body audio { width: min(100%, 640px); }
+.viewer-body pre { margin: 0; padding: 16px; white-space: pre-wrap; word-break: break-word; width: 100%; max-width: 900px; font: 14px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+/* Pointer (desktop/mouse) affordances only — kept out of touch devices so a tap never leaves a stuck hover. */
+@media (hover: hover) {
+	.filelist li:hover { background: var(--panel-2); }
+	button:hover { filter: brightness(1.08); }
+	button.ghost:hover { background: var(--panel-2); }
+	.crumbs a:hover { text-decoration: underline; }
+}
+.viewer-body .pad { padding: 24px; color: var(--muted); text-align: center; }
+.viewer-body .spin { padding: 40px; color: var(--muted); }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: var(--panel-2); color: var(--text); border: 1px solid var(--border); border-radius: 999px; padding: 10px 16px; font-size: 14px; z-index: 30; max-width: 90%; }

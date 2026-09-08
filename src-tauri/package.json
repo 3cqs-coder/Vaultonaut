@@ -1,0 +1,17 @@
+{
+  "name": "vaultonaut-desktop-packaging",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Development-only tooling that wraps the app as a native desktop installer. Not part of the published package.",
+  "scripts": {
+    "prepare-sidecar": "node prepare-sidecar.js",
+    "sign-bundle": "node sign-bundle.js",
+    "scan-leaks": "node scan-leaks.js",
+    "clean-build": "node clean-build.js",
+    "dev": "npm run prepare-sidecar && tauri dev",
+    "build": "npm run prepare-sidecar && npm run sign-bundle && tauri build && npm run scan-leaks"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.9.0"
+  }
+}

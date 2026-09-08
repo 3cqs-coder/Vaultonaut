@@ -1,0 +1,57 @@
+{
+  "name": "vaultonaut",
+  "version": "1.0.0",
+  "description": "Simple, cross-platform, real-time encrypted virtual disks. Create a portable encrypted vault and mount it as an ordinary drive; files are encrypted and decrypted on the fly.",
+  "main": "lib/index.js",
+  "author": "3CQS",
+  "files": [
+    "vaultonaut.js",
+    "verify.js",
+    "lib/",
+    "!lib/test",
+    "!lib/scripts",
+    "docs/README.md",
+    "LICENSE",
+    "CONTRIBUTING.md"
+  ],
+  "keywords": [
+    "encryption",
+    "encrypted-storage",
+    "vault",
+    "rclone",
+    "fuse",
+    "cross-platform",
+    "backup",
+    "privacy",
+    "tamper-detection"
+  ],
+  "bin": {
+    "vdisk": "vaultonaut.js",
+    "vaultonaut": "vaultonaut.js"
+  },
+  "scripts": {
+    "start": "node vaultonaut.js ui",
+    "ui": "node vaultonaut.js ui",
+    "setup": "node -e \"require('./lib/RcloneSetup').ensure().then(r=>console.log(r.ok?'engine ready':'setup failed'))\"",
+    "doctor": "node vaultonaut.js doctor",
+    "sign": "node lib/scripts/sign-release.js",
+    "sign:check": "node lib/scripts/sign-release.js --check",
+    "test": "node -r ./lib/test/_setup.js lib/test/smoke.js",
+    "test:all": "for f in lib/test/*.js; do case \"$(basename \"$f\")\" in _*) ;; *) echo \"# $f\"; node -r ./lib/test/_setup.js \"$f\" || exit 1;; esac; done"
+  },
+  "dependencies": {
+    "archiver": "^8.0.0",
+    "ejs": "^6.0.1",
+    "express": "^5.2.1",
+    "hash-wasm": "^4.12.0",
+    "mammoth": "^1.12.2",
+    "minisearch": "^7.2.0",
+    "read-excel-file": "^9.3.10",
+    "unpdf": "^1.8.1",
+    "unzipper": "^0.12.5"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "license": "AGPL-3.0-or-later"
+}

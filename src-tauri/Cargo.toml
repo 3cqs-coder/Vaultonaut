@@ -1,0 +1,27 @@
+[package]
+name = "vaultonaut"
+version = "1.0.0"
+description = "Vaultonaut desktop shell"
+edition = "2021"
+rust-version = "1.77"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true
+# Note on build-machine paths: a compiled binary embeds the paths it was built from (the build directory and
+# the dependency cache), which normally contain the OS username. Those are kept out not by a compiler flag but by
+# building at a neutral path with a neutral CARGO_HOME (see the "Not leaking the build machine's identity" section
+# of README.md), which the leak scan then verifies. (Cargo's trim-paths would help but is not stable on every
+# supported toolchain, so it is deliberately not relied upon.)
