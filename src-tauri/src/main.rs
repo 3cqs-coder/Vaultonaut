@@ -25,8 +25,11 @@ use tauri::Manager;
 // reachable from the network). This matches the application's own default port (Common.DEFAULT_UI_PORT); a
 // drift-guard test keeps the two in sync.
 const UI_PORT: u16 = 7420;
-// How long to wait for the backend to start serving before giving up and showing the fallback message.
-const STARTUP_TIMEOUT: Duration = Duration::from_secs(45);
+// How long to wait for the backend to start serving before giving up and showing the fallback message. Generous,
+// because a cold first run can be slow — on Windows especially, the OS antivirus scans the freshly installed
+// runtime and its modules the first time they are executed and read. A real crash does NOT wait this out: the
+// poll returns immediately when the child process exits, so only a slow-but-alive startup uses the full budget.
+const STARTUP_TIMEOUT: Duration = Duration::from_secs(120);
 // How long to allow the backend to drain and lock vaults on exit before forcing it down.
 const SHUTDOWN_GRACE: Duration = Duration::from_secs(10);
 
@@ -53,6 +56,21 @@ fn ensure_executable(p: &Path) {
 }
 #[cfg(not(unix))]
 fn ensure_executable(_p: &Path) {}
+
+// Capture the backend's stdout and stderr to a log file, so a startup failure is diagnosable — under the packaged
+// app the process is otherwise silent. A regular file never blocks the writer (unlike a pipe, which could fill and
+// stall it), it is truncated each launch, and it holds only ordinary startup output (engine setup, self-check
+// notes), never vault contents. Falls back to discarding output if the log cannot be opened, so logging can never
+// keep the app from starting.
+fn backend_log_stdio() -> (Stdio, Stdio) {
+    let path = std::env::temp_dir().join("vaultonaut-backend.log");
+    if let Ok(f) = std::fs::File::create(&path) {
+        if let Ok(f2) = f.try_clone() {
+            return (Stdio::from(f), Stdio::from(f2));
+        }
+    }
+    (Stdio::null(), Stdio::null())
+}
 
 // Has our spawned backend already exited? If it has (for example it hit EADDRINUSE because an unrelated program
 // holds the port, or it crashed), we must NOT navigate to whatever is on that port — it would not be ours.
@@ -121,8 +139,8 @@ fn main() {
     tauri::Builder::default()
         .setup(|app| {
             // Launch the Node application through the bundled runtime on the fixed loopback port. Its output is
-            // discarded (the application logs into its own data directory); a null stdio also means there are no
-            // pipes that could ever fill and stall it. --desktop tells the backend it is the packaged app.
+            // captured to a log file (see backend_log_stdio) so a startup failure is diagnosable; a file, unlike a
+            // pipe, can never fill and stall the writer. --desktop tells the backend it is the packaged app.
             let resource_dir = app.path().resource_dir()?;
             let node = node_binary(&resource_dir);
             ensure_executable(&node);
@@ -134,9 +152,9 @@ fn main() {
                 .arg("--port")
                 .arg(UI_PORT.to_string())
                 .arg("--desktop")
-                .stdin(Stdio::null())
-                .stdout(Stdio::null())
-                .stderr(Stdio::null());
+                .stdin(Stdio::null());
+            let (out, err) = backend_log_stdio();
+            cmd.stdout(out).stderr(err);
             // On Windows a GUI process launching a console binary would pop a console window without this flag.
             #[cfg(windows)]
             {
