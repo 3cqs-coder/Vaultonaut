@@ -1,4 +1,6 @@
-# Vaultonaut
+<p align="center">
+  <img src="banner.png" alt="Vaultonaut — portable encrypted vaults that mount as ordinary drives" width="760">
+</p>
 
 Vaultonaut creates portable, password-protected encrypted vaults and mounts them as ordinary drives. Once a vault is unlocked it behaves like any other disk: you open, edit, and save files with any application, and every read and write is encrypted and decrypted on the fly. Nothing is ever written to the vault in the clear.
 

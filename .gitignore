@@ -40,6 +40,8 @@ data/service.pid
 
 docs/*
 !docs/README.md
+!docs/banner.png
+!docs/banner.svg
 
 # Native desktop packaging (development-only; the published npm package never includes it).
 # Build outputs, the staged app copy (which now contains the bundled Node runtime), and the packaging tool's own

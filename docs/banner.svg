@@ -1,0 +1,28 @@
+<svg width="1280" height="320" viewBox="0 0 1280 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vaultonaut — portable encrypted vaults that mount as ordinary drives">
+  <!-- Vaultonaut README banner: the astronaut-helmet-with-keyhole mark beside the wordmark and tagline,
+       in the brand palette (ground #0b1220 → #0d1730, light #e9eff9, keyhole accent #4f8cff). -->
+  <defs>
+    <linearGradient id="ground" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1220"/>
+      <stop offset="1" stop-color="#0d1730"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="320" rx="28" fill="url(#ground)"/>
+
+  <!-- mark (the outer rounded-square ground is dropped so the helmet floats on the banner) -->
+  <g transform="translate(70,48) scale(0.44)">
+    <rect x="60" y="206" width="46" height="96" rx="20" fill="#e9eff9"/>
+    <rect x="406" y="206" width="46" height="96" rx="20" fill="#e9eff9"/>
+    <circle cx="256" cy="252" r="182" fill="#e9eff9"/>
+    <path d="M132 228 Q132 150 210 150 H302 Q380 150 380 228 V284 Q380 374 256 374 Q132 374 132 284 Z" fill="#0d1730"/>
+    <g fill="#4f8cff">
+      <circle cx="256" cy="248" r="42"/>
+      <path d="M236 280 L276 280 L290 350 Q256 364 222 350 Z"/>
+    </g>
+  </g>
+
+  <!-- wordmark + accent rule + tagline -->
+  <text x="360" y="176" font-family="Helvetica, Arial, sans-serif" font-size="104" font-weight="700" letter-spacing="-1" fill="#e9eff9">Vaultonaut</text>
+  <rect x="363" y="200" width="92" height="6" rx="3" fill="#4f8cff"/>
+  <text x="362" y="250" font-family="Helvetica, Arial, sans-serif" font-size="29" font-weight="400" fill="#9db2d4">Portable encrypted vaults that mount as ordinary drives</text>
+</svg>
