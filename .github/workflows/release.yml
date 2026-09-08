@@ -23,6 +23,12 @@ on:
         required: false
         default: ""
 
+# Least privilege: the build jobs only need to read the repository, so the workflow's token is read-only by
+# default. The release job below re-grants itself the contents: write it needs to create the release, so write
+# access is held by that one job and nothing else.
+permissions:
+  contents: read
+
 jobs:
   build:
     strategy:
