@@ -25,7 +25,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": ["app", "dmg", "nsis", "msi", "deb", "rpm"],
     "publisher": "3CQS",
     "copyright": "Copyright (C) 3CQS",
     "icon": [

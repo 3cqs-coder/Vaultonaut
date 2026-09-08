@@ -40,8 +40,7 @@ jobs:
           - os: windows-latest
             label: windows
           # Linux: build on the oldest supported base (Tauri's recommendation). It links against an older glibc,
-          # so the bundle runs on more distributions, and it avoids the newer runner image's AppImage breakage
-          # (Ubuntu 24.04 renamed libfuse2 to libfuse2t64, which stops linuxdeploy — itself an AppImage — from running).
+          # so the deb and rpm run on more distributions — a wider compatibility floor for the same binaries.
           - os: ubuntu-22.04
             label: linux
     runs-on: ${{ matrix.os }}
@@ -77,15 +76,11 @@ jobs:
       - name: Build (stage, bundle, leak-scan)
         shell: bash
         working-directory: src-tauri
-        # AppImage's bundler (linuxdeploy) is itself an AppImage; on a CI runner without FUSE it must extract and
-        # run rather than mount. This variable is harmless (ignored) on macOS and Windows.
-        env:
-          APPIMAGE_EXTRACT_AND_RUN: 1
         run: npm run build
 
-      # These globs must cover whatever `bundle.targets: "all"` produces in tauri.conf.json. If a future Tauri
-      # adds or renames an installer format, extend this list (a missing format is silent unless the whole set is
-      # empty). The current set covers macOS dmg, Windows msi + nsis exe, and Linux deb/AppImage/rpm.
+      # These globs must cover whatever bundle.targets in tauri.conf.json produces. If a future Tauri adds or
+      # renames an installer format, extend this list (a missing format is silent unless the whole set is empty).
+      # The current set covers macOS dmg, Windows msi + nsis exe, and Linux deb + rpm.
       - name: Collect installers
         uses: actions/upload-artifact@v4
         with:
@@ -95,7 +90,6 @@ jobs:
             src-tauri/target/release/bundle/**/*.dmg
             src-tauri/target/release/bundle/**/*.msi
             src-tauri/target/release/bundle/**/*.exe
-            src-tauri/target/release/bundle/**/*.AppImage
             src-tauri/target/release/bundle/**/*.deb
             src-tauri/target/release/bundle/**/*.rpm
 
