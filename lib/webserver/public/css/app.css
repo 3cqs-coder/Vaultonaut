@@ -529,6 +529,9 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 }
 
 /* Tamper-check results */
+/* Visually hidden but read by screen readers — used to announce a result's status (Success/Error/Warning) so it is
+   not conveyed by the panel's border color alone. */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .tamper-result {
 	margin-top: 12px; padding: 10px 12px; border-radius: 8px;
 	border: 1px solid var(--border); background: var(--panel-2);

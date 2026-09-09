@@ -22,6 +22,12 @@ const crypto = require('crypto');
 const MANIFEST_NAME = 'release-manifest.json';
 const SIG_NAME = 'release-manifest.sig';
 const KEY_NAME = 'release-signing-key.json';
+// The manifest format this verifier understands. A future release may use a new schema/hash; its signature would
+// still verify, but the file-hash comparison below assumes THIS shape (sha256, files[].sha256). If the manifest
+// declares a format this build does not know, report UNVERIFIED ("update the verifier"), never TAMPERED — a false
+// alarm from the trust tool would be worse than an honest "cannot check this yet".
+const KNOWN_SCHEMA = 'vaultonaut-release-1';
+const KNOWN_ALGO = 'sha256';
 const SPKI_PREFIX = Buffer.from('302a300506032b6570032100', 'hex'); // raw Ed25519 public key -> SPKI DER
 
 // The covered scope — MUST stay in sync with EXCLUDE_TOP / EXCLUDE_NAME in lib/ReleaseIntegrity.js (a test asserts
@@ -109,6 +115,11 @@ function verifyRelease(dir, pubHexArg) {
 	add('manifest-signature', sigOk, sigOk ? '' : 'The manifest signature does not verify against this key.');
 	if (!sigOk) return { verdict: 'TAMPERED', ...out, usedEmbedded };
 	let manifest; try { manifest = JSON.parse(manifestBuf.toString('utf8')); } catch (_) { add('manifest-readable', false, 'The manifest is not readable JSON.'); return { verdict: 'TAMPERED', ...out, usedEmbedded }; }
+	// The signature is valid, so the manifest is authentic — but if it is a newer FORMAT this build cannot compare
+	// (unknown schema or hash algorithm), say UNVERIFIED and ask the user to update the verifier, rather than running
+	// a comparison that would wrongly read every file as TAMPERED.
+	if (manifest.schema !== KNOWN_SCHEMA || (manifest.algo && manifest.algo !== KNOWN_ALGO)) { add('manifest-format', false, 'This release uses a newer manifest format (' + (manifest.schema || 'unknown') + ') that this verifier does not understand — update to the matching version to check it.'); return { verdict: 'UNVERIFIED', ...out, usedEmbedded }; }
+	add('manifest-format', true);
 	const mismatches = [], missing = [];
 	const listed = new Set();
 	for (const f of manifest.files || []) {
