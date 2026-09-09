@@ -106,7 +106,7 @@ Because this is a security tool, it is worth confirming that the copy you have i
 Official signing public key:
 
 ```
-5b548433373774a18a00c2c82c896c42a1cf68df63358c5e9136ac68bc03f137
+9ff32decec703dc708275a1b19c62a989ab9e8def96e617add3221322250d550
 ```
 
 The strongest check uses that key. Run the bundled verifier from the folder you downloaded, passing the key you copied from above:
