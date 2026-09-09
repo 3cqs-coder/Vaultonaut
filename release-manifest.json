@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.0.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-09T13:18:11.496Z",
+  "generatedAt": "2026-09-09T13:56:10.524Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -17,8 +17,8 @@
     },
     {
       "path": "docs/README.md",
-      "sha256": "3de7480265569b82e537731fcfc5257f5a875a1fb9ba90c55f24428f9e4f27b8",
-      "size": 153016
+      "sha256": "490dc10519d2ae99fe18636eada43971e29c97a7ba54f98b0571661b57bd836d",
+      "size": 152550
     },
     {
       "path": "lib/Attest.js",
@@ -52,8 +52,8 @@
     },
     {
       "path": "lib/Common.js",
-      "sha256": "36ecd33c2756ee96423e69848e221973293c601ef79ed80d59e61f7e3fd2e2af",
-      "size": 41538
+      "sha256": "f59191665e9dff4a86614faf2690bb620142b8b8cff18b98262992a1f4e06649",
+      "size": 42627
     },
     {
       "path": "lib/Decoy.js",
@@ -182,8 +182,8 @@
     },
     {
       "path": "lib/Recovery.js",
-      "sha256": "ded2e05b287af36d828bf784c50414dcd96fe4fc07067eb6ba50b4291e6f8dc7",
-      "size": 72019
+      "sha256": "bde9a6d6c7d916d101134a76a300a224a121e752fe445a585449dbe501e648c6",
+      "size": 72797
     },
     {
       "path": "lib/RecoveryKit.js",
@@ -207,8 +207,8 @@
     },
     {
       "path": "lib/ReleaseIntegrity.js",
-      "sha256": "9b39bca9b0a4196619f3352ef844f145917f3912e02334e13dfa3d7479a96b94",
-      "size": 19719
+      "sha256": "b212d69697929d2db7885be58abc303b0ace926f299c9335c1a85425124659d8",
+      "size": 20091
     },
     {
       "path": "lib/SdNotify.js",
@@ -272,8 +272,8 @@
     },
     {
       "path": "lib/Vault.js",
-      "sha256": "4bafcf96fb552e1eab8b3c84e20db9d67d3aec4600796c3dbd69e282e6a72552",
-      "size": 643281
+      "sha256": "e882a1c6ce129138a146ab403a22d969ddfa5f6cd334c67c3ab937f2e60d72a8",
+      "size": 643731
     },
     {
       "path": "lib/Watchdog.js",
@@ -342,18 +342,18 @@
     },
     {
       "path": "lib/webserver/index.js",
-      "sha256": "330f84e04cd458b036e00e4890402825095c57619baab95c29462eb4fb035c12",
-      "size": 119383
+      "sha256": "b4f57b34f6b723313bd7d8bacf55967b7c0f2087abcf442a03e1a7121247746f",
+      "size": 120785
     },
     {
       "path": "lib/webserver/mobileRoutes.js",
-      "sha256": "ff08f84fbe60282a4d4736fd64aa4c81176b89d7085747295242409d6a03359d",
+      "sha256": "d8ccb902c0bba04806b01e722a8793dc3df0cf9258841707b5c321c49a0498df",
       "size": 9485
     },
     {
       "path": "lib/webserver/public/css/app.css",
-      "sha256": "fc82c335dc323a7769b962aff4d0318f6da8b1dba01bb9a39c3e9819ed07f634",
-      "size": 49496
+      "sha256": "34147b3c1d5828e8d18299df9f8546f7bd6d5c5ca2b5a8a2e02b4d305447b619",
+      "size": 49822
     },
     {
       "path": "lib/webserver/public/fonts/aFTR7PB1QTsUX8KYvrGyEY2tbZX9.woff2",
@@ -422,8 +422,8 @@
     },
     {
       "path": "lib/webserver/public/js/app.js",
-      "sha256": "a9580a4bbf0e05ed83537d89d21084dac384766ea4627e9ff7d43d108f2d884c",
-      "size": 242997
+      "sha256": "28602a887da1702babafeebd7b5a2406c921b59d69e7c94a7d83ad5d848d9406",
+      "size": 243877
     },
     {
       "path": "lib/webserver/public/js/login.js",
@@ -452,8 +452,8 @@
     },
     {
       "path": "lib/webserver/public/mobile/app.css",
-      "sha256": "19ce6ad7de1d2f86aa2b2d4f71ee28fb6093c0a3710313b0a906b03369c83b87",
-      "size": 7659
+      "sha256": "530d009a7e93e2e673846df8e923f75ded80f0b60acec9e65d5ea857b3205c16",
+      "size": 7859
     },
     {
       "path": "lib/webserver/public/mobile/app.js",
@@ -532,18 +532,18 @@
     },
     {
       "path": "package.json",
-      "sha256": "da54bff430913a323efb506a159ee9eeb5cc057ce0d706353601e85c9184f619",
+      "sha256": "bf91e800414d34110a230541240c538c11df5bab5ca0d24a7cdaccc67d01be4f",
       "size": 1640
     },
     {
       "path": "vaultonaut.js",
-      "sha256": "6211429bd7c2dc494e0f781a5fd305810ee66d3b01eb8118573bffe94dceebc5",
-      "size": 3967
+      "sha256": "ffc5b5a1561b3d8b1ad0ca3d80af2d2622f7d9412e44d12e6ded98e8f0422373",
+      "size": 4551
     },
     {
       "path": "verify.js",
-      "sha256": "0d4a992b182c1eebe47439b25b132574a1ce8d8524fde9feb8a35f67c3a68481",
-      "size": 9212
+      "sha256": "5fc5688554d3856ea6fb8d50f169cff090d9c9f128a1ec0061684e21db544630",
+      "size": 9368
     }
   ]
 }

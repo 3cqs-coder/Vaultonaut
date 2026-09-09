@@ -29,6 +29,13 @@
 // Brand are tiny, dependency-free, parse-safe modules, so requiring them this early is safe on an old runtime.
 require('./lib/Bootstrap').enforceNodeVersion(__dirname, require('./lib/Brand').name);
 
+// Give libuv's filesystem thread pool headroom before any async I/O starts (it reads this only at first use). The
+// service runs a lot of concurrent, sometimes slow, disk work — per-vault status polls across possibly removable or
+// network drives, mounts, backups — and the default pool of four is easily saturated, which would let a few slow
+// drives starve every other file operation. A larger fixed pool prevents that. Set in code (not asked of the user);
+// an existing value is left untouched.
+if (!process.env.UV_THREADPOOL_SIZE) process.env.UV_THREADPOOL_SIZE = '16';
+
 // Prefer IPv4 for outbound DNS FIRST, before any network-using module is required, so downloads, cloud vaults,
 // timestamp requests, and relay hops all inherit it and stay resilient on hosts with flaky IPv6 (see lib/DnsOrder).
 require('./lib/DnsOrder').prefer(process.argv);

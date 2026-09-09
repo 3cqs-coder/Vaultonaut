@@ -72,7 +72,7 @@
 	--bg: #f4ecdf; --rail: #fbf6ec; --panel: #fbf6ec; --panel-2: #efe6d5; --hover: #eee2cd;
 	--text: #3a2f22; --muted: #715f45; --faint: #9c8c74; --border: #e2d4b8;
 	--accent: #a4641f; --accent-text: #ffffff; --accent-soft: #f3e4cf; --accent-quiet: #e6d2b3;
-	--good: #2f7d4f; --good-bg: #e4efdb; --warn: #955f10; --warn-bg: #f7ecd2; --warn-soft: #f7ecd2;
+	--good: #276b43; --good-bg: #e4efdb; --warn: #955f10; --warn-bg: #f7ecd2; --warn-soft: #f7ecd2;
 	--danger: #a8231c; --danger-fill: #a8231c;
 	--star: #b5791f;   /* a deeper gold that holds contrast on the cream sepia panel */
 	--shadow: 0 1px 3px rgba(90, 70, 40, .08), 0 1px 2px rgba(90, 70, 40, .06);
@@ -220,8 +220,8 @@ img.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; } /* the b
 /* A neutral, translucent control that stays legible on ANY banner color (ok/warn/error) and either theme.
    Deriving the tint from currentColor (the banner's own text color) means it adapts on its own — a dark
    control on a light banner, a light control on a dark one — with no per-banner overrides. */
-.banner-toggle { flex: none; align-self: flex-start; color: inherit; background: color-mix(in srgb, currentColor 10%, transparent); border: 1px solid color-mix(in srgb, currentColor 35%, transparent); padding: 3px 10px; border-radius: 6px; font: inherit; font-size: 13px; cursor: pointer; }
-@media (hover: hover) { .banner-toggle:hover { background: color-mix(in srgb, currentColor 20%, transparent); } }
+.banner-toggle { flex: none; align-self: flex-start; color: inherit; background: var(--panel-2); background: color-mix(in srgb, currentColor 10%, transparent); border: 1px solid var(--border); border: 1px solid color-mix(in srgb, currentColor 35%, transparent); padding: 3px 10px; border-radius: 6px; font: inherit; font-size: 13px; cursor: pointer; } /* plain-token fallbacks precede color-mix so an engine without color-mix (older WebKitGTK) keeps a visible border and background */
+@media (hover: hover) { .banner-toggle:hover { background: var(--panel-2); background: color-mix(in srgb, currentColor 20%, transparent); } }
 /* When minimized, the banner is just the one-line chip — no list, tighter padding. */
 .banner.collapsed { padding: 8px 12px; }
 
@@ -360,7 +360,7 @@ button { font: inherit; }
 .share-key-list { display: grid; gap: 6px; margin-top: 6px; }
 .share-key-list .radio-row { font-size: 13px; }
 .share-key-list .mine { color: var(--muted); }
-.share-folder-warn { font-size: 13px; line-height: 1.45; background: var(--warn-bg); border: 1px solid color-mix(in srgb, var(--warn) 45%, transparent); border-radius: 8px; padding: 10px 12px; margin-top: 12px; }
+.share-folder-warn { font-size: 13px; line-height: 1.45; background: var(--warn-bg); border: 1px solid var(--warn); border: 1px solid color-mix(in srgb, var(--warn) 45%, transparent); border-radius: 8px; padding: 10px 12px; margin-top: 12px; } /* plain-token border fallback precedes color-mix for older WebKitGTK */
 .share-key-caution { font-size: 12.5px; color: var(--warn); margin-top: 6px; }
 .decoy-map { padding: 4px 0; }
 .decoy-stale { font-size: 12px; color: var(--warn); margin-top: 2px; } /* a decoy pairing that has gone stale — shown only in the manager-password view */

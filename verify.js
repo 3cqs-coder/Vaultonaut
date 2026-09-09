@@ -50,33 +50,41 @@ function resolveWithin(dir, relPosix) {
 	if (rel === '' || rel === '..' || rel.startsWith('..' + path.sep) || path.isAbsolute(rel)) return null;
 	return abs;
 }
-// The covered directories: every ancestor directory of every manifest entry ('' is the root). Extraneous-file
-// detection is limited to these — a file inside a covered directory that the manifest does not list was added after
-// signing. Directories that hold no listed file (the bundled runtime, node_modules, a source checkout's dev-only
-// trees) sit outside the signed scope, so the same manifest verifies a source download, an npm install, and a desktop
-// bundle alike. This MUST match coveredDirs / extraneousFiles in lib/ReleaseIntegrity.js (the EXCLUDE sets are the
-// parts a test asserts stay in sync).
-function coveredDirs(listedPaths) {
-	const dirs = new Set(['']);
-	for (const p of listedPaths) { const parts = String(p).split('/'); parts.pop(); let cur = ''; for (const seg of parts) { cur = cur ? cur + '/' + seg : seg; dirs.add(cur); } }
-	return dirs;
+// The top-level entries (first path segment) that contain a listed file at any depth. Extraneous-file detection
+// descends at the root only into these, then recurses fully within each — so a file added anywhere inside the
+// application's own tree (including a new nested subdirectory) is caught, while directories that hold no listed file
+// (the bundled runtime, node_modules, a source checkout's dev-only trees) are never descended. This MUST match
+// coveredTopEntries / extraneousFiles in lib/ReleaseIntegrity.js (a parity test keeps the two behaviors in sync).
+function coveredTopEntries(listedPaths) {
+	const top = new Set();
+	for (const p of listedPaths) { const i = String(p).indexOf('/'); if (i > 0) top.add(p.slice(0, i)); }
+	return top;
 }
-// Files present directly inside a covered directory but absent from the manifest (an addition). Only the covered
-// directories are read — never a full-tree walk — so this stays cheap even when a large node_modules or a bundled
-// runtime sits alongside.
+// Files absent from the manifest but present in the covered scope (an addition). Recurses fully inside each covered
+// top-level tree; at the root descends only into those trees, so node_modules / the runtime are never walked.
+// Symlinks are never followed.
 function extraneousFiles(dir, listedSet) {
+	dir = path.resolve(dir);
+	const topDirs = coveredTopEntries(listedSet);
 	const out = [];
-	for (const d of coveredDirs(listedSet)) {
-		const abs = d ? resolveWithin(dir, d) : dir;
-		if (!abs) continue;
-		let entries; try { entries = fs.readdirSync(abs, { withFileTypes: true }); } catch (_) { continue; }
+	(function scan(relDir) {
+		const abs = relDir ? resolveWithin(dir, relDir) : dir;
+		if (!abs) return;
+		let entries; try { entries = fs.readdirSync(abs, { withFileTypes: true }); } catch (_) { return; }
 		for (const e of entries) {
-			if (!e.isFile() || EXCLUDE_NAME.has(e.name)) continue;
-			if (!d && EXCLUDE_TOP.has(e.name)) continue; // a top-level control file (manifest, sig, key, SHA256SUMS) is never extraneous
-			const rel = d ? d + '/' + e.name : e.name;
+			if (EXCLUDE_NAME.has(e.name)) continue;
+			if (e.isSymbolicLink()) continue;
+			const rel = relDir ? relDir + '/' + e.name : e.name;
+			if (e.isDirectory()) {
+				if (relDir) scan(rel);
+				else if (topDirs.has(e.name)) scan(rel);
+				continue;
+			}
+			if (!e.isFile()) continue;
+			if (!relDir && EXCLUDE_TOP.has(e.name)) continue; // a top-level control file is never extraneous
 			if (!listedSet.has(rel)) out.push(rel);
 		}
-	}
+	})('');
 	return out;
 }
 function embeddedPubKey(dir) {
@@ -129,4 +137,4 @@ if (require.main === module) {
 	process.exit(r.verdict === 'GENUINE' ? 0 : 1);
 }
 
-module.exports = { verifyRelease, EXCLUDE_TOP, EXCLUDE_NAME }; // EXCLUDE_* exported so a test can assert they match lib/ReleaseIntegrity.js
+module.exports = { verifyRelease, EXCLUDE_TOP, EXCLUDE_NAME, coveredTopEntries, extraneousFiles }; // EXCLUDE_* and the scan helpers exported so a test can assert they match lib/ReleaseIntegrity.js

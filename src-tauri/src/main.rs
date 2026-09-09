@@ -16,6 +16,7 @@
 use std::net::TcpStream;
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
@@ -37,6 +38,13 @@ const SHUTDOWN_GRACE: Duration = Duration::from_secs(10);
 // The backend's own drain is internally bounded, so this only escalates to a hard kill against a genuinely wedged
 // backend, and the user never sees the wait (the window is gone). Prefers not-losing-data over a fast process exit.
 const BACKGROUND_DRAIN_GRACE: Duration = Duration::from_secs(300);
+
+// Shutdown state, so a SECOND quit gesture while the background drain is still running cannot abort it mid-flush.
+// SHUTTING_DOWN is set the moment a shutdown begins; DRAIN_DONE is set by the drain thread immediately before its
+// final exit. The exit handler prevents any exit while SHUTTING_DOWN is set and DRAIN_DONE is not — the only exit it
+// lets through in that state is the drain thread's own, which sets DRAIN_DONE first.
+static SHUTTING_DOWN: AtomicBool = AtomicBool::new(false);
+static DRAIN_DONE: AtomicBool = AtomicBool::new(false);
 
 // The running Node backend, shared between the readiness thread and the exit handler.
 type SharedChild = Arc<Mutex<Option<Child>>>;
@@ -87,8 +95,20 @@ fn ensure_executable(_p: &Path) {}
 // notes), never vault contents. Falls back to discarding output if the log cannot be opened, so logging can never
 // keep the app from starting.
 fn backend_log_stdio() -> (Stdio, Stdio) {
-    let path = std::env::temp_dir().join("vaultonaut-backend.log");
-    if let Ok(f) = std::fs::File::create(&path) {
+    // On Unix /tmp is shared between users, so name the log per-uid and create it 0600. Without that, a second user's
+    // create-truncate would hit the first user's file (EACCES → the fallback below discards output, exactly when a
+    // startup failure needs it), and the log would be world-readable. On Windows the temp dir is already per-user, so
+    // the plain name is fine.
+    #[cfg(unix)]
+    let name = format!("vaultonaut-backend-{}.log", unsafe { libc::getuid() });
+    #[cfg(not(unix))]
+    let name = String::from("vaultonaut-backend.log");
+    let path = std::env::temp_dir().join(name);
+    let mut opts = std::fs::OpenOptions::new();
+    opts.create(true).write(true).truncate(true);
+    #[cfg(unix)]
+    { use std::os::unix::fs::OpenOptionsExt; opts.mode(0o600); }
+    if let Ok(f) = opts.open(&path) {
         if let Ok(f2) = f.try_clone() {
             return (Stdio::from(f), Stdio::from(f2));
         }
@@ -141,9 +161,11 @@ fn show_outcome<R: tauri::Runtime>(handle: &tauri::AppHandle<R>, ready: bool) {
     });
 }
 
-// Ask the backend to stop cleanly (its SIGTERM handler drains writes and locks each vault), wait briefly, then
-// force it down if it has not exited. Windows has no graceful signal, so terminate directly there — the external
-// guardian still unmounts and locks any open vault when the backend disappears.
+// Ask the backend to stop cleanly (its SIGTERM handler drains writes and locks each vault), wait up to `grace`, then
+// force it down if it has not exited. NOTE: the graceful wait applies only on Unix. Windows has no equivalent signal
+// a child console process reliably honors, so the backend is terminated at once there and `grace` has no effect; the
+// external guardian still unmounts and locks any open vault when the backend disappears, but an in-flight cloud
+// upload is not drained on Windows. (Draining on Windows would need a cooperative stop channel to the backend.)
 fn stop_backend(child: &mut Child, grace: Duration) {
     #[cfg(unix)]
     {
@@ -163,11 +185,13 @@ fn stop_backend(child: &mut Child, grace: Duration) {
 // quit path blocks the UI thread and triggers the desktop's "application is not responding" dialog. Safe to call
 // more than once: the child is taken out of the shared slot, so a second call finds nothing and just exits.
 fn shutdown_in_background<R: tauri::Runtime>(handle: tauri::AppHandle<R>, shared: SharedChild) {
+    SHUTTING_DOWN.store(true, Ordering::SeqCst); // from here on, a second quit gesture is held off until the drain finishes
     if let Some(win) = handle.get_webview_window("main") { let _ = win.hide(); }
     std::thread::spawn(move || {
         if let Some(mut child) = shared.lock().ok().and_then(|mut g| g.take()) {
             stop_backend(&mut child, BACKGROUND_DRAIN_GRACE);
         }
+        DRAIN_DONE.store(true, Ordering::SeqCst); // set BEFORE exit so the re-entrant ExitRequested this triggers is allowed through
         handle.exit(0);
     });
 }
@@ -256,7 +280,13 @@ fn main() {
                 // background thread before exiting, so a quit never freezes the UI thread. The has-child peek stops
                 // the exit(0) that the background thread later calls from re-entering here and preventing its own exit.
                 tauri::RunEvent::ExitRequested { api, .. } => {
-                    if let Some(backend) = app_handle.try_state::<Backend>() {
+                    if DRAIN_DONE.load(Ordering::SeqCst) {
+                        // The background drain has finished — this is its own final exit (or a quit after it). Let it through.
+                    } else if SHUTTING_DOWN.load(Ordering::SeqCst) {
+                        // A drain is already running (e.g. the window was closed, or a first Cmd+Q): a SECOND quit gesture
+                        // must not abort it mid-flush, so hold the exit off. The drain thread's own exit sets DRAIN_DONE first.
+                        api.prevent_exit();
+                    } else if let Some(backend) = app_handle.try_state::<Backend>() {
                         let shared = backend.0.clone();
                         let has_child = shared.lock().map(|g| g.is_some()).unwrap_or(false);
                         if has_child {

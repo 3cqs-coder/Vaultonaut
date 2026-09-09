@@ -9,6 +9,11 @@
 #   git config core.hooksPath .githooks
 #
 # POSIX sh with no bashisms, so it runs the same on macOS, Linux, and on Windows under the Git-for-Windows shell.
+#
+# Scope note: this signs the WORKING TREE, not a partial index. A pathspec commit (git commit <file>) or a staged-hunk
+# (git add -p) commit could therefore produce a manifest that describes the working tree rather than the exact snapshot
+# being committed. That is caught anyway — the fail-closed release-signed test runs on the actual committed tree in CI
+# and blocks the release on a mismatch — but for a clean whole-tree commit (the normal case) the manifest is exact.
 
 root=$(git rev-parse --show-toplevel) || exit 0
 cd "$root" || exit 0
