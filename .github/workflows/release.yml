@@ -30,7 +30,25 @@ permissions:
   contents: read
 
 jobs:
+  # Run the unit suite before building or releasing anything. A tagged release must never draft from a broken app,
+  # and this runs the FULL drift/regression suite that the fast smoke-only pre-commit hook skips. One cheap Linux
+  # runner is enough — the suite is platform-agnostic Node with no native build step.
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.11.1
+      - name: Install app dependencies
+        shell: bash
+        run: npm install --no-audit --no-fund
+      - name: Run the unit suite
+        shell: bash
+        run: npm run test:all
+
   build:
+    needs: test
     strategy:
       fail-fast: false
       matrix:
