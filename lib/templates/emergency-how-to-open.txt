@@ -1,0 +1,12 @@
+How to open this emergency access
+
+These ".sealed" files each contain read-only access to a vault, sealed to your
+public key. Only your private key can open them. On a computer with {{name}}:
+
+  {{cli}} emergency-open <file>.sealed --key <your-private-key>
+
+That prints a read link. Mount a copy of the vault with it:
+
+  {{cli}} mount <vault-folder> --read-cap <the-read-link>
+
+You can read the files. You cannot change the vault, its keys, or its owner.
