@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.0.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-09T14:39:40.400Z",
+  "generatedAt": "2026-09-09T15:27:25.448Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -17,8 +17,8 @@
     },
     {
       "path": "docs/README.md",
-      "sha256": "490dc10519d2ae99fe18636eada43971e29c97a7ba54f98b0571661b57bd836d",
-      "size": 152550
+      "sha256": "2eb9de89e1d9c7840c72607129ad66fb4dbfad301d783fc0a6b6e07745cdf8ea",
+      "size": 152579
     },
     {
       "path": "lib/Attest.js",
@@ -47,8 +47,8 @@
     },
     {
       "path": "lib/Commands.js",
-      "sha256": "8be6ef07c83fcfccc011228359ec7cba98520b35fd5b5283beca996c5dee5074",
-      "size": 149047
+      "sha256": "0bee03b50398dcc529fabcfcbe7c65a90436be4d897b34c86493f1b91fbb3bb8",
+      "size": 149681
     },
     {
       "path": "lib/Common.js",
@@ -122,8 +122,8 @@
     },
     {
       "path": "lib/Kdf.js",
-      "sha256": "5cbf1380d0f1f8c44811c2331ba1bc4c7e6f59f16bf4d1b30d7f88036f93af93",
-      "size": 10639
+      "sha256": "67019ac8cb23189772bede161188886bcc09558eaedae6a3c7f4338f46497304",
+      "size": 11677
     },
     {
       "path": "lib/KdfWorker.js",
@@ -137,8 +137,8 @@
     },
     {
       "path": "lib/Mobile.js",
-      "sha256": "d74619b8e8eab573181009617c48c78dd5783b2afe322b1cf93caf0aa36de880",
-      "size": 10450
+      "sha256": "454f366a8772c4aca95cea887949394f887bb5d7ec3ca4e793e769f70e0f5812",
+      "size": 11484
     },
     {
       "path": "lib/Net.js",
@@ -162,8 +162,8 @@
     },
     {
       "path": "lib/ProcRegistry.js",
-      "sha256": "1110c09bec9e0fc6415fb84ca543f61d9021818be340977b9318081ba2d8ea15",
-      "size": 6325
+      "sha256": "2ad9c99c52a0971b66196d4ed48560086997c67a0a5e73ab8382b3a86e0a33e3",
+      "size": 7277
     },
     {
       "path": "lib/RamCache.js",
@@ -212,8 +212,8 @@
     },
     {
       "path": "lib/SdNotify.js",
-      "sha256": "5af019409e58b7378f0d1bf38246d2e3032d1fe4e21d8f48426054da6a240835",
-      "size": 4025
+      "sha256": "8ea54898842da77ec943c37bec47b18bd0adaa31545257a7592482e632c0b948",
+      "size": 4577
     },
     {
       "path": "lib/SearchDefs.js",
@@ -222,8 +222,8 @@
     },
     {
       "path": "lib/SearchWorker.js",
-      "sha256": "27c3b4bb827e093c8294bfb40c1943f477f371780b9dc05152f25a0ec37b2e21",
-      "size": 10179
+      "sha256": "9fd5df5bef7317fed94bc4cabbfc04816f2a14c8652524e27cc78ba392dc25b8",
+      "size": 10442
     },
     {
       "path": "lib/SelfCheck.js",
@@ -272,8 +272,8 @@
     },
     {
       "path": "lib/Vault.js",
-      "sha256": "ae56c79ff87410d654b33786b590445e7a047e95db1d06527ed780f75398e76a",
-      "size": 645102
+      "sha256": "c62d1c94b02849e064f2ee74fd76a0076748b8aa1983e16f788a6121f1db83a4",
+      "size": 647291
     },
     {
       "path": "lib/Watchdog.js",
@@ -282,8 +282,8 @@
     },
     {
       "path": "lib/WorkerRun.js",
-      "sha256": "da96cc4f3105276e30fa393745fd02d710fd7db5da7d5edcccf688dd756a3934",
-      "size": 4435
+      "sha256": "e794070970e2e3ed57df3bc39bcf4297239e013a0ee82f8feeae1d73aec519be",
+      "size": 5302
     },
     {
       "path": "lib/assets/logo.icns",
@@ -342,13 +342,13 @@
     },
     {
       "path": "lib/webserver/index.js",
-      "sha256": "31f082a6f54fd2ab6f61723b9dea43b53533c8942b360b26c55218173414a9f1",
-      "size": 121204
+      "sha256": "f193c15dade7e38d6301957961ac8e65b38b11a05bb40d4156a3cce2de3e5cc9",
+      "size": 121776
     },
     {
       "path": "lib/webserver/mobileRoutes.js",
-      "sha256": "d8ccb902c0bba04806b01e722a8793dc3df0cf9258841707b5c321c49a0498df",
-      "size": 9485
+      "sha256": "c5cfe972ac63569475aa8125c761cc83679406a52aa3c10dfc1c0c8f2611be90",
+      "size": 10524
     },
     {
       "path": "lib/webserver/public/css/app.css",
@@ -452,13 +452,13 @@
     },
     {
       "path": "lib/webserver/public/mobile/app.css",
-      "sha256": "530d009a7e93e2e673846df8e923f75ded80f0b60acec9e65d5ea857b3205c16",
+      "sha256": "aeaa6502c8596b5734511220ed6557f93d6942ccd1b85c10f341f7bdd3ca8bd2",
       "size": 7859
     },
     {
       "path": "lib/webserver/public/mobile/app.js",
-      "sha256": "6e85cc390df218ac27cc0f2ebc2b3be0a7ada944ba8171d14f641decc222f644",
-      "size": 26844
+      "sha256": "ec0b5053272b287687f9343792a96344612f681cae5c20f70c5bb5c531f0b517",
+      "size": 28844
     },
     {
       "path": "lib/webserver/public/mobile/apple-touch-icon.png",
@@ -492,8 +492,8 @@
     },
     {
       "path": "lib/webserver/public/mobile/sw.js",
-      "sha256": "a4331376a263df96f21f4debe8703c05ce9692778906555e0237ba016a3416e5",
-      "size": 7123
+      "sha256": "42afd52289a05ee08f23bad49c98441275a93a9b78f83fef7c7036449627490f",
+      "size": 7501
     },
     {
       "path": "lib/webserver/public/mobile/theme-boot.js",
