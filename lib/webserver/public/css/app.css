@@ -8,6 +8,9 @@
    tokens here; nothing below hardcodes a color. Contrast is tuned to clear WCAG AA on each theme's surfaces. */
 
 :root {
+	/* Tell the browser which theme its OWN chrome (form controls, scrollbars, date/number spinners and their
+	   popups) should render in. Without this, those UA-drawn parts stay light-mode over the dark surfaces. */
+	color-scheme: light;
 	/* structural, theme-independent */
 	--radius: 12px;
 	--radius-sm: 9px;
@@ -43,6 +46,7 @@
    (deep slate, not near-black) so a security app reads as reassuring rather than a technical terminal. */
 @media (prefers-color-scheme: dark) {
 	:root[data-theme="auto"] {
+		color-scheme: dark;
 		--bg: #0e1117; --rail: #12161f; --panel: #161b25; --panel-2: #1d2430; --hover: #232b39;
 		--text: #e6ebf5; --muted: #9aa4b6; --faint: #6b7488; --border: #262e3d;
 		--accent: #4d82ff; --accent-text: #ffffff; --accent-soft: #182642; --accent-quiet: #2b3a5c;
@@ -53,6 +57,7 @@
 	}
 }
 :root[data-theme="dark"] {
+	color-scheme: dark;
 	--bg: #0e1117; --rail: #12161f; --panel: #161b25; --panel-2: #1d2430; --hover: #232b39;
 	--text: #e6ebf5; --muted: #9aa4b6; --faint: #6b7488; --border: #262e3d;
 	--accent: #4d82ff; --accent-text: #ffffff; --accent-soft: #182642; --accent-quiet: #2b3a5c;
@@ -63,6 +68,7 @@
 }
 /* SEPIA — a warm, low-contrast "calming" theme (paper cream + soft brown accent) for long, relaxed use. */
 :root[data-theme="sepia"] {
+	color-scheme: light;
 	--bg: #f4ecdf; --rail: #fbf6ec; --panel: #fbf6ec; --panel-2: #efe6d5; --hover: #eee2cd;
 	--text: #3a2f22; --muted: #715f45; --faint: #9c8c74; --border: #e2d4b8;
 	--accent: #a4641f; --accent-text: #ffffff; --accent-soft: #f3e4cf; --accent-quiet: #e6d2b3;
@@ -365,7 +371,7 @@ button { font: inherit; }
 .divider span { padding: 0 12px; font-size: 12px; }
 
 /* Dialog */
-.dialog { border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; background: var(--panel); color: var(--text); max-width: 92vw; width: 360px; max-height: 90dvh; overflow-y: auto; } /* scroll a tall dialog on a short/phone screen so its action row is never clipped */
+.dialog { border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; background: var(--panel); color: var(--text); max-width: 92vw; width: 360px; max-height: 90vh; max-height: 90dvh; overflow-y: auto; } /* scroll a tall dialog on a short/phone screen so its action row is never clipped; vh fallback for engines without dvh */
 /* A disabled control must look inert, not clickable — the base .primary-btn stays fully saturated otherwise. */
 button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled { opacity: .5; cursor: not-allowed; }
 /* A visible keyboard-focus ring on the custom buttons (inputs already have one), for keyboard users. */
@@ -395,7 +401,7 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 /* The flex layout must be scoped to [open]: setting `display: flex` unconditionally overrides the browser's own
    `dialog:not([open]) { display: none }`, which would render the whole guide in normal flow below the page on
    every load — before anyone opens it. Only an open dialog lays out as a column; a closed one stays hidden. */
-.help-dialog { width: min(880px, 94vw); max-width: 94vw; height: min(88dvh, 920px); max-height: 92dvh; padding: 0; overflow: hidden; flex-direction: column; }
+.help-dialog { width: min(880px, 94vw); max-width: 94vw; height: min(88vh, 920px); height: min(88dvh, 920px); max-height: 92vh; max-height: 92dvh; padding: 0; overflow: hidden; flex-direction: column; } /* vh fallbacks first, dvh override where supported */
 .help-dialog[open] { display: flex; }
 .help-head { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--panel); flex: 0 0 auto; }
 .help-title { flex: 0 0 auto; }

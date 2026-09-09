@@ -3,6 +3,7 @@
    only when the theme is "auto", and always when it is pinned "dark"; sepia is a calm warm theme. data-theme is set
    before paint by theme-boot.js. */
 :root {
+	color-scheme: light; /* UA-drawn controls, scrollbars, and pickers follow the theme (see the desktop stylesheet) */
 	--radius: 12px;
 	/* LIGHT (default) */
 	--bg: #f4f6fb; --panel: #ffffff; --panel-2: #f0f2f8; --text: #1a2233; --muted: #5b6475;
@@ -10,15 +11,18 @@
 }
 @media (prefers-color-scheme: dark) {
 	:root[data-theme="auto"] {
+		color-scheme: dark;
 		--bg: #0e1117; --panel: #161b25; --panel-2: #1d2430; --text: #e6ebf5; --muted: #9aa4b6;
 		--border: #262e3d; --accent: #4d82ff; --accent-ink: #ffffff; --danger: #f87171; --good: #34d399;
 	}
 }
 :root[data-theme="dark"] {
+	color-scheme: dark;
 	--bg: #0e1117; --panel: #161b25; --panel-2: #1d2430; --text: #e6ebf5; --muted: #9aa4b6;
 	--border: #262e3d; --accent: #4d82ff; --accent-ink: #ffffff; --danger: #f87171; --good: #34d399;
 }
 :root[data-theme="sepia"] {
+	color-scheme: light;
 	--bg: #f4ecdf; --panel: #fbf6ec; --panel-2: #efe6d5; --text: #3a2f22; --muted: #715f45;
 	--border: #e2d4b8; --accent: #a4641f; --accent-ink: #ffffff; --danger: #a8231c; --good: #2f7d4f;
 }
