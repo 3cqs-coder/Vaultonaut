@@ -51,10 +51,12 @@ function resolveWithin(dir, relPosix) {
 	return abs;
 }
 // The top-level entries (first path segment) that contain a listed file at any depth. Extraneous-file detection
-// descends at the root only into these, then recurses fully within each — so a file added anywhere inside the
-// application's own tree (including a new nested subdirectory) is caught, while directories that hold no listed file
-// (the bundled runtime, node_modules, a source checkout's dev-only trees) are never descended. This MUST match
-// coveredTopEntries / extraneousFiles in lib/ReleaseIntegrity.js (a parity test keeps the two behaviors in sync).
+// descends at the root only into these, then recurses fully within each — so a file added anywhere inside a covered
+// top-level tree is caught, including a new nested subdirectory. Whole top-level entries with no listed file (the
+// bundled runtime, node_modules) are never descended. A distributed artifact (the npm package, the desktop bundle)
+// carries only the published files, so this has no stray files to flag there; a raw source checkout also carries
+// development trees under a covered directory, so running this against a clone reports them, which is expected (a
+// clone is not a signed release). MUST match coveredTopEntries / extraneousFiles in lib/ReleaseIntegrity.js.
 function coveredTopEntries(listedPaths) {
 	const top = new Set();
 	for (const p of listedPaths) { const i = String(p).indexOf('/'); if (i > 0) top.add(p.slice(0, i)); }
