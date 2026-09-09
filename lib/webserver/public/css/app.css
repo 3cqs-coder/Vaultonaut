@@ -526,6 +526,11 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 	.star-btn { min-width: 40px; min-height: 40px; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
 	.help-nav-btn { min-width: 40px; min-height: 40px; }
 	.copy-btn { min-height: 40px; }
+	/* The everyday row and menu actions (Keys, Remove, revoke, size) and the More-menu itself are the ones a phone
+	   user taps most and sit close to their neighbors, so grow their hit area to the same comfortable minimum to
+	   avoid mis-taps between adjacent controls. The visual text size is unchanged; only the tap target grows. */
+	.link-btn, .ghost-btn { min-height: 40px; }
+	.more-menu .link-btn, .more > summary { min-height: 40px; display: flex; align-items: center; }
 }
 
 /* Tamper-check results */

@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.0.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-09T17:24:35.911Z",
+  "generatedAt": "2026-09-09T18:35:05.340Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -17,13 +17,13 @@
     },
     {
       "path": "docs/README.md",
-      "sha256": "a73de9542e70855a5371e88b27b3eb638604f78e70cc38ed019db1aa3242ee86",
-      "size": 153052
+      "sha256": "ae3ebd7d92f1c62a804e6410245f18055e1201768615dc03fd7f0d31c1d2b7b5",
+      "size": 153143
     },
     {
       "path": "lib/Attest.js",
-      "sha256": "25c5b5259479cee633dd67776ede91f310b1f9ccffcade9fca18e4c015afac3b",
-      "size": 34313
+      "sha256": "1e5f7163585b4df78a4229b34f19ed5c95d53a2c5728cb945245e832eb532eb1",
+      "size": 34996
     },
     {
       "path": "lib/Autostart.js",
@@ -62,13 +62,13 @@
     },
     {
       "path": "lib/Der.js",
-      "sha256": "c5307ee088e1d5369490b174ba31ab3cda1754d4847cb13a8441a8e49be07603",
-      "size": 7881
+      "sha256": "0420b977da663770b454051d37bec60de3ff7509dac47cdf1f28d7fe1e50e91a",
+      "size": 8738
     },
     {
       "path": "lib/Disperse.js",
-      "sha256": "ac55299ecc270923a1412ddfc1da9b4bce681a533e7cc3c9912fa51dc2962e70",
-      "size": 14490
+      "sha256": "e0aa19004276313c8d8a107df475622669f4d1ef45dd75eb60d52a95288059f3",
+      "size": 15460
     },
     {
       "path": "lib/DisperseWorker.js",
@@ -92,8 +92,8 @@
     },
     {
       "path": "lib/Emergency.js",
-      "sha256": "a9baaff549583b2137e1fc349c0bbd64bd8f6724d6e920fb839771c2bbdc40be",
-      "size": 12717
+      "sha256": "c60109d9803c998170e6935415945aad760b20d0479d29b394bd5431f094649a",
+      "size": 14136
     },
     {
       "path": "lib/Extract.js",
@@ -112,8 +112,8 @@
     },
     {
       "path": "lib/Integrity.js",
-      "sha256": "8ddabc77086fe95c7fd9ae1fe5fd38859c753fa78ebd6fa142c403489dd115d5",
-      "size": 40442
+      "sha256": "563e8fb05ebc51009df07e08f4f701bc9b6c406a54b4aca53e769479cd199176",
+      "size": 40356
     },
     {
       "path": "lib/IpMatch.js",
@@ -122,8 +122,8 @@
     },
     {
       "path": "lib/Kdf.js",
-      "sha256": "67019ac8cb23189772bede161188886bcc09558eaedae6a3c7f4338f46497304",
-      "size": 11677
+      "sha256": "0cb3b0da7f3533ab6e58105f2c0dfdb561d71146ac915cec578630e94d69c781",
+      "size": 12837
     },
     {
       "path": "lib/KdfWorker.js",
@@ -172,8 +172,8 @@
     },
     {
       "path": "lib/Rclone.js",
-      "sha256": "405a7bbd9ada150e08c3be615d8a5e16293a7688eba665f3726011060af7e84a",
-      "size": 52246
+      "sha256": "7110ed96fc68ade5f5e07b5711e782d3f1406742c317b48a8f4b7d071173ca97",
+      "size": 52772
     },
     {
       "path": "lib/RcloneSetup.js",
@@ -272,8 +272,8 @@
     },
     {
       "path": "lib/Vault.js",
-      "sha256": "5903a89b4f22f481eef4568c00169e6af71fc5b3bfa7fd0338947cafd9fedf2f",
-      "size": 650506
+      "sha256": "34f0966abbbcce604a5b8be763d931a913b2024e9e713ab0ece7566ae4f84393",
+      "size": 656488
     },
     {
       "path": "lib/Watchdog.js",
@@ -337,13 +337,13 @@
     },
     {
       "path": "lib/verify-bundle.js",
-      "sha256": "b08c00b4bf50dd0e542a6ff0cdf3197ae257cef5411295ecb108d8d8c58cfc36",
-      "size": 17023
+      "sha256": "8f2f97ee59c45afee06afcb283d815778b025e3947e8ccede17aabb2f7b774e8",
+      "size": 17896
     },
     {
       "path": "lib/webserver/index.js",
-      "sha256": "da2661e836bdc959b7563edf6805cdb10c6cff2960652eb45ed71aff0bf721ee",
-      "size": 121935
+      "sha256": "edea96507c62925018f916d0af503cb22c3381ffe129a6318b4d5a07b99ef488",
+      "size": 123099
     },
     {
       "path": "lib/webserver/mobileRoutes.js",
@@ -352,8 +352,8 @@
     },
     {
       "path": "lib/webserver/public/css/app.css",
-      "sha256": "b65575d4c3f5346dc31a40e8d9d08cf619e837b121b15164d1536eee09f3db13",
-      "size": 50149
+      "sha256": "192064d7e2cf4cb0207a102b715cf71eb310f4181994c57c8fb07173d0811eb7",
+      "size": 50626
     },
     {
       "path": "lib/webserver/public/fonts/aFTR7PB1QTsUX8KYvrGyEY2tbZX9.woff2",
@@ -422,8 +422,8 @@
     },
     {
       "path": "lib/webserver/public/js/app.js",
-      "sha256": "cf1e2cc89e14f4ff082962265114a33ff63d0ea86a1d827b022cd263896f5306",
-      "size": 248427
+      "sha256": "e9ab50139bf92a2dec1f55c3b5e1a54bbcebb70a5872524154b81e058552f24b",
+      "size": 252051
     },
     {
       "path": "lib/webserver/public/js/login.js",
@@ -482,13 +482,13 @@
     },
     {
       "path": "lib/webserver/public/mobile/index.html",
-      "sha256": "cf84012c96ec55365e50c2469d679b2aea542df4c0aac21e0a1d14501488b79e",
+      "sha256": "6b93bbeb13136a801a7cadf3948e71147bfcb2e90b6d97b7ba45b4c0bd0ccfce",
       "size": 3514
     },
     {
       "path": "lib/webserver/public/mobile/rclone-reader.js",
-      "sha256": "b58892f316ae9f0ae6b7ff2e5c0048306db90c955a14993f835d644fbb640cef",
-      "size": 13579
+      "sha256": "ea88347339aa8de0f4488232ff7ca12de306a8ca23c389eef002d7ba05b2909a",
+      "size": 13960
     },
     {
       "path": "lib/webserver/public/mobile/sw.js",
@@ -497,8 +497,8 @@
     },
     {
       "path": "lib/webserver/public/mobile/theme-boot.js",
-      "sha256": "4b217d1c570eb2f64eaf3cff16d5d83a9b718e2c9d94a0462b2f1bd2da53af4b",
-      "size": 741
+      "sha256": "8a40291cdf143b778feeb23b885c5d4ad03e18427b50aa143fba00c4d8c7e2de",
+      "size": 1682
     },
     {
       "path": "lib/webserver/public/mobile/vendor/LICENSES.md",
