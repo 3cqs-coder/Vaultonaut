@@ -291,7 +291,7 @@ vdisk shares    <name|path>      Show who has access (read links handed out), wi
 vdisk revoke-share <name|path> <id>   Mark a share revoked and end its live viewer session (rotate to cut off a leaked key; cannot recall a copy already taken)
 vdisk prune-shares <name|path>   Remove the revoked and expired entries from the access list (only tidies it)
 vdisk team-enable <name|path>    Turn a vault into a team vault you own (mints the owner key; nothing is re-encrypted)
-vdisk member-add <name|path> --to <public-key>   Add a member by their public key (add --write for read-write)
+vdisk member-add <name|path> --to <public-key>   Add a member by their public key (add --write for read-write, --label <name> to name them)
 vdisk members   <name|path>      List a team vault's members, roles, and devices
 vdisk member-remove <name|path> <member-id>   Remove a member (their access ends going forward; --soft to only drop from the roster, --yes to skip the confirm)
 vdisk member-promote <name|path> <member-id>   Promote a member to owner (they can manage membership)
@@ -310,7 +310,7 @@ vdisk emergency <keypair|enroll|arm|check-in|status|disarm>   Dead-man's switch:
 vdisk emergency-open <sealed-file> --key <private-key>   Contact side: open released access with your private key
 vdisk rmkey    <name|path> <id>  Remove a key (unlock with a different one)
 vdisk mount    <name|path>       Mount a vault as a drive
-vdisk unmount  <name|path|mount> Unmount a vault (add --force if it is stuck)
+vdisk unmount  <name|path|mount> Unmount a vault (add --force if it is stuck, or --recover for a wedged drive --force cannot release)
 vdisk repair                     Release stale (crashed) mounts and clean up leftovers
 vdisk lock                       Lock (unmount) every mounted vault right now
 vdisk autolock <minutes>         Auto-lock idle vaults after N minutes (0 = off)
@@ -373,7 +373,7 @@ vdisk autostart <install|uninstall|status>   Start the web interface automatical
 vdisk wedge-restart <on|off|status>   Restart a hung (not just crashed) service automatically (off by default)
 vdisk uninstall                  Remove the autostart and shortcut entries (never touches your data)
 vdisk setup                      Download the bundled engine
-vdisk update-check               Check whether a newer version has been published (read-only; never downloads)
+vdisk update-check               Check whether a newer version has been published (read-only; never downloads; --url <address> checks a different source)
 ```
 
 File and directory names are always encrypted, so a vault never reveals its structure. There is no option to weaken this.
@@ -382,7 +382,7 @@ By default a vault just works, so you rarely need any of the flags below. They a
 
 - **mount** — `--mountpoint` and `--volname` set where it appears and its name. `--read-only` opens it for reading only. `--keyfile <file>`, `--key-shares <s1,s2,…>`, `--read-cap <token>`, and `--member-key <private-key>` unlock without a typed password (a keyfile, threshold-key shares, a shared read link, or a team member's own key). `--force` takes over a cross-machine write lease another machine still holds. `--allow-other` lets other users on the machine reach the mounted drive (off by default; use only on a trusted computer). `--cache-size` and the other buffering flags are described below.
 - **mount, on macOS** — `--fuse-backend smb` mounts through the SMB transport. This works around a FUSE-T driver bug that can make large copies fail with an I/O error, and it is remembered per vault.
-- **unmount** — first finishes saving any buffered writes to the encrypted store, then frees the buffer and releases the drive. A large file written just before unmounting can make this take a moment; it says so on screen while it finishes. If the writes cannot finish in time, the vault is left mounted so nothing is lost — wait a moment and unmount again. `--keep-cache` applies only to an explicit on-disk `--cache-dir`. `--force` releases a mount that is stuck or stale; it skips the flush, so use it only when a mount is truly wedged.
+- **unmount** — first finishes saving any buffered writes to the encrypted store, then frees the buffer and releases the drive. A large file written just before unmounting can make this take a moment; it says so on screen while it finishes. If the writes cannot finish in time, the vault is left mounted so nothing is lost — wait a moment and unmount again. `--keep-cache` applies only to an explicit on-disk `--cache-dir`. `--force` releases a mount that is stuck or stale; it skips the flush, so use it only when a mount is truly wedged. `--recover` is the last resort when even `--force` cannot release a wedged drive: it stops the drive's file-server process and frees the mount, usually without a restart. Nothing in the vault is lost.
 - **create / import** — `--kdf <standard|high|max>` chooses the password-protection strength (see "Security"). For a cloud vault on S3-compatible storage, `--worm --retain-days <N>` locks each uploaded version against change or deletion for N days (write-once, tamper-proof), and `--worm-mode <governance|compliance>` sets whether a privileged account may shorten that window (governance) or no one can (compliance).
 - **verify** — `--keyfile <file>` unlocks with a keyfile. `--quick` checks the password and manifest without reading every file. `--no-password` checks only that the manifest is present and healthy, without unlocking.
 - **snapshot** — `--force` proceeds on a sealed vault, which removes the seal.
@@ -459,7 +459,7 @@ Store the kit somewhere safe and separate from the vault, such as a locked drawe
 
 ### Secure notes
 
-Open a vault and you can keep secure notes inside it — a lightweight place for secrets, logins, and short notes, right in the web interface under **Notes** on the mounted vault. It is not a full password manager; it is the quick, private notepad you always wish you had somewhere safe. Each note is saved as an ordinary encrypted file inside the open vault, so it is protected exactly like every other file: the text lives only in the vault's in-memory view while it is open, is never written to disk unencrypted, and is locked away the moment you close the vault. Notes travel with the vault through backups, mirrors, and shared copies, and because they are real files in the vault, the tamper check accounts for them like any other content.
+Open a vault and you can keep secure notes inside it — a lightweight place for secrets, logins, and short notes, right in the web interface under **Notes** on the mounted vault. It is not a full password manager; it is the quick, private notepad you always wish you had somewhere safe. Each note is saved as an ordinary encrypted file inside the open vault, so it is protected exactly like every other file: the text lives only in the vault's in-memory view while it is open, is never written to disk unencrypted, and is locked away the moment you close the vault. Notes travel with the vault through backups, mirrors, and shared copies. Because they are real files in the vault, the tamper check accounts for them like any other content.
 
 A couple of walk-away conveniences match what a password manager does. The Notes window closes itself after a few minutes with no activity, so a note left open on screen does not stay revealed. And when you copy a secret, the clipboard is cleared again a short time later — best-effort, since a browser may not allow it, and only if you have not copied something else in the meantime.
 
@@ -739,7 +739,7 @@ Without a pinned key the server's identity is not verified — your uploaded dat
 
 A backup goes one way; a **mirror** goes both. Set one up with **Mirror** on a vault (or `vdisk mirror <vault> <destination>`) to keep a two-way copy of the vault on another drive, a network share, or an SFTP server — the same kinds of destination a backup uses. As with everything else, only the encrypted files travel: the destination never sees your password or your contents, so a mirror on a shared drive or an untrusted server still gives away nothing.
 
-Setting up a mirror first **primes** it — the destination is made to match this vault. Priming can never overwrite an unrelated folder or a *different* vault that happens to share the name; it only ever writes this vault's own copy. Re-priming is guarded the same way a backup is: if the vault looks damaged — its recovery-protected files have gone missing — priming is refused rather than mirror-deleting the destination's still-good copies, and no prime ever wipes the destination or removes the bulk of what it already holds (the threshold tightens for smaller sets).
+Setting up a mirror first **primes** it — the destination is made to match this vault. Priming can never overwrite an unrelated folder or a *different* vault that happens to share the name; it only ever writes this vault's own copy. Re-priming is guarded the same way a backup is: if the vault looks damaged — its recovery-protected files have gone missing — priming is refused rather than mirror-deleting the destination's still-good copies. No prime ever wipes the destination or removes the bulk of what it already holds, and the threshold tightens for smaller sets.
 
 From then on the mirror is two-way: **Sync now** (or `vdisk sync <vault>`) reconciles both sides. While the web app or background service is running, it also syncs on its own right after any unmount. That happens whether you unmounted from the web interface or with `vdisk unmount`, which hands off to the running service, so wherever you left off is carried across for you. Only when no such service is running do you need to run `vdisk sync` yourself after a command-line unmount. Syncing only happens on a settled (unmounted) vault, never on a live drive.
 
