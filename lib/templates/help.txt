@@ -113,6 +113,7 @@ All commands:
   vdisk shortcut <create|remove|status>   Add just the clickable launcher (autostart install already adds one; use this for a launcher without autostart)
   vdisk uninstall                  Remove the autostart and shortcut entries (never touches your vaults)
   vdisk setup                      Download the bundled engine (one time)
+  vdisk update-check               Check whether a newer version has been published (read-only; never downloads; add --url to override the source)
 
 File and directory names are always encrypted, so a vault never reveals its structure.
 

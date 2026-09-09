@@ -133,6 +133,12 @@ One limit worth stating plainly: the signature covers the application's own file
 
 As a second layer, the application also checks its own files against that signed manifest each time it starts, and the web page surfaces a warning if they do not match. This is a helpful backstop, not a substitute for the check above: whoever could alter the files could also disable this internal check, which is exactly why verifying your download against a key you obtained independently is the reliable test.
 
+### Checking for updates
+
+You can check whether a newer version has been published with `vdisk update-check`, or with **Check now** next to **Version** in **Settings**. The check only reads the latest published version number and compares it to the copy you are running. It never downloads or installs anything. Getting the update stays your choice, and any download you then make is verified with the signature check above before you trust it.
+
+Automatic checking is turned off by default, on purpose. A check reaches out over the network, so nothing contacts the release page unless you ask it to. If you want a gentle reminder, turn on **Check for updates** in **Settings** and the app will look once a day and show a quiet note when a newer version exists. You can turn it back off at any time. The check reads only a version number and sends nothing about your machine or your vaults.
+
 ## Quick start
 
 Create a vault, mount it, use it, and unmount it:
@@ -367,6 +373,7 @@ vdisk autostart <install|uninstall|status>   Start the web interface automatical
 vdisk wedge-restart <on|off|status>   Restart a hung (not just crashed) service automatically (off by default)
 vdisk uninstall                  Remove the autostart and shortcut entries (never touches your data)
 vdisk setup                      Download the bundled engine
+vdisk update-check               Check whether a newer version has been published (read-only; never downloads)
 ```
 
 File and directory names are always encrypted, so a vault never reveals its structure. There is no option to weaken this.
