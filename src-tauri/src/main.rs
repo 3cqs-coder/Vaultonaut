@@ -43,6 +43,25 @@ fn node_binary(resource_dir: &Path) -> PathBuf {
     resource_dir.join("app").join("runtime").join(name)
 }
 
+// Strip the Windows "verbatim" path prefix (\\?\) that Tauri's resource_dir() returns. Node's module resolver
+// cannot handle that prefix on its main-script argument — it tries to lstat "C:" and aborts with EISDIR before
+// any of our code runs — so every path handed to Node must be plain. A UNC verbatim path (\\?\UNC\server\share)
+// is rewritten to its normal \\server\share form; a no-op on non-verbatim paths and on every non-Windows platform.
+fn plain_path(p: PathBuf) -> PathBuf {
+    #[cfg(windows)]
+    {
+        if let Some(s) = p.to_str() {
+            if let Some(rest) = s.strip_prefix(r"\\?\UNC\") {
+                return PathBuf::from(format!(r"\\{}", rest));
+            }
+            if let Some(rest) = s.strip_prefix(r"\\?\") {
+                return PathBuf::from(rest);
+            }
+        }
+    }
+    p
+}
+
 // Best-effort: make sure the bundled runtime is executable. Some Linux resource packagers drop the +x bit; if
 // that happens the spawn fails with EACCES and the app never starts, so restore it defensively before launch.
 #[cfg(unix)]
@@ -141,7 +160,10 @@ fn main() {
             // Launch the Node application through the bundled runtime on the fixed loopback port. Its output is
             // captured to a log file (see backend_log_stdio) so a startup failure is diagnosable; a file, unlike a
             // pipe, can never fill and stall the writer. --desktop tells the backend it is the packaged app.
-            let resource_dir = app.path().resource_dir()?;
+            // plain_path: resource_dir() is a \\?\ verbatim path on Windows, which Node cannot use as its entry
+            // script (it crashes in module resolution before running anything). Strip it here so node, the entry,
+            // and everything derived from them are plain paths.
+            let resource_dir = plain_path(app.path().resource_dir()?);
             let node = node_binary(&resource_dir);
             ensure_executable(&node);
             let entry = resource_dir.join("app").join("vaultonaut.js");
