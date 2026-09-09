@@ -15,6 +15,7 @@ A vault is a self-contained folder. Copy that folder to another computer, an ext
 - [Quick start](#quick-start)
 - [The web interface](#the-web-interface)
 - [Desktop app](#desktop-app)
+- [How new versions are published](#how-new-versions-are-published)
 - [Starting automatically at login](#starting-automatically-at-login)
 - [Where your data lives](#where-your-data-lives)
 - [External drives](#external-drives)
@@ -211,6 +212,16 @@ Vaultonaut is also available as a native desktop app, for people who would rathe
 The desktop app is optional. The command-line install described above is unchanged, and it is what a server without a screen uses to run backups and mirroring on their own. The two are the same program underneath: the desktop app is a native window onto the same local service.
 
 In the app, **Start at login** runs Vaultonaut in the background whenever you log in, so scheduled work such as backups and mirroring keeps happening even when the window is closed. You open the window whenever you want it; unlocking a vault is always something you do yourself.
+
+## How new versions are published
+
+New releases go through a few steps before they reach you, so you can trust that a download on the releases page has been built and reviewed rather than posted straight from someone's machine.
+
+When a maintainer marks a new version, the full test suite runs first, and only if it passes are the desktop installers built fresh for macOS, Windows, and Linux. A build that fails its tests never becomes a release.
+
+Those installers are then gathered into a draft release. A draft is private to the maintainer and appears to no one else. Nobody sees a new version the moment a version number is set. The maintainer reviews the draft, adds the signature that proves the download is genuine (see [Verifying your download](#verifying-your-download)), and only then publishes it. So a release becomes visible on the releases page after a person has checked it and chosen to publish, not automatically.
+
+You can always confirm a release for yourself. Every published version carries the signed manifest that `verify.js` checks against the public key, and the app repeats that check each time it starts.
 
 ## Starting automatically at login
 
