@@ -30,8 +30,13 @@ const UI_PORT: u16 = 7420;
 // runtime and its modules the first time they are executed and read. A real crash does NOT wait this out: the
 // poll returns immediately when the child process exits, so only a slow-but-alive startup uses the full budget.
 const STARTUP_TIMEOUT: Duration = Duration::from_secs(120);
-// How long to allow the backend to drain and lock vaults on exit before forcing it down.
+// Last-resort cap for the main-thread exit fallback: short, so a fallback exit can never freeze the UI thread.
 const SHUTDOWN_GRACE: Duration = Duration::from_secs(10);
+// The responsive close/quit path drains on a BACKGROUND thread (the window is already hidden), so it can wait out a
+// long but legitimate flush — a large cloud-backed vault can take a while to finish uploading — before force-killing.
+// The backend's own drain is internally bounded, so this only escalates to a hard kill against a genuinely wedged
+// backend, and the user never sees the wait (the window is gone). Prefers not-losing-data over a fast process exit.
+const BACKGROUND_DRAIN_GRACE: Duration = Duration::from_secs(300);
 
 // The running Node backend, shared between the readiness thread and the exit handler.
 type SharedChild = Arc<Mutex<Option<Child>>>;
@@ -139,11 +144,11 @@ fn show_outcome<R: tauri::Runtime>(handle: &tauri::AppHandle<R>, ready: bool) {
 // Ask the backend to stop cleanly (its SIGTERM handler drains writes and locks each vault), wait briefly, then
 // force it down if it has not exited. Windows has no graceful signal, so terminate directly there — the external
 // guardian still unmounts and locks any open vault when the backend disappears.
-fn stop_backend(child: &mut Child) {
+fn stop_backend(child: &mut Child, grace: Duration) {
     #[cfg(unix)]
     {
         unsafe { libc::kill(child.id() as i32, libc::SIGTERM); }
-        let deadline = Instant::now() + SHUTDOWN_GRACE;
+        let deadline = Instant::now() + grace;
         while Instant::now() < deadline {
             if let Ok(Some(_)) = child.try_wait() {
                 return;
@@ -152,6 +157,19 @@ fn stop_backend(child: &mut Child) {
         }
     }
     let _ = child.kill();
+}
+
+// Hide the window (so it vanishes at once) and drain-and-lock the backend on a BACKGROUND thread, then exit — so no
+// quit path blocks the UI thread and triggers the desktop's "application is not responding" dialog. Safe to call
+// more than once: the child is taken out of the shared slot, so a second call finds nothing and just exits.
+fn shutdown_in_background<R: tauri::Runtime>(handle: tauri::AppHandle<R>, shared: SharedChild) {
+    if let Some(win) = handle.get_webview_window("main") { let _ = win.hide(); }
+    std::thread::spawn(move || {
+        if let Some(mut child) = shared.lock().ok().and_then(|mut g| g.take()) {
+            stop_backend(&mut child, BACKGROUND_DRAIN_GRACE);
+        }
+        handle.exit(0);
+    });
 }
 
 fn main() {
@@ -198,19 +216,10 @@ fn main() {
                     if let Some(win) = app.get_webview_window("main") {
                         let close_shared = shared.clone();
                         let close_handle = app.handle().clone();
-                        let w = win.clone();
                         win.on_window_event(move |event| {
                             if let tauri::WindowEvent::CloseRequested { api, .. } = event {
                                 api.prevent_close();
-                                let _ = w.hide();
-                                let sh = close_shared.clone();
-                                let h = close_handle.clone();
-                                std::thread::spawn(move || {
-                                    if let Some(mut child) = sh.lock().ok().and_then(|mut g| g.take()) {
-                                        stop_backend(&mut child);
-                                    }
-                                    h.exit(0);
-                                });
+                                shutdown_in_background(close_handle.clone(), close_shared.clone());
                             }
                         });
                     }
@@ -220,6 +229,14 @@ fn main() {
                     std::thread::spawn(move || {
                         let ready = wait_for_server(UI_PORT, STARTUP_TIMEOUT, &shared);
                         show_outcome(&handle, ready);
+                        // Never leave an orphan holding the port: if the backend is alive but never bound (a timeout,
+                        // not a crash), stop it now instead of waiting for the user to close the error window. Taking
+                        // the child here also means the close/quit handlers find nothing left to do. No-op if it exited.
+                        if !ready {
+                            if let Some(mut child) = shared.lock().ok().and_then(|mut g| g.take()) {
+                                stop_backend(&mut child, SHUTDOWN_GRACE);
+                            }
+                        }
                     });
                 }
                 // The backend could not even be launched (a missing or unrunnable runtime). Show the friendly
@@ -232,13 +249,32 @@ fn main() {
         .build(tauri::generate_context!())
         .expect("failed to start the Vaultonaut desktop shell")
         .run(|app_handle, event| {
-            // On exit, stop the backend cleanly so vaults are locked and in-flight writes flush.
-            if let tauri::RunEvent::Exit = event {
-                if let Some(backend) = app_handle.try_state::<Backend>() {
-                    if let Some(mut child) = backend.0.lock().ok().and_then(|mut g| g.take()) {
-                        stop_backend(&mut child);
+            match event {
+                // Every quit gesture that is NOT the window close button (which is handled per-window above) —
+                // macOS Cmd+Q, the Dock's Quit, a logout — arrives here as ExitRequested. Route it through the same
+                // responsive path: prevent the immediate exit, then hide the window and drain-and-lock on a
+                // background thread before exiting, so a quit never freezes the UI thread. The has-child peek stops
+                // the exit(0) that the background thread later calls from re-entering here and preventing its own exit.
+                tauri::RunEvent::ExitRequested { api, .. } => {
+                    if let Some(backend) = app_handle.try_state::<Backend>() {
+                        let shared = backend.0.clone();
+                        let has_child = shared.lock().map(|g| g.is_some()).unwrap_or(false);
+                        if has_child {
+                            api.prevent_exit();
+                            shutdown_in_background(app_handle.clone(), shared);
+                        }
                     }
                 }
+                // Last-resort backstop: if the app ever exits without going through the responsive path, stop the
+                // backend here so vaults are still locked and in-flight writes flush. Short grace — runs on the main thread.
+                tauri::RunEvent::Exit => {
+                    if let Some(backend) = app_handle.try_state::<Backend>() {
+                        if let Some(mut child) = backend.0.lock().ok().and_then(|mut g| g.take()) {
+                            stop_backend(&mut child, SHUTDOWN_GRACE);
+                        }
+                    }
+                }
+                _ => {}
             }
         });
 }
