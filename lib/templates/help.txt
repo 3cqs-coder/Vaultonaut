@@ -46,7 +46,7 @@ All commands:
   vdisk travel <on|off|status>     Before travel: hide all vaults from this app and lock them (restore with a travel password)
   vdisk rmkey    <path> <key-id>   Remove a key (unlock with a different one)
   vdisk mount    <path>            Mount a vault as a drive (prompts for the password)
-  vdisk unmount  <path|mount>      Unmount a vault (add --force if it is stuck)
+  vdisk unmount  <path|mount>      Unmount a vault (add --force if it is stuck; --recover as a last resort for a wedged drive, to avoid a restart)
   vdisk repair                     Release stale (crashed) mounts and clean up leftovers
   vdisk lock                       Lock (unmount) every mounted vault now
   vdisk autolock <minutes>         Auto-lock idle vaults after N minutes (0 = off)
