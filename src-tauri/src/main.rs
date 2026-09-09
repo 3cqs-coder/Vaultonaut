@@ -161,22 +161,26 @@ fn show_outcome<R: tauri::Runtime>(handle: &tauri::AppHandle<R>, ready: bool) {
     });
 }
 
-// Ask the backend to stop cleanly (its SIGTERM handler drains writes and locks each vault), wait up to `grace`, then
-// force it down if it has not exited. NOTE: the graceful wait applies only on Unix. Windows has no equivalent signal
-// a child console process reliably honors, so the backend is terminated at once there and `grace` has no effect; the
-// external guardian still unmounts and locks any open vault when the backend disappears, but an in-flight cloud
-// upload is not drained on Windows. (Draining on Windows would need a cooperative stop channel to the backend.)
+// Ask the backend to stop cleanly (it drains writes and locks each vault on the way out), wait up to `grace` for it to
+// exit, then force it down if it has not. The clean-stop request is cross-platform: on Unix, SIGTERM (its handler runs
+// the graceful shutdown); on Windows, which has no such signal for a windowless child, a "quit" line on the backend's
+// stdin, which the desktop backend listens for and treats exactly like SIGTERM. Either way `grace` is honored, so a
+// large in-flight cloud upload can finish on every platform before any force-kill.
 fn stop_backend(child: &mut Child, grace: Duration) {
     #[cfg(unix)]
-    {
-        unsafe { libc::kill(child.id() as i32, libc::SIGTERM); }
-        let deadline = Instant::now() + grace;
-        while Instant::now() < deadline {
-            if let Ok(Some(_)) = child.try_wait() {
-                return;
-            }
-            std::thread::sleep(Duration::from_millis(100));
+    unsafe { libc::kill(child.id() as i32, libc::SIGTERM); }
+    #[cfg(windows)]
+    if let Some(stdin) = child.stdin.as_mut() {
+        use std::io::Write;
+        let _ = stdin.write_all(b"quit\n");
+        let _ = stdin.flush();
+    }
+    let deadline = Instant::now() + grace;
+    while Instant::now() < deadline {
+        if let Ok(Some(_)) = child.try_wait() {
+            return;
         }
+        std::thread::sleep(Duration::from_millis(100));
     }
     let _ = child.kill();
 }
@@ -216,7 +220,7 @@ fn main() {
                 .arg("--port")
                 .arg(UI_PORT.to_string())
                 .arg("--desktop")
-                .stdin(Stdio::null());
+                .stdin(Stdio::piped()); // kept open so the shell can send a cross-platform "quit" line on shutdown (see stop_backend)
             let (out, err) = backend_log_stdio();
             cmd.stdout(out).stderr(err);
             // On Windows a GUI process launching a console binary would pop a console window without this flag.
