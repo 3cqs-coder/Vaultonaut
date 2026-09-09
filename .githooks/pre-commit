@@ -1,0 +1,34 @@
+#!/bin/sh
+# Auto-sign the release manifest before committing, so the committed manifest is never stale and the maintainer never
+# has to remember to run "npm run sign". This runs ONLY where the private signing key is present (the maintainer's
+# machine); everywhere else it does nothing and the commit proceeds unchanged. It is a CONVENIENCE — the authoritative
+# guard is the fail-closed release-signed test the CI suite runs before any build, which blocks a release on a stale
+# or unverifiable manifest even if this hook never ran.
+#
+# Enable once per clone (git does not install hooks automatically):
+#   git config core.hooksPath .githooks
+#
+# POSIX sh with no bashisms, so it runs the same on macOS, Linux, and on Windows under the Git-for-Windows shell.
+
+root=$(git rev-parse --show-toplevel) || exit 0
+cd "$root" || exit 0
+
+# Not the maintainer's machine (no private key) → nothing to auto-sign. The CI gate still enforces freshness.
+[ -f release-signing-key.json ] || exit 0
+
+# Re-sign only when the published files no longer match the committed manifest (or nothing is signed yet):
+# sign:check exits non-zero in exactly those cases, and zero when everything is already up to date.
+if npm run --silent sign:check >/dev/null 2>&1; then
+	exit 0
+fi
+
+echo "pre-commit: a published file changed — re-signing the release manifest (npm run sign)"
+if ! npm run --silent sign >/dev/null 2>&1; then
+	echo "pre-commit: signing failed — aborting the commit so a stale manifest is not committed. Run 'npm run sign' to see the error." >&2
+	exit 1
+fi
+
+# Stage the refreshed manifest and signature so they travel with this commit. SHA256SUMS is a release artifact and is
+# git-ignored, so it is intentionally not added here.
+git add release-manifest.json release-manifest.sig
+exit 0

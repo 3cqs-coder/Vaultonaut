@@ -24,8 +24,11 @@ const { runNpm } = require('./buildutil');
 const HERE = __dirname;
 const REPO = path.resolve(HERE, '..');
 const APP_DIR = path.join(HERE, 'app');
-// The bundled runtime lives INSIDE the staged app tree so it is covered by the bundle's signed manifest — the
-// interpreter that runs everything must be tamper-evident, not a sibling the signature skips.
+// The bundled runtime lives INSIDE the staged app tree so it ships with the bundle, but it is OUTSIDE the signed
+// manifest's scope: the manifest covers the published application files, which are identical on every platform, so a
+// single committed signature verifies all three desktop builds. The interpreter cannot be in that scope because each
+// platform bundles a different Node binary; its authenticity comes instead from the fixed version pin below (every
+// build must run on exactly that official Node) plus the checksum-verifying toolchain that fetched it.
 const RUNTIME_DIR = path.join(APP_DIR, 'runtime');
 
 function rimraf(p) { fs.rmSync(p, { recursive: true, force: true }); }
@@ -42,8 +45,8 @@ function publishedFileList() {
 
 // Copy the running Node executable into the bundle's runtime resource (app/runtime/node, or node.exe on
 // Windows). It is a plain resource, not a bundler "sidecar", so on macOS it stays out of Contents/MacOS and
-// raises no Dock tile of its own. Call AFTER stageApp (which recreates app/). Being inside app/, it is covered
-// by the signed bundle manifest.
+// raises no Dock tile of its own. Call AFTER stageApp (which recreates app/). It ships inside app/ but is outside
+// the signed manifest's scope (see the RUNTIME_DIR note above); its version is pinned instead.
 function stageRuntime() {
 	fs.mkdirSync(RUNTIME_DIR, { recursive: true });
 	const dest = path.join(RUNTIME_DIR, process.platform === 'win32' ? 'node.exe' : 'node');
@@ -109,7 +112,7 @@ function enforceRuntimeVersion() {
 function main() {
 	enforceRuntimeVersion();
 	const app = stageApp();       // recreates app/ (the published files + node_modules)
-	const runtime = stageRuntime(); // then drops the runtime inside it, so the signature covers it
+	const runtime = stageRuntime(); // then drops the runtime inside it (shipped with the bundle; pinned by version, not signed)
 	console.log(`Staged app:     ${path.relative(REPO, app)}  (${dirSizeMB(app)} MB)`);
 	console.log(`Node runtime:   ${path.relative(REPO, runtime)}`);
 	console.log('Ready to build the desktop shell (sign the bundle next, then run the Tauri build).');

@@ -50,24 +50,33 @@ function resolveWithin(dir, relPosix) {
 	if (rel === '' || rel === '..' || rel.startsWith('..' + path.sep) || path.isAbsolute(rel)) return null;
 	return abs;
 }
-// List every covered regular file under dir (POSIX-relative), so a file present on disk but absent from the manifest
-// can be flagged as an addition.
-function listCovered(dir, withDependencies) {
-	// A desktop bundle's manifest covers node_modules (its shipped dependencies); a source release does not. The
-	// manifest says which via coversDependencies, so the extraneous-file scan matches it.
-	const topExcl = withDependencies ? new Set([...EXCLUDE_TOP].filter((n) => n !== 'node_modules')) : EXCLUDE_TOP;
+// The covered directories: every ancestor directory of every manifest entry ('' is the root). Extraneous-file
+// detection is limited to these — a file inside a covered directory that the manifest does not list was added after
+// signing. Directories that hold no listed file (the bundled runtime, node_modules, a source checkout's dev-only
+// trees) sit outside the signed scope, so the same manifest verifies a source download, an npm install, and a desktop
+// bundle alike. This MUST match coveredDirs / extraneousFiles in lib/ReleaseIntegrity.js (the EXCLUDE sets are the
+// parts a test asserts stay in sync).
+function coveredDirs(listedPaths) {
+	const dirs = new Set(['']);
+	for (const p of listedPaths) { const parts = String(p).split('/'); parts.pop(); let cur = ''; for (const seg of parts) { cur = cur ? cur + '/' + seg : seg; dirs.add(cur); } }
+	return dirs;
+}
+// Files present directly inside a covered directory but absent from the manifest (an addition). Only the covered
+// directories are read — never a full-tree walk — so this stays cheap even when a large node_modules or a bundled
+// runtime sits alongside.
+function extraneousFiles(dir, listedSet) {
 	const out = [];
-	(function walk(d, relBase) {
-		let entries; try { entries = fs.readdirSync(d, { withFileTypes: true }); } catch (_) { return; }
+	for (const d of coveredDirs(listedSet)) {
+		const abs = d ? resolveWithin(dir, d) : dir;
+		if (!abs) continue;
+		let entries; try { entries = fs.readdirSync(abs, { withFileTypes: true }); } catch (_) { continue; }
 		for (const e of entries) {
-			if (EXCLUDE_NAME.has(e.name)) continue;
-			if (!relBase && topExcl.has(e.name)) continue;
-			const rel = relBase ? relBase + '/' + e.name : e.name;
-			if (e.isSymbolicLink()) continue;
-			if (e.isDirectory()) { walk(path.join(d, e.name), rel); continue; }
-			if (e.isFile()) out.push(rel);
+			if (!e.isFile() || EXCLUDE_NAME.has(e.name)) continue;
+			if (!d && EXCLUDE_TOP.has(e.name)) continue; // a top-level control file (manifest, sig, key, SHA256SUMS) is never extraneous
+			const rel = d ? d + '/' + e.name : e.name;
+			if (!listedSet.has(rel)) out.push(rel);
 		}
-	})(dir, '');
+	}
 	return out;
 }
 function embeddedPubKey(dir) {
@@ -98,8 +107,8 @@ function verifyRelease(dir, pubHexArg) {
 		let cur = null; try { cur = abs && hashFile(abs); } catch (_) { missing.push(f.path); continue; }
 		if (!abs || cur !== f.sha256) mismatches.push(f.path);
 	}
-	// A file present in the covered scope but not in the manifest was added after signing — flag it too.
-	const extraneous = listCovered(dir, !!manifest.coversDependencies).filter(p => !listed.has(p));
+	// A file present in a covered directory but not in the manifest was added after signing — flag it too.
+	const extraneous = extraneousFiles(dir, listed);
 	const filesOk = mismatches.length === 0 && missing.length === 0 && extraneous.length === 0;
 	add('file-hashes', filesOk, filesOk ? (manifest.files || []).length + ' file(s) match the signed manifest.' : (mismatches.length + ' changed, ' + missing.length + ' missing, ' + extraneous.length + ' unexpected'));
 	return { verdict: filesOk ? 'GENUINE' : 'TAMPERED', ...out, usedEmbedded, version: manifest.version, product: manifest.product, mismatches, missing, extraneous };

@@ -115,6 +115,8 @@ The strongest check uses that key. Run the bundled verifier from the folder you 
 node verify.js . --pubkey <the public key above>
 ```
 
+This works for both the standalone download and the desktop app. The desktop app carries the same signed manifest inside its bundled application folder (on macOS, that is `Vaultonaut.app/Contents/Resources/app`), so pointing the verifier at that folder confirms an installed copy the same way. The desktop app also runs this check itself each time it starts, described at the end of this section.
+
 The verifier prints one of three results:
 
 - `GENUINE` — every file matches what the maintainer signed.
@@ -127,7 +129,7 @@ If you leave off `--pubkey`, the verifier falls back to the key embedded in the 
 
 A signed release also includes a plain `SHA256SUMS` file, if you prefer the familiar `sha256sum -c` flow to confirm the files are not corrupted. A checksum on its own only proves a file was not corrupted. The signature is what proves it came from the maintainer. So always run the signature check with `verify.js`, and always take the public key from a source you trust rather than from the download itself.
 
-One limit worth stating plainly: the signature covers the application's own files, not the third-party packages under `node_modules`, which each machine installs on its own.
+One limit worth stating plainly: the signature covers the application's own files. It does not cover the third-party packages under `node_modules`, which each machine installs on its own, or the program runtime bundled inside the desktop app. That runtime is the official Node.js build, fixed to a specific version by each release and fetched by the build's own verified toolchain, so a single signature can cover the identical application files on every platform.
 
 As a second layer, the application also checks its own files against that signed manifest each time it starts, and the web page surfaces a warning if they do not match. This is a helpful backstop, not a substitute for the check above: whoever could alter the files could also disable this internal check, which is exactly why verifying your download against a key you obtained independently is the reliable test.
 

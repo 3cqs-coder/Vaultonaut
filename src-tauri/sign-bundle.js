@@ -1,20 +1,24 @@
 'use strict';
-// sign-bundle.js — make the DESKTOP bundle host-independently verifiable, using the project's own signing key
-// (the same Ed25519 trust root as a source release — no operating-system code-signing certificate, no Apple or
-// Microsoft account, nothing platform-locked).
+// sign-bundle.js — make the DESKTOP bundle host-independently verifiable using the project's own signing key (the
+// same Ed25519 trust root as a source release — no operating-system code-signing certificate, no Apple or Microsoft
+// account, nothing platform-locked).
 //
-// The source release manifest covers the full source tree and cannot describe the trimmed runtime tree the
-// desktop bundle carries. So this signs a manifest scoped to the STAGED bundle itself: it builds the manifest
-// over src-tauri/app (the exact files the shell will ship), signs it with the maintainer's key, and writes
-// app/release-manifest.json + app/release-manifest.sig. Because the manifest is generated over that same tree,
-// the bundled verify.js and the app's boot-time self-check both confirm it cleanly — and anyone can re-check the
-// installed app against the public key from the README, independent of any platform.
+// It does NOT sign here, and needs no private key: the maintainer signs the release manifest ONCE on their own
+// machine (node lib/scripts/sign-release.js) and commits release-manifest.json + release-manifest.sig. Those cover
+// the published application file set — the exact files prepare-sidecar stages into app/ — so this step simply COPIES
+// them into the staged bundle and then verifies they match what was staged. Because the manifest is committed, every
+// build embeds the maintainer's signature the same way, whether it runs on the maintainer's machine or on a hosted CI
+// runner that never holds the key. The bundled Node runtime and node_modules are outside the manifest's scope (each
+// platform's build supplies its own); the runtime is pinned to a fixed official version by prepare-sidecar, and
+// node_modules carries npm's own provenance.
 //
-// Run AFTER prepare-sidecar.js (which stages app/) and BEFORE the Tauri build (which copies app/ into the
-// installer). Best-effort by design: on a machine without the private signing key (any non-maintainer build) it
-// prints a notice and exits 0, leaving an unsigned-but-fully-working bundle whose self-check stays inert.
+// Run AFTER prepare-sidecar.js (which stages app/) and BEFORE the Tauri build (which copies app/ into the installer).
+//   node sign-bundle.js
 //
-//   node sign-bundle.js [--key <path-to-release-signing-key.json>]
+// Fail-closed: if the committed manifest is present but does NOT match the staged files, the build stops — a stale or
+// missing re-sign can never ship a bundle whose signature does not verify. If NO manifest is committed at all (a
+// checkout from before signing was set up), it leaves an unsigned-but-working bundle whose self-check stays inert,
+// exactly like an unsigned source checkout, so a non-maintainer build still succeeds.
 
 const fs = require('fs');
 const path = require('path');
@@ -24,40 +28,39 @@ const REPO = path.resolve(HERE, '..');
 const APP_DIR = path.join(HERE, 'app');
 const RI = require(path.join(REPO, 'lib', 'ReleaseIntegrity'));
 
-function arg(name, def) { const i = process.argv.indexOf(name); return i >= 0 && process.argv[i + 1] ? process.argv[i + 1] : def; }
-
-function loadSeed(keyPath) {
-	let raw;
-	try { raw = JSON.parse(fs.readFileSync(keyPath, 'utf8')); } catch (_) { return null; }
-	return raw && raw.seed ? raw.seed : null;
-}
-
 async function main() {
 	if (!fs.existsSync(path.join(APP_DIR, 'vaultonaut.js'))) {
 		console.error('Nothing staged at ' + path.relative(REPO, APP_DIR) + ' — run prepare-sidecar.js first.');
 		process.exit(1);
 	}
 
-	const keyPath = path.resolve(arg('--key', path.join(REPO, RI.KEY_NAME)));
-	const seed = loadSeed(keyPath);
-	if (!seed) {
-		// No maintainer key on this machine: leave the bundle unsigned. It still runs; its self-check stays inert
-		// (no manifest to check), exactly like an unsigned source checkout. This keeps non-maintainer builds working.
-		console.log('No signing key at ' + path.relative(REPO, keyPath) + ' — building an UNSIGNED bundle (the app still runs; its integrity self-check stays inert).');
-		console.log('To make the desktop bundle verifiable, sign on the maintainer machine that holds ' + RI.KEY_NAME + '.');
+	const manifestSrc = path.join(REPO, RI.MANIFEST_NAME);
+	const sigSrc = path.join(REPO, RI.SIG_NAME);
+	if (!fs.existsSync(manifestSrc) || !fs.existsSync(sigSrc)) {
+		// No committed signature: leave the bundle unsigned. It still runs; its self-check stays inert (no manifest to
+		// check), exactly like an unsigned source checkout. This keeps a checkout from before signing was set up working.
+		console.log('No committed ' + RI.MANIFEST_NAME + ' / ' + RI.SIG_NAME + ' at the repository root — building an UNSIGNED bundle (the app still runs; its integrity self-check stays inert).');
+		console.log('To make the desktop bundle verifiable, run "node lib/scripts/sign-release.js" on the maintainer machine and commit the manifest and signature.');
 		return;
 	}
 
-	// Cover the whole bundle, INCLUDING node_modules: unlike a source release (where npm re-fetches dependencies
-	// with its own integrity), the desktop bundle SHIPS its dependencies as part of the signed artifact, so they
-	// must be attested too or a tamperer could alter shipped third-party code and still pass verification.
-	const manifest = await RI.buildManifest(APP_DIR, { withDependencies: true });
-	const buf = RI.serialize(manifest);
-	fs.writeFileSync(path.join(APP_DIR, RI.MANIFEST_NAME), buf);
-	fs.writeFileSync(path.join(APP_DIR, RI.SIG_NAME), RI.signManifest(buf, seed) + '\n');
-	console.log('Signed the desktop bundle: ' + manifest.files.length + ' file(s), version ' + manifest.version + '.');
-	console.log('  ' + RI.MANIFEST_NAME + ' + ' + RI.SIG_NAME + ' written into the staged bundle (verify.js / boot self-check).');
-	console.log('Public key (must match the README): ' + RI.publicKeyForSeed(seed));
+	// Copy the committed manifest + signature into the staged bundle, then verify they match the staged files.
+	fs.copyFileSync(manifestSrc, path.join(APP_DIR, RI.MANIFEST_NAME));
+	fs.copyFileSync(sigSrc, path.join(APP_DIR, RI.SIG_NAME));
+
+	const r = await RI.verifyInstall(APP_DIR, { pubHex: RI.embeddedPubKey() });
+	if (!r.present) { console.error('Bundle signing failed: the manifest did not copy into ' + path.relative(REPO, APP_DIR) + '.'); process.exit(1); }
+	if (r.pubkey === false) { console.error('Bundle signing failed: lib/releasePubKey.js has no public key — run "node lib/scripts/sign-release.js --init".'); process.exit(1); }
+	if (!r.signatureValid) { console.error('Bundle signing failed: the committed manifest signature does not verify against the embedded public key. Re-sign with "node lib/scripts/sign-release.js".'); process.exit(1); }
+	if (!r.ok) {
+		console.error('Bundle signing failed: the staged bundle does not match the committed signed manifest — the release manifest is stale. Re-sign with "node lib/scripts/sign-release.js" and commit it.');
+		if (r.mismatches && r.mismatches.length) console.error('  Changed: ' + r.mismatches.slice(0, 50).join(', ') + (r.mismatches.length > 50 ? ', …' : ''));
+		if (r.missing && r.missing.length) console.error('  Missing: ' + r.missing.slice(0, 50).join(', ') + (r.missing.length > 50 ? ', …' : ''));
+		if (r.extraneous && r.extraneous.length) console.error('  Unexpected: ' + r.extraneous.slice(0, 50).join(', ') + (r.extraneous.length > 50 ? ', …' : ''));
+		process.exit(1);
+	}
+	console.log('Embedded the signed manifest in the desktop bundle: ' + r.count + ' file(s), version ' + (r.version || '?') + '.');
+	console.log('  ' + RI.MANIFEST_NAME + ' + ' + RI.SIG_NAME + ' copied into ' + path.relative(REPO, APP_DIR) + ' and verified against the embedded public key.');
 }
 
 main().catch((e) => { console.error('Bundle signing failed:', e && e.message || e); process.exit(1); });

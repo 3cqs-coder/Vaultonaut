@@ -24,12 +24,11 @@ data/tamper-log.json
 # OS cruft
 .DS_Store
 
-# Release signing: the PRIVATE key must never be committed. The signed manifest and checksum files are generated
-# at release time into the release artifact, not tracked in the source tree, so a dev checkout has no manifest and
-# the self-integrity check stays inert during development (no false alarms while editing).
+# Release signing: the PRIVATE key must never be committed. The signed manifest and its signature ARE tracked,
+# however, so a build can embed them into the desktop bundle without ever holding the private key — the maintainer
+# signs on their own machine, commits the manifest, and every platform's build (including CI) verifies against it.
+# The plain SHA256SUMS is a per-release convenience artifact attached to the release, not tracked in the tree.
 release-signing-key.json
-release-manifest.json
-release-manifest.sig
 SHA256SUMS
 SHA256SUMS.sig
 
