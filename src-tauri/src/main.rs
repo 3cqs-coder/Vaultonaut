@@ -189,6 +189,32 @@ fn main() {
                 Ok(child) => {
                     let shared: SharedChild = Arc::new(Mutex::new(Some(child)));
                     app.manage(Backend(shared.clone()));
+
+                    // Close WITHOUT freezing the window. On a close request, hide the window immediately (so it
+                    // vanishes at once) and run the backend's drain-and-lock on a BACKGROUND thread, then exit.
+                    // Doing that multi-second shutdown on the UI thread (as the RunEvent::Exit handler alone would)
+                    // makes the desktop pop an "application is not responding" dialog before the app finally closes.
+                    // The full shutdown that locks every open vault still runs — only its thread moves off the UI.
+                    if let Some(win) = app.get_webview_window("main") {
+                        let close_shared = shared.clone();
+                        let close_handle = app.handle().clone();
+                        let w = win.clone();
+                        win.on_window_event(move |event| {
+                            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                                api.prevent_close();
+                                let _ = w.hide();
+                                let sh = close_shared.clone();
+                                let h = close_handle.clone();
+                                std::thread::spawn(move || {
+                                    if let Some(mut child) = sh.lock().ok().and_then(|mut g| g.take()) {
+                                        stop_backend(&mut child);
+                                    }
+                                    h.exit(0);
+                                });
+                            }
+                        });
+                    }
+
                     // Wait for the server off the main thread (so the window and its "starting" splash stay
                     // responsive), then, back on the main thread, show the interface or the error state.
                     std::thread::spawn(move || {
