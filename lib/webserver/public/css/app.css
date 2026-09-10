@@ -595,6 +595,7 @@ input.mask { -webkit-text-security: disc; }
 .note-item.active { border-color: var(--accent); color: var(--accent); }
 /* A note-item used as a plain (non-clickable) row — the row itself does nothing; only a control inside it acts. */
 .note-item.static { cursor: default; }
+.note-meta { font-size: 12px; margin: 2px 0 0; }
 /* A read-only search hit: same chip as a note but with no pointer/hover affordance, since it does not act on click. */
 .search-hit { text-align: left; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; padding: 6px 10px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); }
 #noteBody { width: 100%; resize: vertical; font-family: var(--mono); font-size: 13px; }

@@ -471,7 +471,11 @@ Store the kit somewhere safe and separate from the vault, such as a locked drawe
 
 ### Secure notes
 
-Open a vault and you can keep secure notes inside it — a lightweight place for secrets, logins, and short notes, right in the web interface under **Notes** on the mounted vault. It is not a full password manager; it is the quick, private notepad you always wish you had somewhere safe. Each note is saved as an ordinary encrypted file inside the open vault, so it is protected exactly like every other file: the text lives only in the vault's in-memory view while it is open, is never written to disk unencrypted, and is locked away the moment you close the vault. Notes travel with the vault through backups, mirrors, and shared copies. Because they are real files in the vault, the tamper check accounts for them like any other content.
+Open a vault and you can keep secure notes inside it — a lightweight place for secrets, logins, and short notes, right in the web interface under **Notes** on the mounted vault. It is not a full password manager; it is the quick, private notepad you always wish you had somewhere safe.
+
+Because a note can hold passwords, its title and body are encrypted a second time, on top of the vault's own encryption. The file that holds the note is ciphertext even in the open vault, so the plaintext exists only for the moment the app decrypts a note to show it. This is stronger than the protection on a normal file: another program that can see the open drive — a search indexer, a backup tool, another app — still cannot read your notes. The notes are encrypted with a key that comes from your vault password, so they decrypt automatically while the vault is unlocked and need no second password, and they stay readable after a password change or a key rotation.
+
+Notes travel with the vault through backups, mirrors, and shared copies, and because they are real files in the vault, the tamper check accounts for them like any other content.
 
 A couple of walk-away conveniences match what a password manager does. The Notes window closes itself after a few minutes with no activity, so a note left open on screen does not stay revealed. And when you copy a secret, the clipboard is cleared again a short time later — best-effort, since a browser may not allow it, and only if you have not copied something else in the meantime.
 
