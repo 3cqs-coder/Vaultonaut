@@ -344,6 +344,8 @@ vdisk recovery-kit <name|path> [out]   Write a printable one-page Recovery Kit (
 vdisk attest   <name|path>       Timestamp the vault's state as court-grade proof (--list to see proofs, --tsa <url> to pick an authority)
 vdisk make-bundle <name|path> [--out <dir>]   Package a portable proof anyone can verify offline
 vdisk verify-bundle <dir>        Verify a proof bundle offline (GENUINE / TAMPERED / ROLLED-BACK)
+vdisk prove-file <name|path> <file-in-vault> [--out <file>]   Prove one file is in the vault's signed state (a small, shareable proof)
+vdisk verify-file <proof.json>   Verify a single-file proof offline (GENUINE / TAMPERED; --expect <origin-identity> to check the origin)
 vdisk protect  <name|path>       Add or refresh self-healing recovery data (no password)
 vdisk heal     <name|path>       Check for corruption and repair it from the recovery data (add --force to also rebuild or trim a size-changed file, and to repair when the recovery signature is unverified)
 vdisk scrub    <name|path>       Check the recovery data against the files now (no password; add --heal to repair)
@@ -956,6 +958,8 @@ Give that folder to anyone, and they get a plain verdict — GENUINE, TAMPERED, 
 - Or, with this tool, `vdisk verify-bundle <folder>` does the same and additionally verifies the trusted timestamps.
 
 Either way the verification is entirely offline and re-runs the math itself, so the answer does not depend on trusting the person who made the bundle. This is the honest, portable form of the vault's court-grade integrity: a record whose authenticity a lawyer, a journalist, or an auditor can confirm for themselves.
+
+**Proving a single file.** When you need to prove just *one* file — that this exact document was in your vault, unchanged, as of a point in time — `vdisk prove-file <vault> <file>` writes a small proof for that one file instead of the whole vault. It is a Merkle inclusion proof: the file's fingerprint plus the short chain of hashes that ties it to the same signed baseline, so the proof stays tiny no matter how large the vault is. It carries the file's name, size, and content fingerprint — never the file's contents. Anyone can check it offline with `vdisk verify-file <proof.json>`, or with the same self-contained `node verify.js <proof.json>`, and gets the same GENUINE or TAMPERED verdict, with no vault and no password. As with a bundle, pass the owner's identity with `--expect` to also confirm the proof came from their vault. Take a deep snapshot first so the proof binds the file's content, not just its name and size.
 
 Two things the math inside a bundle cannot settle on its own, so the verifier is honest about them:
 
