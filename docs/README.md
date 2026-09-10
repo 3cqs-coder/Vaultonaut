@@ -12,6 +12,7 @@ A vault is a self-contained folder. Copy that folder to another computer, an ext
 - [Requirements](#requirements)
 - [Setup](#setup)
 - [Verifying your download](#verifying-your-download)
+  - [Checking for updates](#checking-for-updates)
 - [Quick start](#quick-start)
 - [The web interface](#the-web-interface)
 - [Desktop app](#desktop-app)
@@ -22,16 +23,25 @@ A vault is a self-contained folder. Copy that folder to another computer, an ext
 - [Commands](#commands)
 - [Running a project from a vault](#running-a-project-from-a-vault)
 - [Security](#security)
+  - [What a vault protects, and what it cannot](#what-a-vault-protects-and-what-it-cannot)
+  - [An open format, not home-grown cryptography](#an-open-format-not-home-grown-cryptography)
 - [Keys and recovery](#keys-and-recovery)
+  - [Secure notes](#secure-notes)
+  - [Finding files by name](#finding-files-by-name)
+  - [Read-only access and sharing](#read-only-access-and-sharing)
+  - [Viewing files in the app](#viewing-files-in-the-app)
 - [Team vaults](#team-vaults)
 - [Per-vault decoy protection (advanced)](#per-vault-decoy-protection-advanced)
 - [Travel mode](#travel-mode)
 - [Keeping vaults intact](#keeping-vaults-intact)
+  - [Self-healing](#self-healing)
 - [Vaults that live in the cloud](#vaults-that-live-in-the-cloud)
 - [Backing up off-site](#backing-up-off-site)
 - [Mirroring across places](#mirroring-across-places)
+  - [Reaching a vault on another machine](#reaching-a-vault-on-another-machine)
 - [Splitting a vault across places](#splitting-a-vault-across-places)
 - [Emergency and inheritance access](#emergency-and-inheritance-access)
+  - [A dead-man's switch](#a-dead-mans-switch)
 - [Locking](#locking)
 - [Tamper detection](#tamper-detection)
 - [Permissions](#permissions)
@@ -345,8 +355,8 @@ vdisk attest   <name|path>       Timestamp the vault's state as court-grade proo
 vdisk make-bundle <name|path> [--out <dir>]   Package a portable proof anyone can verify offline
 vdisk verify-bundle <dir>        Verify a proof bundle offline (GENUINE / TAMPERED / ROLLED-BACK)
 vdisk prove-file <name|path> <file-in-vault> [--out <file>]   Prove one file is in the vault's signed state (a small, shareable proof)
-vdisk verify-file <proof.json>   Verify a single-file proof offline (GENUINE / TAMPERED; --expect <origin-identity> to check the origin)
-vdisk verify-self                Check this installation's own files against the maintainer-signed release (GENUINE / ALTERED)
+vdisk verify-file <proof.json>   Verify a single-file proof offline (GENUINE / TAMPERED / UNVERIFIED; --expect <origin-identity> to check the origin)
+vdisk verify-self                Check this installation's own files against the maintainer-signed release (GENUINE / ALTERED / UNSIGNED)
 vdisk protect  <name|path>       Add or refresh self-healing recovery data (no password)
 vdisk heal     <name|path>       Check for corruption and repair it from the recovery data (add --force to also rebuild or trim a size-changed file, and to repair when the recovery signature is unverified)
 vdisk scrub    <name|path>       Check the recovery data against the files now (no password; add --heal to repair)
@@ -834,7 +844,7 @@ You can also arrange for trusted people to gain read-only access automatically i
 
 1. Each beneficiary makes a keypair and gives you only the public half (**Generate a keypair** in the app, or `vdisk emergency keypair`).
 2. You enroll the first one (paste the public key, or `vdisk emergency enroll --contact-key <their public key> --label <name>`), and add any others the same way (**Add beneficiary**, or `vdisk emergency add-contact --contact-key <key> --label <name>`).
-3. You route each vault to the beneficiary who should inherit it (**Protect this vault**, choosing the beneficiary, or `vdisk emergency arm <vault> --contact <name-or-id>`), which seals that vault's read link to that person's public key, so only their private key can ever open it.
+3. You route each vault to the beneficiary who should inherit it (**Route this vault** in the app, after choosing the beneficiary, or `vdisk emergency arm <vault> --contact <name-or-id>`), which seals that vault's read link to that person's public key, so only their private key can ever open it.
 
 This is what makes the handover *granular*: different vaults can go to different people — your bank vault to your spouse, your business vault to your partner — and no beneficiary can open a vault that was not routed to them. When access is released, each person gets their own set of sealed files, holding only the vaults meant for them.
 

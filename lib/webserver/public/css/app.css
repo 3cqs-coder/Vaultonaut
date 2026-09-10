@@ -605,17 +605,17 @@ input.mask { -webkit-text-security: disc; }
 .secret-field { border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; background: var(--panel-2); }
 .sf-head { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 6px; }
 .sf-label { flex: 1; min-width: 0; padding: 5px 8px; background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 7px; font-size: 12.5px; font-weight: 600; }
-.sf-kind { flex: 0 0 auto; padding: 5px 6px; background: var(--panel); color: var(--muted); border: 1px solid var(--border); border-radius: 7px; font-size: 12px; }
-.sf-remove { flex: 0 0 auto; width: 28px; height: 28px; background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; line-height: 1; }
+.sf-kind { flex: 0 1 auto; min-width: 0; max-width: 100%; padding: 5px 6px; background: var(--panel); color: var(--muted); border: 1px solid var(--border); border-radius: 7px; font-size: 12px; }
+.sf-remove { flex: 0 0 auto; width: 32px; height: 32px; background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; line-height: 1; }
 .sf-value { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .sf-input { flex: 1 1 200px; min-width: 0; padding: 7px 9px; background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 7px; font-size: 13.5px; }
 textarea.sf-input { width: 100%; flex-basis: 100%; resize: vertical; font: 13px/1.5 var(--mono); }
 .sf-input.masked { font-family: var(--mono); letter-spacing: 0.02em; }
 .sf-tools { display: flex; gap: 4px; flex: 0 0 auto; }
-.sf-btn { padding: 5px 9px; background: var(--panel); color: var(--muted); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; font-size: 12px; }
+.sf-btn { min-height: 32px; padding: 6px 10px; background: var(--panel); color: var(--muted); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; font-size: 12px; }
 .sf-btn:focus-visible, .sf-remove:focus-visible, .sf-kind:focus-visible, .sf-label:focus-visible, .sf-input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .sf-totp { flex-basis: 100%; display: flex; align-items: center; gap: 8px; margin-top: 2px; }
-.totp-code { font: 650 17px/1 var(--mono); letter-spacing: 0.08em; color: var(--accent); }
+.totp-code { font: 700 19px/1 var(--mono); letter-spacing: 0.08em; color: var(--accent); } /* 19px bold qualifies as large text, so the accent color clears WCAG AA at the 3:1 threshold */
 .totp-secs { font-size: 12px; color: var(--muted); }
 .note-addfield { margin: 0 0 12px; }
 /* Password-health report. Token-driven and non-alarming: a calm summary, small severity chips, one row per item. */
@@ -628,7 +628,7 @@ textarea.sf-input { width: 100%; flex-basis: 100%; resize: vertical; font: 13px/
 .health-items .note-item { flex: 0 1 auto; }
 .hb { font-size: 11.5px; font-weight: 650; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); white-space: nowrap; }
 .hb-ok { color: var(--good, #0c6e3e); border-color: currentColor; }
-.hb-warn { color: var(--accent); border-color: currentColor; }
+.hb-warn { color: var(--warn); border-color: currentColor; } /* the AA-tuned warning token (not --accent, which is too light for small text) */
 .hb-bad { color: var(--danger, #c0362c); border-color: currentColor; }
 .notes-health .hb-bad-note { color: var(--danger); }
 /* A read-only search hit: same chip as a note but with no pointer/hover affordance, since it does not act on click. */

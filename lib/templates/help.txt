@@ -74,8 +74,8 @@ All commands:
   vdisk make-bundle  <path> [--out <dir>]   Package a portable proof anyone can verify offline
   vdisk verify-bundle <dir> [--expect <origin-identity>]   Verify a proof bundle offline -> GENUINE / TAMPERED / ROLLED-BACK
   vdisk prove-file   <path> <file-in-vault> [--out <file>]   Prove ONE file is in the vault's signed state (a shareable proof)
-  vdisk verify-file  <proof.json> [--expect <origin-identity>]   Verify a single-file proof offline -> GENUINE / TAMPERED
-  vdisk verify-self                Check this install's own files against the maintainer-signed release -> GENUINE / ALTERED
+  vdisk verify-file  <proof.json> [--expect <origin-identity>]   Verify a single-file proof offline -> GENUINE / TAMPERED / UNVERIFIED
+  vdisk verify-self                Check this install's own files against the maintainer-signed release -> GENUINE / ALTERED / UNSIGNED
   vdisk pack     <path> [out]      Bundle a vault into a single portable .vdisk file
   vdisk unpack   <file> [dest]     Restore a vault from a .vdisk file
   vdisk backup   <path> <dest>     Back up a vault (still encrypted) to a folder or drive
