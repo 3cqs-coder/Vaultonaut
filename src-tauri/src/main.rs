@@ -200,7 +200,37 @@ fn shutdown_in_background<R: tauri::Runtime>(handle: tauri::AppHandle<R>, shared
     });
 }
 
+// On Linux the interface runs inside a WebKitGTK WebView, whose DMABUF-based accelerated-compositing renderer
+// fails on a wide range of GPU + driver + compositor combinations (NVIDIA especially, and many Wayland setups):
+// the GTK window paints its background color but the WebView surface never composites, so the app shows a blank
+// dark window instead of the interface or the loading splash. It often appears only on a RELAUNCH, once the
+// driver/compositor state differs from the very first run — which is exactly the "black screen when you reopen it"
+// report. Disabling the DMABUF renderer makes the WebView paint reliably on every Linux machine; the small loss of
+// rendering acceleration is irrelevant for this simple interface. NVIDIA's explicit-sync path is disabled too — it
+// is free and heads off a related Wayland crash. This is Linux-only, so macOS (WKWebView) and Windows (WebView2)
+// are untouched. WebKitGTK reads these only from the environment and offers no command-line or config equivalent
+// (the same reason the FUSE-T library path is set via the environment), so this is a deliberate, documented
+// exception to the project's configure-by-argument rule — and only a DEFAULT: an advanced user who sets either
+// variable themselves keeps their choice, so a future driver that prefers the accelerated path can opt back in.
+#[cfg(target_os = "linux")]
+fn tune_linux_webview() {
+    for (key, value) in [
+        ("WEBKIT_DISABLE_DMABUF_RENDERER", "1"),
+        ("__NV_DISABLE_EXPLICIT_SYNC", "1"),
+    ] {
+        if std::env::var_os(key).is_none() {
+            std::env::set_var(key, value);
+        }
+    }
+}
+#[cfg(not(target_os = "linux"))]
+fn tune_linux_webview() {}
+
 fn main() {
+    // Must run BEFORE any WebView is created (the window is built from the config below), so the renderer choice is
+    // in effect for the very first paint.
+    tune_linux_webview();
+
     tauri::Builder::default()
         .setup(|app| {
             // Launch the Node application through the bundled runtime on the fixed loopback port. Its output is
