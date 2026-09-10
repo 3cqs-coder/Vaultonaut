@@ -782,9 +782,9 @@ From then on the mirror is two-way: **Sync now** (or `vdisk sync <vault>`) recon
 
 If the *same* file was changed on both sides between syncs, a mirror never silently picks a winner — it keeps both versions (the extra one gets a `sync-conflict` suffix) and flags it. The vault's **Tamper check** lists those copies plainly as a *sync issue to resolve*, so you can keep the one you want. Because a mirror also copies deletions in both directions, it is not a substitute for a backup: a mirror keeps two places identical, while a backup keeps a safe copy of what the vault held. Use a mirror to work across machines, and keep a backup for recovering from a mistake. Stop mirroring at any time with **Stop mirroring** or `vdisk unmirror` — the copy already at the destination is left untouched; nothing is deleted.
 
-One vault, one active writer at a time: mount and edit a vault on one machine, unmount and sync, then it is ready to open on another. Editing the same vault on two machines at once is the one thing to avoid — that is what produces the conflict copies above — so a mirrored vault takes a small **write lease** to help.
+One vault, one active writer at a time: mount and edit a vault on one machine, unmount and sync, then it is ready to open on another. Editing the same vault on two machines at once is the one thing to avoid — that is what produces the conflict copies above — so a shared vault takes a small **write lease** to help. This covers a mirrored vault and a cloud vault that two machines open from the same storage.
 
-When you mount a mirrored vault for writing, it records a marker at the shared destination. If you then try to mount the same vault for writing on a second machine while the first still holds it, that mount tells you the vault is in use elsewhere and offers three choices:
+When you mount such a vault for writing, it records a marker at the shared place — the mirror destination, or the cloud store itself. If you then try to mount the same vault for writing on a second machine while the first still holds it, that mount tells you the vault is in use elsewhere and offers three choices:
 
 - unmount it on the first machine;
 - mount it here read-only (which can never cause a conflict);
