@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.0.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-10T19:03:53.353Z",
+  "generatedAt": "2026-09-10T19:36:47.227Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -172,8 +172,8 @@
     },
     {
       "path": "lib/RamCache.js",
-      "sha256": "9193d9a1b7100ebc65077451373c4c80aa16fba2d2f23326699f275e57c569b9",
-      "size": 15274
+      "sha256": "2de984808ee74b492d8ad1076f591ea5997fa6e5d37e70ab7981d78bcb810fc9",
+      "size": 18229
     },
     {
       "path": "lib/Rclone.js",
