@@ -109,7 +109,19 @@ button.ghost { background: transparent; color: var(--text); border: 1px solid va
 .viewer-body .spin { padding: 40px; color: var(--muted); }
 /* A secure note: a decrypted read-only view — the timestamps line above the body, both stacked and left-aligned
    (the viewer centers its children by default), reusing the same wrapped monospace block the text viewer uses. */
-.viewer-body .note-view { width: 100%; max-width: 900px; }
-.viewer-body .note-view .note-when { margin: 4px 16px 0; }
+.viewer-body .note-view { width: 100%; max-width: 900px; padding: 4px 4px 24px; }
+.viewer-body .note-view .note-when { margin: 4px 4px 12px; }
 .viewer-body .note-view pre { max-width: none; }
+/* Read-only typed fields in the item viewer. Token-driven so every theme stays correct. */
+.note-field { border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; margin: 0 0 8px; background: var(--panel); }
+.nf-label { font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 4px; }
+.nf-value { display: flex; align-items: center; gap: 8px; }
+.nf-val { flex: 1; min-width: 0; overflow-wrap: anywhere; font: 14px/1.5 var(--mono, ui-monospace, Menlo, monospace); }
+.nf-val.masked { letter-spacing: 0.1em; }
+.nf-val a { color: var(--accent, #4d82ff); }
+.nf-tools { display: flex; gap: 4px; flex: 0 0 auto; }
+.nf-btn { padding: 5px 10px; background: var(--panel-2); color: var(--text); border: 1px solid var(--border); border-radius: 999px; font-size: 12px; cursor: pointer; }
+.nf-totp { display: flex; align-items: center; gap: 10px; }
+.nf-totp .totp-code { font: 700 20px/1 var(--mono, ui-monospace, Menlo, monospace); letter-spacing: 0.1em; color: var(--accent, #4d82ff); }
+.nf-totp .totp-secs { font-size: 12px; color: var(--muted); }
 .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: var(--panel-2); color: var(--text); border: 1px solid var(--border); border-radius: 999px; padding: 10px 16px; font-size: 14px; z-index: 30; max-width: 90%; }

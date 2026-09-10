@@ -596,6 +596,28 @@ input.mask { -webkit-text-security: disc; }
 /* A note-item used as a plain (non-clickable) row — the row itself does nothing; only a control inside it acts. */
 .note-item.static { cursor: default; }
 .note-meta { font-size: 12px; margin: 2px 0 0; }
+.note-item .note-ic { margin-right: 2px; }
+.note-item .note-nm { overflow: hidden; text-overflow: ellipsis; }
+.notes-filter { width: 100%; margin: 0 0 8px; padding: 7px 10px; background: var(--panel-2); color: var(--text); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; }
+/* Typed-secret fields in the note editor: each field is a labelled row with a value control and its tools
+   (reveal, copy). Kept token-driven so it is correct in every theme. */
+.note-fields { display: flex; flex-direction: column; gap: 10px; margin: 4px 0 8px; }
+.secret-field { border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; background: var(--panel-2); }
+.sf-head { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; }
+.sf-label { flex: 1; min-width: 0; padding: 5px 8px; background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 7px; font-size: 12.5px; font-weight: 600; }
+.sf-kind { flex: 0 0 auto; padding: 5px 6px; background: var(--panel); color: var(--muted); border: 1px solid var(--border); border-radius: 7px; font-size: 12px; }
+.sf-remove { flex: 0 0 auto; width: 28px; height: 28px; background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; line-height: 1; }
+.sf-value { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.sf-input { flex: 1 1 200px; min-width: 0; padding: 7px 9px; background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 7px; font-size: 13.5px; }
+textarea.sf-input { width: 100%; flex-basis: 100%; resize: vertical; font: 13px/1.5 var(--mono); }
+.sf-input.masked { font-family: var(--mono); letter-spacing: 0.02em; }
+.sf-tools { display: flex; gap: 4px; flex: 0 0 auto; }
+.sf-btn { padding: 5px 9px; background: var(--panel); color: var(--muted); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; font-size: 12px; }
+.sf-btn:focus-visible, .sf-remove:focus-visible, .sf-kind:focus-visible, .sf-label:focus-visible, .sf-input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.sf-totp { flex-basis: 100%; display: flex; align-items: center; gap: 8px; margin-top: 2px; }
+.totp-code { font: 650 17px/1 var(--mono); letter-spacing: 0.08em; color: var(--accent); }
+.totp-secs { font-size: 12px; color: var(--muted); }
+.note-addfield { margin: 0 0 12px; }
 /* A read-only search hit: same chip as a note but with no pointer/hover affordance, since it does not act on click. */
 .search-hit { text-align: left; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; padding: 6px 10px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); }
 #noteBody { width: 100%; resize: vertical; font-family: var(--mono); font-size: 13px; }
