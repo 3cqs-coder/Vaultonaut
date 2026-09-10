@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.0.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-09T23:39:44.724Z",
+  "generatedAt": "2026-09-10T00:52:40.051Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -352,8 +352,13 @@
     },
     {
       "path": "lib/webserver/index.js",
-      "sha256": "65fb46bcbabf93a29b3e4197108e3e03bb4af65989230d45da044067fb88a063",
-      "size": 128437
+      "sha256": "7c26c16c425f5acc22c308706d27a4950c32e487762fa8ebf9cdf0f8dd7961cd",
+      "size": 130035
+    },
+    {
+      "path": "lib/webserver/kitView.js",
+      "sha256": "3ea7c2c8ee8b817e632430a3a279ddd813b8fa764ce73f64fdeaa5e7a2d62ae3",
+      "size": 2946
     },
     {
       "path": "lib/webserver/mobileRoutes.js",
@@ -362,8 +367,8 @@
     },
     {
       "path": "lib/webserver/public/css/app.css",
-      "sha256": "192064d7e2cf4cb0207a102b715cf71eb310f4181994c57c8fb07173d0811eb7",
-      "size": 50626
+      "sha256": "fed4aea2f5d8193cf11dc8208369303b49d18e7625891c00692801facf6ed641",
+      "size": 51099
     },
     {
       "path": "lib/webserver/public/fonts/aFTR7PB1QTsUX8KYvrGyEY2tbZX9.woff2",
@@ -432,8 +437,8 @@
     },
     {
       "path": "lib/webserver/public/js/app.js",
-      "sha256": "955247540497748f7efa300b41b971b97c80a21eed26c7abcd9a202eec0483df",
-      "size": 257856
+      "sha256": "26cd99ee1bfc6fff8d83a820bec6b9f00db8fb2c4439beae8f01e08a9d167a66",
+      "size": 260114
     },
     {
       "path": "lib/webserver/public/js/login.js",
@@ -532,8 +537,8 @@
     },
     {
       "path": "lib/webserver/public/views/index.ejs",
-      "sha256": "e16ec5d3b73c724033bbc99cbbb990cf4fdc0116ee0bffad348f5a7b5d463727",
-      "size": 74318
+      "sha256": "96b59bc3420edda91cae37607b6817143944419346670c4f315a246a03a3d87e",
+      "size": 75288
     },
     {
       "path": "lib/webserver/public/views/login.ejs",

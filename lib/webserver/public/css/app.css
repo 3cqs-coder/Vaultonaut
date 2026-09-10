@@ -396,6 +396,12 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 /* Folder browser */
 .dialog.browse { width: 520px; }
 
+/* Recovery Kit viewer (the desktop-app fallback when a separate browser window cannot be opened). Wide enough to read
+   and print the one-page kit; the sandboxed iframe holds the kit's own (white, print-oriented) document. */
+.dialog.kit-dialog { width: min(860px, 94vw); }
+.kit-head h3 { margin: 0 0 6px; }
+.kit-frame { display: block; width: 100%; height: 70vh; height: 70dvh; margin-top: 12px; border: 1px solid var(--border); border-radius: 8px; background: #fff; }
+
 /* In-app Help: the project README rendered in a large, searchable panel. Themed through the same tokens as the
    rest of the app; the search highlight uses fixed colors (readable on any ground, like a browser's own find). */
 /* The flex layout must be scoped to [open]: setting `display: flex` unconditionally overrides the browser's own
