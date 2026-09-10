@@ -132,7 +132,7 @@ A signed release also includes a plain `SHA256SUMS` file, if you prefer the fami
 
 One limit worth stating plainly: the signature covers the application's own files. It does not cover the third-party packages under `node_modules`, which each machine installs on its own, or the program runtime bundled inside the desktop app. That runtime is the official Node.js build, fixed to a specific version by each release and fetched by the build's own verified toolchain, so a single signature can cover the identical application files on every platform.
 
-As a second layer, the application also checks its own files against that signed manifest each time it starts, and the web page surfaces a warning if they do not match. This is a helpful backstop, not a substitute for the check above: whoever could alter the files could also disable this internal check, which is exactly why verifying your download against a key you obtained independently is the reliable test.
+As a second layer, the application also checks its own files against that signed manifest each time it starts, and the web page surfaces a warning if they do not match. You can run that same check any time with `vdisk verify-self`, which reports GENUINE when every signed file matches or ALTERED (listing the files) when one does not. This is a helpful backstop, not a substitute for the check above: whoever could alter the files could also disable this internal check, which is exactly why verifying your download against a key you obtained independently is the reliable test.
 
 ### Checking for updates
 
@@ -346,6 +346,7 @@ vdisk make-bundle <name|path> [--out <dir>]   Package a portable proof anyone ca
 vdisk verify-bundle <dir>        Verify a proof bundle offline (GENUINE / TAMPERED / ROLLED-BACK)
 vdisk prove-file <name|path> <file-in-vault> [--out <file>]   Prove one file is in the vault's signed state (a small, shareable proof)
 vdisk verify-file <proof.json>   Verify a single-file proof offline (GENUINE / TAMPERED; --expect <origin-identity> to check the origin)
+vdisk verify-self                Check this installation's own files against the maintainer-signed release (GENUINE / ALTERED)
 vdisk protect  <name|path>       Add or refresh self-healing recovery data (no password)
 vdisk heal     <name|path>       Check for corruption and repair it from the recovery data (add --force to also rebuild or trim a size-changed file, and to repair when the recovery signature is unverified)
 vdisk scrub    <name|path>       Check the recovery data against the files now (no password; add --heal to repair)
