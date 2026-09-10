@@ -396,11 +396,16 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 /* Folder browser */
 .dialog.browse { width: 520px; }
 
-/* Recovery Kit viewer (the desktop-app fallback when a separate browser window cannot be opened). Wide enough to read
-   and print the one-page kit; the sandboxed iframe holds the kit's own (white, print-oriented) document. */
-.dialog.kit-dialog { width: min(860px, 94vw); }
-.kit-head h3 { margin: 0 0 6px; }
-.kit-frame { display: block; width: 100%; height: 70vh; height: 70dvh; margin-top: 12px; border: 1px solid var(--border); border-radius: 8px; background: #fff; }
+/* Recovery Kit viewer, shown natively in the app so it renders reliably in every WebView and keeps the app's feel.
+   The values (identity, fingerprint, and — for a full kit — the recovery key) are laid out with the app's own tokens;
+   the full printable kit opens in a real browser from the Print button. */
+.dialog.kit-dialog { width: min(560px, 94vw); }
+.kit-body { display: flex; flex-direction: column; gap: 14px; margin: 6px 0 2px; }
+.kit-field { display: flex; flex-direction: column; gap: 4px; }
+.kit-field .kit-label { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.kit-field .kit-value { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 14px; word-break: break-all; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+.kit-field.kit-key .kit-value { border-color: var(--warn, #b9861f); }
+.kit-steps { margin: 0; padding-left: 20px; color: var(--muted); font-size: 13px; display: flex; flex-direction: column; gap: 4px; }
 
 /* In-app Help: the project README rendered in a large, searchable panel. Themed through the same tokens as the
    rest of the app; the search highlight uses fixed colors (readable on any ground, like a browser's own find). */
