@@ -317,7 +317,7 @@ vdisk decoy <status|set|list|remove>   Advanced: pair a vault with a decoy opene
 vdisk travel   <on|off|status>   Advanced: before travel, hide all vaults from this app and lock them (restore with a travel password)
 vdisk threshold-key <name|path> --shares <n> --threshold <k> [--read-only]   Split the unlock key k-of-n; any k shares mount it
 vdisk emergency-access <name|path> --shares <n> --threshold <k>   Read-only inheritance access: any k of n trusted contacts can read it
-vdisk emergency <keypair|enroll|arm|check-in|status|disarm>   Dead-man's switch: release read access to a contact if you stop checking in
+vdisk emergency <keypair|enroll|add-contact|remove-contact|contacts|arm|check-in|status|disarm>   Dead-man's switch: release read access to your beneficiaries if you stop checking in
 vdisk emergency-open <sealed-file> --key <private-key>   Contact side: open released access with your private key
 vdisk rmkey    <name|path> <id>  Remove a key (unlock with a different one)
 vdisk mount    <name|path>       Mount a vault as a drive
@@ -827,13 +827,15 @@ A threshold key also gives you a safe way to make sure trusted people can reach 
 
 ### A dead-man's switch
 
-You can also arrange for a trusted contact to gain read-only access automatically if you stop checking in — for incapacitation, not just a planned handover. Use **Emergency…** in the app, or the `vdisk emergency` commands. It works the honest way, in three steps:
+You can also arrange for trusted people to gain read-only access automatically if you stop checking in — for incapacitation, not just a planned handover. Use **Emergency…** in the app, or the `vdisk emergency` commands. It works the honest way:
 
-1. The contact makes a keypair and gives you only the public half (**Generate a keypair** in the app, or `vdisk emergency keypair`).
-2. You enroll it (paste the public key, or `vdisk emergency enroll --contact-key <their public key>`).
-3. You arm a vault (**Protect this vault**, or `vdisk emergency arm <vault>`), which seals that vault's read link to the contact's public key, so only their private key can ever open it.
+1. Each beneficiary makes a keypair and gives you only the public half (**Generate a keypair** in the app, or `vdisk emergency keypair`).
+2. You enroll the first one (paste the public key, or `vdisk emergency enroll --contact-key <their public key> --label <name>`), and add any others the same way (**Add beneficiary**, or `vdisk emergency add-contact --contact-key <key> --label <name>`).
+3. You route each vault to the beneficiary who should inherit it (**Protect this vault**, choosing the beneficiary, or `vdisk emergency arm <vault> --contact <name-or-id>`), which seals that vault's read link to that person's public key, so only their private key can ever open it.
 
-A timer only controls when the sealed access is handed over: as long as you check in (**Check in**, `vdisk emergency check-in`, or just using the app), nothing happens. If you miss the whole inactivity window plus a grace period, the sealed access is released, and the contact opens it with their private key (`vdisk emergency-open <file> --key <their private key>`).
+This is what makes the handover *granular*: different vaults can go to different people — your bank vault to your spouse, your business vault to your partner — and no beneficiary can open a vault that was not routed to them. When access is released, each person gets their own set of sealed files, holding only the vaults meant for them.
+
+A timer only controls when the sealed access is handed over: as long as you check in (**Check in**, `vdisk emergency check-in`, or just using the app), nothing happens. If you miss the whole inactivity window plus a grace period, the sealed access is released, and each beneficiary opens their own with their private key (`vdisk emergency-open <file> --key <their private key>`). Removing a beneficiary later drops the sealed grants routed to them, since those could never be opened by anyone else anyway.
 
 Because this sealed access can sit unopened for years, it is sealed with post-quantum protection: a hybrid of a classical key exchange and a quantum-resistant one (ML-KEM), so a copy recorded today stays safe even against a future quantum computer. It stays safe as long as *either* method holds. This is automatic — there is nothing to choose.
 

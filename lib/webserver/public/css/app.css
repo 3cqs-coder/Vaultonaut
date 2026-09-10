@@ -753,3 +753,7 @@ input.switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2
 .mobile-qr { display: flex; justify-content: center; margin: 10px 0 4px; }
 .mobile-qr svg { width: min(220px, 100%); height: auto; background: #fff; border-radius: 10px; padding: 8px; box-sizing: content-box; } /* min()/auto so the QR shrinks on a very narrow phone instead of pushing the dialog sideways */
 .mobile-code { text-align: center; font: 700 22px/1.2 var(--mono); letter-spacing: 3px; margin: 8px 0 2px; }
+
+/* Emergency beneficiaries list rows */
+.em-contact { display: flex; align-items: center; gap: 8px; justify-content: space-between; width: 100%; padding: 6px 10px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; }
+.em-contact .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 13px; }
