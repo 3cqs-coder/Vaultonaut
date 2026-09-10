@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.0.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-10T14:37:16.509Z",
+  "generatedAt": "2026-09-10T14:59:43.833Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -17,8 +17,8 @@
     },
     {
       "path": "docs/README.md",
-      "sha256": "43e3c59e95d4384cd6bb271653deb4db5776e0db6b17fb2a53bb531b2ec8f51a",
-      "size": 159385
+      "sha256": "4d1c8e6cf8e86fdba0aee8d8cc92bf18d346a491831cd5167f047546cc08f3bb",
+      "size": 160362
     },
     {
       "path": "lib/Attest.js",
@@ -282,8 +282,8 @@
     },
     {
       "path": "lib/Vault.js",
-      "sha256": "aeee7b9eb267e5982676a8423fe1ad991ce830d84d12cdf2a9e5d50a7f8cd534",
-      "size": 701950
+      "sha256": "9e5cdb48ae89f43b50c58134473e0bfa1f73ebcf751afe591281a1c687166019",
+      "size": 703079
     },
     {
       "path": "lib/Watchdog.js",
@@ -312,8 +312,8 @@
     },
     {
       "path": "lib/index.js",
-      "sha256": "1be1db0bc112a4a66ab412dc608052d41e975fd7c9e77e57c94bb10d0e391175",
-      "size": 11752
+      "sha256": "7d1b30ff2ae75816487e6251a71cb9c0677c5385dbf64c524c415c5165e2de59",
+      "size": 11851
     },
     {
       "path": "lib/passwordStrength.js",
@@ -357,8 +357,8 @@
     },
     {
       "path": "lib/webserver/index.js",
-      "sha256": "e5afde865cd9d9d3fc94dbdb9c7184f4d7a585b17e5a3e5561f6aa23ed7d648a",
-      "size": 132237
+      "sha256": "bef0b73d5e1876ca7f296cd2a43028b07d5c39b15a7dcd7d117112e996f4efe9",
+      "size": 135145
     },
     {
       "path": "lib/webserver/kitView.js",
@@ -442,8 +442,8 @@
     },
     {
       "path": "lib/webserver/public/js/app.js",
-      "sha256": "878e17a50015474853e43faad8ceea5a9378077d59d79facaf945a71706f4206",
-      "size": 274847
+      "sha256": "d21103571be5425223b8371a7f6c4160832a70085746191547e45ac5d5f2040c",
+      "size": 277081
     },
     {
       "path": "lib/webserver/public/js/login.js",
@@ -541,19 +541,34 @@
       "size": 17811
     },
     {
+      "path": "lib/webserver/public/send/app.js",
+      "sha256": "b6a8eb150f4fa72dfbbd6ea167d6f7df9b7e2ed4a3f0a1e7dd2881f89a8ddf6b",
+      "size": 4432
+    },
+    {
+      "path": "lib/webserver/public/send/index.html",
+      "sha256": "828bf2caebd2d767d59b7707eaf398fd45de55ad29fec3cc60db3b152aa1e89d",
+      "size": 3267
+    },
+    {
       "path": "lib/webserver/public/shared/secret-schema.js",
-      "sha256": "b449cca6658683891ba349401d7aa74f2cf25d4c88edd8ba271898b534d09ce2",
-      "size": 11787
+      "sha256": "ff65dca58e3657f27216465f5ca53b3dfdc04ab5d7ad0588a6b25b14e6897921",
+      "size": 18056
     },
     {
       "path": "lib/webserver/public/views/index.ejs",
-      "sha256": "7191225be380614a138463164b620ed46e92137564b8aba6b5d3e2e68648c67f",
-      "size": 76268
+      "sha256": "35dae9d64379ce09c20ef73f3828383dfb2c4fe0d8d2cae12bc2276010f31aa9",
+      "size": 78676
     },
     {
       "path": "lib/webserver/public/views/login.ejs",
       "sha256": "353269b10057828e1e746dcde2323b0e397c7c06a3dcc09f869073ff1929da5b",
       "size": 1699
+    },
+    {
+      "path": "lib/webserver/sendLinks.js",
+      "sha256": "913f123e429dc8fbed7be4893b5e2163c36956ea18a26f7b33cf12301a51f9f1",
+      "size": 4170
     },
     {
       "path": "package.json",
