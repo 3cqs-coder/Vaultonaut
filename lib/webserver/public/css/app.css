@@ -542,6 +542,12 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 	   avoid mis-taps between adjacent controls. The visual text size is unchanged; only the tap target grows. */
 	.link-btn, .ghost-btn { min-height: 40px; }
 	.more-menu .link-btn, .more > summary { min-height: 40px; display: flex; align-items: center; }
+	/* The typed-secret editor's own controls (add/remove a field, the field-type picker, and the key-slot pickers)
+	   live only in this desktop UI — there is no separate touch editor — so a touchscreen laptop, an iPad on the
+	   local server, or the desktop app on a touch display all reach them here. Grow their tap target to the same
+	   comfortable minimum as the controls above; the visual text size is unchanged. */
+	.sf-btn, .sf-kind, .mini-select { min-height: 40px; }
+	.sf-remove { width: 40px; height: 40px; }
 }
 
 /* Tamper-check results */
