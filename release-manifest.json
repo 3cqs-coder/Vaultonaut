@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.0.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-10T15:34:03.232Z",
+  "generatedAt": "2026-09-10T16:14:36.948Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -17,8 +17,8 @@
     },
     {
       "path": "docs/README.md",
-      "sha256": "ad6db61baa380bda36f70d724093da557db8b769b4ddfb743a42e009bade7fe0",
-      "size": 161412
+      "sha256": "47709e6896a52a330e41657064e8326bd36c766264c59740e0090a8bc0abfbbf",
+      "size": 161625
     },
     {
       "path": "lib/Attest.js",
@@ -47,13 +47,13 @@
     },
     {
       "path": "lib/Commands.js",
-      "sha256": "fa7b1da2ac05303f6ab69b99208cce206bc9de8e04e234cb1ed70de2bb45c6f7",
-      "size": 160023
+      "sha256": "e41d18e1e73151b8bb8c4de8c02c6299e5debfe882383e8bb02ddf7a3aa6bde8",
+      "size": 160319
     },
     {
       "path": "lib/Common.js",
-      "sha256": "a9dd48376d197d4d2092da7c675fe0a2ae9f1229a8b7e50a79f95067d9febf3a",
-      "size": 45527
+      "sha256": "18fb850025575fc1892c0f44b333569257222fcd10ead718d7f82477655da5d6",
+      "size": 46691
     },
     {
       "path": "lib/Decoy.js",
@@ -167,8 +167,8 @@
     },
     {
       "path": "lib/PwnedCheck.js",
-      "sha256": "9ae4d6bd1f5b73573ac9fb4f81c307332529e6fc25b8c3b994b937126d6bbfda",
-      "size": 3632
+      "sha256": "92334964988cd9e454612e2671b9c2dbbc49b80916ea453e845469b3dad3cbdd",
+      "size": 3177
     },
     {
       "path": "lib/RamCache.js",
@@ -277,13 +277,13 @@
     },
     {
       "path": "lib/UpdateCheck.js",
-      "sha256": "bb18e0b75391adc277099373298c32aac14af8a9aba78cf80f1d8177d20ae016",
-      "size": 7354
+      "sha256": "46de30cfd5d8b15e8561f85a18dc982242d484898da5a753a2eaf99e9c3c5aa7",
+      "size": 6901
     },
     {
       "path": "lib/Vault.js",
-      "sha256": "9b09ab28e72809e5d8c70834b523f65140f75e4af99a9c878beb36ad191c2f6f",
-      "size": 708276
+      "sha256": "eb9557bc192a68cf9f5812a35512ebe13c2fe4f9b5041e5446f1c594e6132f7c",
+      "size": 709583
     },
     {
       "path": "lib/Watchdog.js",
@@ -352,13 +352,13 @@
     },
     {
       "path": "lib/verify-bundle.js",
-      "sha256": "aa1e0ef457310914853014c0ab82595754a7a32fb33eef71d86ef870bb4f93d8",
-      "size": 25934
+      "sha256": "1cd606f5f5e2d7b47c85a530c54fa735642f3cf8a5c2739ddf819eb12b6d0480",
+      "size": 26534
     },
     {
       "path": "lib/webserver/index.js",
-      "sha256": "cd94b927d44680abd9610d3506e38001ce8c10fb8d614b4a524eefd74d80e60a",
-      "size": 135468
+      "sha256": "b5aded6fa40c3ac5e42759ec33d95b624c1ab87d843be9bd188a0e7e8d380bb6",
+      "size": 136083
     },
     {
       "path": "lib/webserver/kitView.js",
@@ -372,8 +372,8 @@
     },
     {
       "path": "lib/webserver/public/css/app.css",
-      "sha256": "6d82f0c832f49f3dfb47e161f5c5d96f21253a9f1fc0016e595637cd8de9f6b9",
-      "size": 55666
+      "sha256": "510e31f0f410cf5bf610d9ba42e620651dc3a303ea6f1e40d7672b8c5347c45b",
+      "size": 55735
     },
     {
       "path": "lib/webserver/public/fonts/aFTR7PB1QTsUX8KYvrGyEY2tbZX9.woff2",
@@ -442,8 +442,8 @@
     },
     {
       "path": "lib/webserver/public/js/app.js",
-      "sha256": "1e8c64b5d8961e12292ce7b0f69c7d727df02000741291028a586ad1c66de351",
-      "size": 280699
+      "sha256": "f71ceb87f89fa99a6a193da1a92ad679d5a7e2012e417605e330d4e70c84a12b",
+      "size": 281364
     },
     {
       "path": "lib/webserver/public/js/login.js",
@@ -542,8 +542,8 @@
     },
     {
       "path": "lib/webserver/public/send/app.js",
-      "sha256": "b6a8eb150f4fa72dfbbd6ea167d6f7df9b7e2ed4a3f0a1e7dd2881f89a8ddf6b",
-      "size": 4432
+      "sha256": "c5f36acf393654d9c201affc4a0746f8ebe7abc6264c7e7439a2aec875028e93",
+      "size": 4793
     },
     {
       "path": "lib/webserver/public/send/index.html",
@@ -567,8 +567,8 @@
     },
     {
       "path": "lib/webserver/sendLinks.js",
-      "sha256": "913f123e429dc8fbed7be4893b5e2163c36956ea18a26f7b33cf12301a51f9f1",
-      "size": 4170
+      "sha256": "7c70c2cf2cd34468dfbbc21466b698d6a078946dcc308a5e03a9c832649117c2",
+      "size": 5244
     },
     {
       "path": "package.json",
