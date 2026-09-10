@@ -107,4 +107,9 @@ button.ghost { background: transparent; color: var(--text); border: 1px solid va
 }
 .viewer-body .pad { padding: 24px; color: var(--muted); text-align: center; }
 .viewer-body .spin { padding: 40px; color: var(--muted); }
+/* A secure note: a decrypted read-only view — the timestamps line above the body, both stacked and left-aligned
+   (the viewer centers its children by default), reusing the same wrapped monospace block the text viewer uses. */
+.viewer-body .note-view { width: 100%; max-width: 900px; }
+.viewer-body .note-view .note-when { margin: 4px 16px 0; }
+.viewer-body .note-view pre { max-width: none; }
 .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: var(--panel-2); color: var(--text); border: 1px solid var(--border); border-radius: 999px; padding: 10px 16px; font-size: 14px; z-index: 30; max-width: 90%; }
