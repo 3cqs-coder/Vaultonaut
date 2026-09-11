@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.0.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-11T22:48:57.102Z",
+  "generatedAt": "2026-09-11T23:09:27.079Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -52,8 +52,8 @@
     },
     {
       "path": "lib/Commands.js",
-      "sha256": "aca2600a87ccf0716da73ad006b57428bae5fec73acc01be466aba96a2fe964c",
-      "size": 164204
+      "sha256": "e23e91867d22353052b5dae2174fa882be3b2d7492150f72c9f12ada4ca4cda6",
+      "size": 165057
     },
     {
       "path": "lib/Common.js",
@@ -182,8 +182,8 @@
     },
     {
       "path": "lib/Rclone.js",
-      "sha256": "29e8e23db741813c92a7ca7360102d2fa174dc6a3d92cd6157737b6f863d85e2",
-      "size": 55447
+      "sha256": "59dc09205d0e4b75a2768f5f687177497e9b943140a291952d4c91f8fdf96ca3",
+      "size": 56077
     },
     {
       "path": "lib/RcloneSetup.js",
@@ -287,8 +287,8 @@
     },
     {
       "path": "lib/Vault.js",
-      "sha256": "a7bf299500190d8bc2b01b583e1978ed92aaf31cbfb91266b698f103d2e83ca7",
-      "size": 751364
+      "sha256": "3326ecaca505ea8fbb4e3019f268503a0743b3847de8dd66ff4ea2eb9c338662",
+      "size": 751864
     },
     {
       "path": "lib/Watchdog.js",
