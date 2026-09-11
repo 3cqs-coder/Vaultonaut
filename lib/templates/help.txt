@@ -16,6 +16,7 @@ All commands:
                  [--worm --retain-days <N> [--worm-mode governance|compliance]]   ...tamper-proof (S3): lock each version for N days
   vdisk cloud    <list|connect|add|remove|test>   Manage cloud storage for cloud-backed vaults
   vdisk cloud    connect <drive|dropbox|onedrive>   Sign in to a cloud account in the browser (OAuth)
+  vdisk cloud    add --type <type> [key=value …]   Add cloud storage by config; use --secrets-file <path> to keep secrets off the command line
   vdisk import   <folder> [path]   Create a new vault from an existing folder (copies files in)
   vdisk passwd   <path>            Change a vault's password (instant; no re-encryption)
   vdisk keys     <path>            List a vault's keys (no password needed)
@@ -87,7 +88,7 @@ All commands:
   vdisk sync     <path>            Sync the mirror now, both directions (also runs on unmount)
   vdisk unmirror <path>            Stop mirroring (the copy at the destination is left in place)
   vdisk serve    <path>            Serve a vault as a node another machine can mirror to (encrypted only)
-                                   Add --relay <host[:port]> --token <t> to reach it through a relay (no port forwarding)
+                                   Add --relay <host[:port]> --token <t> (or --token-file <path>) to reach it through a relay (no port forwarding)
   vdisk relay                      Run a relay hub (on a public host) so nodes behind NAT are reachable  (--token or --token-file, --port, --ports)
   vdisk peer-add <code|address>    Add a peer node (a served vault) to mirror to — paste its connect code, or an address  (--label, --user)
   vdisk peers                      List saved peer nodes
