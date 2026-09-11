@@ -367,7 +367,7 @@ vdisk fingerprint <name|path>    Show the vault's identity, version, and short f
 vdisk recovery-kit <name|path> [out]   Write a printable one-page Recovery Kit (add --no-key for an identity-only kit)
 vdisk attest   <name|path>       Timestamp the vault's state as court-recognized proof (--list to see proofs, --tsa <url> to pick an authority)
 vdisk make-bundle <name|path> [--out <dir>]   Package a portable proof anyone can verify offline
-vdisk verify-bundle <dir>        Verify a proof bundle offline (GENUINE / TAMPERED / ROLLED-BACK)
+vdisk verify-bundle <dir>        Verify a proof bundle offline (GENUINE / TAMPERED / ROLLED-BACK / UNVERIFIED)
 vdisk prove-file <name|path> <file-in-vault> [--out <file>]   Prove one file is in the vault's signed state (a small, shareable proof)
 vdisk verify-file <proof.json>   Verify a single-file proof offline (GENUINE / TAMPERED / UNVERIFIED; --expect <origin-identity> to check the origin)
 vdisk verify-self                Check this installation's own files against the maintainer-signed release (GENUINE / ALTERED / UNSIGNED)
@@ -1009,7 +1009,7 @@ Turn on **Auto-timestamp** (the toggle by Auto-lock, or leave it off) to have ea
 
 All of this normally lives with the vault, but you can also package it into a small, self-contained **proof bundle** that a third party can verify on their own — without the vault, without a password, and without trusting you. Run `vdisk make-bundle <vault>` (it asks for the password once, to read the signed baseline) and it writes a folder holding the manifest, the signed baseline, the identity succession, the timestamp proofs, and the vault's original-identity anchor. Everything in it is a hash or a public key, so it never contains your file contents.
 
-Give that folder to anyone, and they get a plain verdict — GENUINE, TAMPERED, or ROLLED-BACK — with each underlying check shown. There are two ways to check it, and neither needs your vault or your password:
+Give that folder to anyone, and they get a plain verdict — GENUINE, TAMPERED, ROLLED-BACK, or UNVERIFIED (the last means the bundle is incomplete or was made by a newer version of the tool) — with each underlying check shown. There are two ways to check it, and neither needs your vault or your password:
 
 - The folder includes a small, self-contained `verify.js`, so anyone with a plain Node.js install can run `node verify.js .` with nothing else to download.
 - Or, with this tool, `vdisk verify-bundle <folder>` does the same and additionally verifies the trusted timestamps.

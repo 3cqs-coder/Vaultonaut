@@ -360,9 +360,13 @@ button { font: inherit; }
 .radio-row { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; line-height: 1.4; }
 .radio-row input[type="radio"] { flex: none; margin-top: 2px; }
 .share-deliver { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
-/* This row reuses .dialog-actions for its right-aligned layout but sits MID-dialog, so it must not inherit the
-   sticky footer positioning (which would float it over the content below on a scrolling dialog). */
-.share-deliver-actions { position: static; margin: 8px 0; padding: 0; border-top: none; background: none; }
+/* A .dialog-actions row that sits MID-dialog (not as the dialog's footer) must not inherit the sticky-footer
+   positioning: the negative side margins break it out full-bleed and draw a stray full-width divider, and on a
+   scrolling dialog `position: sticky` floats it over the fields below. Add this class alongside .dialog-actions on
+   any such in-body row. The selector is compound (.dialog-actions.dialog-actions-inline) ON PURPOSE, so it outranks
+   the base .dialog-actions rule regardless of source order — a plain single-class reset would lose the cascade to
+   the later base rule. Single-sourced here so every mid-dialog row resets identically and the fix cannot drift. */
+.dialog-actions.dialog-actions-inline { position: static; margin: 8px 0; padding: 0; border-top: none; background: none; }
 .share-keys { border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin: 4px 0 10px; }
 .share-keys legend { font-size: 13px; color: var(--muted); padding: 0 4px; }
 .share-key-list { display: grid; gap: 6px; margin-top: 6px; }

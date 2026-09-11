@@ -8,9 +8,12 @@
 	<meta name="referrer" content="no-referrer">
 	<title>Shared securely</title>
 	<style>
-		/* Light is the base; dark follows the system. Self-contained so the page needs no external stylesheet. */
-		:root { --bg:#f4f6fb; --panel:#ffffff; --panel-2:#f0f2f8; --text:#1a2233; --muted:#5b6475; --border:#e2e6ef; --accent:#2f6bff; --danger:#c0362c; }
-		@media (prefers-color-scheme: dark) { :root { --bg:#0e1117; --panel:#161b25; --panel-2:#1d2430; --text:#e6ebf5; --muted:#9aa4b6; --border:#262e3d; --accent:#4d82ff; --danger:#f87171; } }
+		/* Light is the base; dark follows the system. Self-contained so the page needs no external stylesheet.
+		   color-scheme is set per theme so the browser draws its own chrome (the password field's caret, any autofill
+		   or validation styling, and scrollbars) to match — without it, that chrome stays light over the dark surface
+		   in the system's dark mode. */
+		:root { color-scheme: light; --bg:#f4f6fb; --panel:#ffffff; --panel-2:#f0f2f8; --text:#1a2233; --muted:#5b6475; --border:#e2e6ef; --accent:#2f6bff; --danger:#c0362c; }
+		@media (prefers-color-scheme: dark) { :root { color-scheme: dark; --bg:#0e1117; --panel:#161b25; --panel-2:#1d2430; --text:#e6ebf5; --muted:#9aa4b6; --border:#262e3d; --accent:#4d82ff; --danger:#f87171; } }
 		* { box-sizing: border-box; }
 		body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 24px 16px; }
 		.wrap { width: 100%; max-width: 640px; }
