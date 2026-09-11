@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.0.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-11T16:48:11.756Z",
+  "generatedAt": "2026-09-11T17:23:01.472Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -17,8 +17,8 @@
     },
     {
       "path": "docs/README.md",
-      "sha256": "8c0710d0ad85c17d026e3b21d16afbb944ccc3bda760a891c3abcae3648e3225",
-      "size": 165924
+      "sha256": "d1212e45b68929d2f3cf991a810612d30da6513acda40ce6d933e6db29ca9b38",
+      "size": 165940
     },
     {
       "path": "lib/Attest.js",
@@ -72,8 +72,8 @@
     },
     {
       "path": "lib/DisperseWorker.js",
-      "sha256": "54df1dc0a2802d221c51ba9ed70b034c992011936657c88cd1d77ab9b7f6cb1f",
-      "size": 10432
+      "sha256": "18f9444c79c983e4367e19de560855ac9895ff4ba5fb688b5eebb7ac4d5ca0e9",
+      "size": 11168
     },
     {
       "path": "lib/DnsOrder.js",
@@ -187,8 +187,8 @@
     },
     {
       "path": "lib/Recovery.js",
-      "sha256": "912f3d3c4a90364666acf98a75211980923be7fac568c4d5c4e15ce447695479",
-      "size": 81031
+      "sha256": "8b5d5b5c683a160c033bd59dabd1f7eb335dcbad2405b71208ad42eba9653f07",
+      "size": 81179
     },
     {
       "path": "lib/RecoveryKit.js",
@@ -282,8 +282,8 @@
     },
     {
       "path": "lib/Vault.js",
-      "sha256": "2b0eb614ba726d6f79d879ef48d29a169c248b336134406271e9c1855b4f00cf",
-      "size": 738390
+      "sha256": "19b33a908c3b532e82d8eabc9e523566fb2a30381d88c76007ab2fd338e6355d",
+      "size": 739598
     },
     {
       "path": "lib/Watchdog.js",
@@ -557,8 +557,8 @@
     },
     {
       "path": "lib/webserver/public/views/index.ejs",
-      "sha256": "d0b39227fd5bd3b9bd1c100177bd35a69dd37c53b4a1a7d54e7d77b4a80c7f30",
-      "size": 79906
+      "sha256": "dbd24518462bcba772c75d7232aee605a75f5b36f44870ba5548484a46ba959e",
+      "size": 80448
     },
     {
       "path": "lib/webserver/public/views/login.ejs",
@@ -572,8 +572,8 @@
     },
     {
       "path": "package.json",
-      "sha256": "bf91e800414d34110a230541240c538c11df5bab5ca0d24a7cdaccc67d01be4f",
-      "size": 1640
+      "sha256": "489eaaae6f38932bbfda23023af512403f96bbf4216e7ec284bee94f7bb28e58",
+      "size": 1523
     },
     {
       "path": "vaultonaut.js",

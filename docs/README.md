@@ -44,6 +44,7 @@ A vault is a self-contained folder. Copy that folder to another computer, an ext
 - [Emergency and inheritance access](#emergency-and-inheritance-access)
   - [A dead-man's switch](#a-dead-mans-switch)
 - [Locking](#locking)
+  - [Securely removing a vault](#securely-removing-a-vault)
 - [Tamper detection](#tamper-detection)
   - [The automatic check](#the-automatic-check)
   - [Deep content check](#deep-content-check)
@@ -423,7 +424,7 @@ By default a vault just works, so you rarely need any of the flags below. They a
 - **snapshot** — `--force` proceeds on a sealed vault, which removes the seal.
 - **protect** — `--redundancy <low|medium|high>` sets how much recovery data to add (about 5%, 10%, or 15% extra space; the default is medium). `--thorough` keeps the recovery data current after in-place edits that leave a file the same size (see "Self-healing").
 - **heal** — `--force` rebuilds or trims a file whose size changed (which is otherwise preserved as a probable edit) and repairs even when the recovery data's authenticity signature does not verify (see "Self-healing").
-- **pack** — `--keys <id,id>` includes only selected key slots, so a password you leave out cannot open the shared copy (see "Choosing which keys travel with a shared file"). `--force` overwrites an existing output file.
+- **pack** — `--keys <id,id>` includes only selected key slots, so a password you leave out cannot open the shared copy. `--force` overwrites an existing output file.
 - **restore / disperse** — `--force` overwrites an existing destination folder, or shards already present at the target folders.
 - **setup** — `--latest` fetches the newest engine instead of the pinned, tested version.
 - **any command** — `--data-dir <folder>` uses a custom data directory instead of the per-user default (see "Where your data lives"); pass it consistently to every command. `--dns-order <ipv4first|ipv6first|verbatim>` sets how outbound connections resolve host names. The default, `ipv4first`, prefers IPv4 but still falls back to IPv6 when that is all there is. Preferring IPv4 keeps downloads, cloud vaults, timestamps, and relays working on a machine whose IPv6 is broken or flaky (common on some servers). Change it only if you specifically need a different order.
@@ -544,7 +545,7 @@ You choose how long the link lasts, from an hour up to 30 days, and how many tim
 
 Be clear-eyed about what revoking and expiry can and cannot do — this is honest zero-knowledge sharing, meaning whoever holds or hosts the copy only ever sees encrypted data, never your files or your password. They apply going forward, and for a vault you serve as a node they are enforced there immediately. But they cannot recall a copy someone has already downloaded. No tool can un-share data a person already holds. To cut off a leaked read key *entirely*, you rotate the vault's keys and re-encrypt it — a separate, deliberate operation, because it rewrites every file.
 
-**Rotating keys and re-encrypting — true revocation.** When a read key has genuinely leaked and you need to be certain a copy of it can never open the vault again, `vdisk rotate <vault>` (or **Rotate keys** in **Keys**) generates a brand-new key, re-encrypts every file under it, and rotates the vault's identity.
+**Rotating keys and re-encrypting — true revocation.** Sometimes a read key has genuinely leaked and you need to be certain that a copy of it can never open the vault again. `vdisk rotate <vault>` (or **Rotate keys** in **Keys**) generates a brand-new key, re-encrypts every file under it, and rotates the vault's identity.
 
 It is built to be safe above all else. The existing encrypted files are only ever read during the operation. The new copy is written alongside and verified byte-for-byte (decrypted and compared) before anything is switched over, and the switch itself is a single atomic step. If the operation is interrupted at any point — a crash, a power loss, you cancel it — the original vault is left completely intact, and the next time you open it the tool either finishes the switch or rolls it back cleanly.
 
@@ -887,7 +888,9 @@ Be clear about the limits, because this is not magic:
 
 **Lock on sleep.** Turn on **Lock on sleep** and, when this computer wakes from sleep — closing the laptop is the usual case — any open vaults are locked for you. It uses the same gentle flush-then-unmount as Lock all, so it never forces and unsaved work stays safe. Off by default.
 
-**Securely removing a vault.** To make a copy of a vault truly unrecoverable, `vdisk secure-remove <vault>` destroys its keys. The vault's data is protected by a random master key kept only inside this copy's key file. Destroy that file and the encrypted contents become meaningless noise that no password or recovery key can ever open again. This is faster and more honest than trying to overwrite every file: on a modern SSD the drive itself can quietly keep old copies of data, so wiping the key is the reliable way to put the contents beyond reach.
+### Securely removing a vault
+
+To make a copy of a vault truly unrecoverable, `vdisk secure-remove <vault>` destroys its keys. The vault's data is protected by a random master key kept only inside this copy's key file. Destroy that file and the encrypted contents become meaningless noise that no password or recovery key can ever open again. This is faster and more honest than trying to overwrite every file: on a modern SSD the drive itself can quietly keep old copies of data, so wiping the key is the reliable way to put the contents beyond reach.
 
 Because this is irreversible, it takes more than knowing a vault exists. Erasing always requires the vault's own read-write password — the same one that opens it. A vault's name is on show in the list, so it is no secret; the password proves that whoever is deleting can actually open the vault, and a wrong password, or a read-only one, erases nothing. If you have lost the password, the data is already beyond reach, so there is nothing left to crypto-erase — use the everyday **Remove** to forget the vault, then delete its folder yourself.
 
