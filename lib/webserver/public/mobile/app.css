@@ -123,3 +123,5 @@ button.ghost { background: transparent; color: var(--text); border: 1px solid va
 .nf-totp .totp-code { font: 700 20px/1 ui-monospace, Menlo, monospace; letter-spacing: 0.1em; color: var(--accent, #4d82ff); }
 .nf-totp .totp-secs { font-size: 12px; color: var(--muted); }
 .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: var(--panel-2); color: var(--text); border: 1px solid var(--border); border-radius: 999px; padding: 10px 16px; font-size: 14px; z-index: 30; max-width: 90%; }
+/* An error toast carries a danger-colored border and text so it does not read with the same weight as a success. */
+.toast.err { border-color: var(--danger); color: var(--danger); }

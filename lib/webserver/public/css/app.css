@@ -379,6 +379,10 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 .ghost-btn:focus-visible, .primary-btn:focus-visible, .link-btn:focus-visible, .copy-btn:focus-visible, .rail-item:focus-visible, .browse-item:focus-visible, .help-nav-btn:focus-visible, .help-chip:focus-visible, .note-item:focus-visible, .mini-select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .dialog::backdrop { background: rgba(6, 10, 18, .45); }
 .dialog h3 { margin: 0 0 6px; }
+/* A dialog often echoes the vault's name in a paragraph (e.g. "Unlock <strong>MyVault</strong>"). A long, unbroken
+   name must wrap instead of overflowing the fixed-width dialog — the vault cards already wrap the same way. This breaks
+   only when there is no other break opportunity, so ordinary prose still wraps at spaces. */
+.dialog p, .dialog li { overflow-wrap: anywhere; }
 /* Pin the action row to the bottom of a scrolling dialog, so on a tall dialog the buttons are always reachable
    without scrolling to the very end. It spans the dialog's 20px padding to sit flush at the bottom edge, with a
    panel background and a hairline so the scrolling body reads cleanly beneath it. On a short dialog that does not
