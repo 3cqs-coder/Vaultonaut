@@ -70,7 +70,7 @@ All commands:
   vdisk tamper-log <path>          Show the recorded tamper history (no password)
   vdisk fingerprint <path>         Show the vault's identity, version, and short fingerprint (no password)
   vdisk recovery-kit <path> [out]  Make a printable one-page Recovery Kit (add --no-key to skip the spare key)
-  vdisk attest   <path>            Timestamp the vault's state as court-grade proof (--list to see proofs, --tsa <url> for a specific authority)
+  vdisk attest   <path>            Timestamp the vault's state as court-recognized proof (--list to see proofs, --tsa <url> for a specific authority)
   vdisk make-bundle  <path> [--out <dir>]   Package a portable proof anyone can verify offline
   vdisk verify-bundle <dir> [--expect <origin-identity>]   Verify a proof bundle offline -> GENUINE / TAMPERED / ROLLED-BACK
   vdisk prove-file   <path> <file-in-vault> [--out <file>]   Prove ONE file is in the vault's signed state (a shareable proof)

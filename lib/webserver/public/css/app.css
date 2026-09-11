@@ -197,6 +197,7 @@ img.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; } /* the b
 .panel-head h2 { font-size: 17px; margin: 0; letter-spacing: -.01em; }
 .head-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .muted { color: var(--muted); }
+.fine { color: var(--muted); font-size: 13px; } /* fine print (e.g. the notes password-health explainer); mirrors the mobile stylesheet so the two never drift */
 
 /* Environment banner */
 .banner {

@@ -197,7 +197,7 @@ Global options and one-off maintenance live together in the **Settings** panel o
 
 The server is private by default. It listens only on your own machine (the loopback address) and rejects requests from other web pages. It is reachable from the network only if you deliberately set a password and bind it there (see below). Passwords are typed in the browser and used immediately to unlock a vault; they are never saved.
 
-The web interface is built for a personal, single-user computer: any program running under *another* user account on the same machine could reach the local address and see your vault list and paths, or interrupt a mounted drive. It cannot unlock, decrypt, or read a vault's contents: every unlock still requires your password, which is never stored. On a shared computer, prefer the command line, or run the web interface only while you are the one signed in.
+The web interface is built for a personal, single-user computer. Any program running under *another* user account on the same machine could reach the local address and see your vault list and paths, or interrupt a mounted drive. It cannot unlock, decrypt, or read a vault's contents: every unlock still requires your password, which is never stored. On a shared computer, prefer the command line, or run the web interface only while you are the one signed in.
 
 You can add a login to the web interface. It is optional and off by default, and is worth setting on a shared computer or when you want to reach the interface from another machine. Set one with `vdisk web-password set`. After that, the interface asks for the password before it opens anything. It keeps you signed in with a browser cookie that no other web page can read, and it shows a **Log out** button. Changing the password signs out every existing session.
 
@@ -351,7 +351,7 @@ vdisk unseal   <name|path>       Remove the seal (back to automatic tracking)
 vdisk tamper-log <name|path>     Show the recorded tamper history (no password)
 vdisk fingerprint <name|path>    Show the vault's identity, version, and short fingerprint (no password)
 vdisk recovery-kit <name|path> [out]   Write a printable one-page Recovery Kit (add --no-key for an identity-only kit)
-vdisk attest   <name|path>       Timestamp the vault's state as court-grade proof (--list to see proofs, --tsa <url> to pick an authority)
+vdisk attest   <name|path>       Timestamp the vault's state as court-recognized proof (--list to see proofs, --tsa <url> to pick an authority)
 vdisk make-bundle <name|path> [--out <dir>]   Package a portable proof anyone can verify offline
 vdisk verify-bundle <dir>        Verify a proof bundle offline (GENUINE / TAMPERED / ROLLED-BACK)
 vdisk prove-file <name|path> <file-in-vault> [--out <file>]   Prove one file is in the vault's signed state (a small, shareable proof)
@@ -439,7 +439,7 @@ You can mount several vaults at once; each gets its own drive, its own settings,
 
 ## Running a project from a vault
 
-A vault is not a good home for workloads made of very many tiny files with heavy churn — most notably a project's `node_modules` and the `npm install`, package builds, and busy version-control operations around it. This is a limitation of encrypted mount filesystems in general, not of this tool specifically: thousands of small files, each with its own create, write, and rename, overwhelm the userspace filesystem layer, so such installs are slow no matter which encrypted-mount tool you use. No mount setting fixes it. The available knobs only trade the slowness for stale directory listings or a higher risk of losing recent writes in a crash, so the tool does not chase them.
+A vault is not a good home for workloads made of very many tiny files with heavy churn — most notably a project's `node_modules` and the `npm install`, package builds, and busy version-control operations around it. This is a limitation of encrypted mount filesystems in general, not of this tool. Thousands of small files, each with its own create, write, and rename, overwhelm the userspace filesystem layer. Such installs are slow no matter which encrypted-mount tool you use. No mount setting fixes it. The available knobs only trade the slowness for stale directory listings or a higher risk of losing recent writes in a crash, so the tool does not chase them.
 
 The right approach is a simple rule. Put in the vault what is sensitive — your source, configuration, `.env`, keys, and data. Keep regenerable public artifacts — `node_modules`, build output, package caches — on the ordinary disk, where there is nothing to encrypt and the churn never touches the mount. Two layouts work for any project:
 
@@ -484,11 +484,11 @@ Store the kit somewhere safe and separate from the vault, such as a locked drawe
 
 ### Secure notes
 
-Open a vault and you can keep secure items inside it — logins, payment cards, crypto recovery phrases, API keys, Wi-Fi passwords, identity details, and plain notes — right in the web interface under **Notes** on the mounted vault. Pick a type and the item gives you the right fields. A field can be a password, a one-time-code (2FA) secret, a website, a PIN, a date, or plain text, and you can add your own fields to any item. It replaces the scattered places people keep these things today, without leaving your own computer.
+Open a vault and you can keep secure items inside it — logins, payment cards, crypto recovery phrases, API keys, Wi-Fi passwords, identity details, and plain notes — right in the web interface under **Notes** on any unlocked vault. Pick a type and the item gives you the right fields. A field can be a password, a one-time-code (2FA) secret, a website, a PIN, a date, or plain text, and you can add your own fields to any item. It replaces the scattered places people keep these things today, without leaving your own computer.
 
 A login can hold its two-factor secret, and the app shows the rolling six-digit code with its countdown right beside the password. The code is worked out on your device each time, so the changing code is never stored — only the setup secret is. Every field has a copy button, secret fields stay hidden until you choose to reveal them, and a type icon and quick filter make a long list easy to scan.
 
-Because an item can hold passwords, its title, its fields, and its note are all encrypted a second time, on top of the vault's own encryption. The file that holds the item is ciphertext even in the open vault, so the plaintext exists only for the moment the app decrypts an item to show it. This is stronger than the protection on a normal file: another program that can see the open drive — a search indexer, a backup tool, another app — still cannot read your items. They are encrypted with a key that comes from your vault password, so they decrypt automatically while the vault is unlocked and need no second password, and they stay readable after a password change or a key rotation.
+Because an item can hold passwords, its title, its fields, and its note are all encrypted a second time, on top of the vault's own encryption. The stored item is ciphertext, so the plaintext exists only for the moment the app decrypts an item to show it. This is stronger than the protection on a normal file. Even a program with access to the vault's files — a search indexer, a backup tool, another app — still cannot read your items. They are encrypted with a key that comes from your vault password, so they decrypt automatically while the vault is unlocked and need no second password, and they stay readable after a password change or a key rotation. Items are written straight to the encrypted store. They are saved the instant you enter them, and they work the same on macOS, Linux, and Windows, whether or not the vault is mounted as a drive.
 
 You can also read your items without mounting the vault as a drive. Choose **View files & notes** on a vault, open it in this browser, and your secure items appear there under **Secure notes**, decrypted only in the page — the same low-residue path the file viewer uses. It works on a phone through the one-time code too, so your logins and codes travel with you.
 
@@ -892,7 +892,7 @@ One point if you use duress protection: erasing a vault does not adjust any deco
 
 A vault is stored as many individually encrypted files, which is what keeps it portable and friendly to cloud sync. The trade-off is that removing or replacing one of those files is easy and, on its own, invisible. Tamper detection closes that gap, and it works automatically.
 
-For everyday use, the first part below is all you really need — the check runs on its own and simply warns you if something looks off. The later parts are reference for when you want deep content-level checking, a strict tripwire, a portable fingerprint, or court-grade timestamped proof.
+For everyday use, the first part below is all you really need — the check runs on its own and simply warns you if something looks off. The later parts are reference for when you want deep content-level checking, a strict tripwire, a portable fingerprint, or court-recognized timestamped proof.
 
 **It just happens.** Every time you mount a vault, it is checked against a signed baseline of its file set. If anything was added, removed, or changed while the vault was not in use, you are told right away — and it still mounts, because this is a warning, never a lockout. Your own edits are folded into the baseline as your new trusted state, so they are never mistaken for tampering.
 
@@ -974,7 +974,7 @@ Give that folder to anyone, and they get a plain verdict — GENUINE, TAMPERED, 
 - The folder includes a small, self-contained `verify.js`, so anyone with a plain Node.js install can run `node verify.js .` with nothing else to download.
 - Or, with this tool, `vdisk verify-bundle <folder>` does the same and additionally verifies the trusted timestamps.
 
-Either way the verification is entirely offline and re-runs the math itself, so the answer does not depend on trusting the person who made the bundle. This is the honest, portable form of the vault's court-grade integrity: a record whose authenticity a lawyer, a journalist, or an auditor can confirm for themselves.
+Either way the verification is entirely offline and re-runs the math itself, so the answer does not depend on trusting the person who made the bundle. This is the honest, portable form of the vault's court-recognized integrity: a record whose authenticity a lawyer, a journalist, or an auditor can confirm for themselves.
 
 **Proving a single file.** When you need to prove just *one* file — that this exact document was in your vault, unchanged, as of a point in time — `vdisk prove-file <vault> <file>` writes a small proof for that one file instead of the whole vault. It is a Merkle inclusion proof: the file's fingerprint plus the short chain of hashes that ties it to the same signed baseline, so the proof stays tiny no matter how large the vault is. It carries the file's name, size, and content fingerprint — never the file's contents. Anyone can check it offline with `vdisk verify-file <proof.json>`, or with the same self-contained `node verify.js <proof.json>`, and gets the same GENUINE, TAMPERED, or UNVERIFIED verdict, with no vault and no password. As with a bundle, pass the owner's identity with `--expect` to also confirm the proof came from their vault. Take a deep snapshot first so the proof binds the file's content, not just its name and size.
 
