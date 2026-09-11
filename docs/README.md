@@ -37,6 +37,7 @@ A vault is a self-contained folder. Copy that folder to another computer, an ext
   - [Self-healing](#self-healing)
 - [Vaults that live in the cloud](#vaults-that-live-in-the-cloud)
 - [Backing up off-site](#backing-up-off-site)
+  - [Version history](#version-history)
 - [Mirroring across places](#mirroring-across-places)
   - [Reaching a vault on another machine](#reaching-a-vault-on-another-machine)
 - [Splitting a vault across places](#splitting-a-vault-across-places)
@@ -44,6 +45,15 @@ A vault is a self-contained folder. Copy that folder to another computer, an ext
   - [A dead-man's switch](#a-dead-mans-switch)
 - [Locking](#locking)
 - [Tamper detection](#tamper-detection)
+  - [The automatic check](#the-automatic-check)
+  - [Deep content check](#deep-content-check)
+  - [Sealing a vault (a strict tripwire)](#sealing-a-vault-a-strict-tripwire)
+  - [Tamper history](#tamper-history)
+  - [Rollback protection](#rollback-protection)
+  - [Vault identity](#vault-identity)
+  - [What each layer covers](#what-each-layer-covers)
+  - [Timestamped proof](#timestamped-proof)
+  - [Portable proof](#portable-proof)
 - [Permissions](#permissions)
 - [Frequently asked questions](#frequently-asked-questions)
 - [Troubleshooting](#troubleshooting)
@@ -182,6 +192,7 @@ Then open `http://localhost:7420` in your browser.
 For everyday use, the page lists your vaults and shows which are mounted. From there you can:
 
 - Manage vaults — create, mount, unmount, reveal, add, and remove them.
+- Star your favorites — mark the vaults you use most with the star and they sort to the top of the list. A favorite that has Touch ID, Windows Hello, or a security key enrolled also gets a one-tap unlock. Vaults are still never mounted on their own; a favorite only shortens the unlock you choose to do.
 - Add files with progress — while a vault is mounted, files stream straight in with a progress bar. This also sidesteps a copy bug that some macOS driver versions have with large files.
 - Check storage use — see how much space a vault's contents take. It is shown only while the vault is open, so an unmounted vault never reveals its size.
 - Choose a theme — light, dark, or a calm sepia, or follow your system. The page also works on a phone, where the side menu folds into a slide-out drawer. The phone viewer for a shared vault carries the same theme choices in its own toggle.
@@ -496,6 +507,8 @@ Items travel with the vault through backups, mirrors, and shared copies, and bec
 
 A couple of walk-away conveniences match what a password manager does. The Notes window closes itself after a few minutes with no activity, so a note left open on screen does not stay revealed. And when you copy a secret, the clipboard is cleared again a short time later — best-effort, since a browser may not allow it, and only if you have not copied something else in the meantime.
 
+Notes also include an on-device password check, reached with **Check password health** in the Notes window. It scans the logins you have stored and flags three things: a password reused across more than one item, a weak password, and, if you opt in, one that has appeared in a known public breach. The check runs entirely on your machine and shows only which items have an issue, never any password. The breach step is optional and privacy-preserving. Only a short one-way hash prefix of a password is ever sent to look it up, never the password itself, so the service you check against learns nothing about your passwords.
+
 ### Finding files by name
 
 An encrypted vault is invisible to your computer's own search, so Vaultonaut gives you a **Search** on each open vault (or `vdisk search <vault> <text>`) that finds files and folders by name. It reads only names, never file contents, so it is fast even on a large vault. When the vault is open, the search needs no password. When it is closed, the command asks for the password and decrypts just the names to search them — nothing is written to disk.
@@ -754,13 +767,15 @@ To bring a backup back, `vdisk restore <backup.vault> <folder>` copies it into p
 
 **On a schedule.** In the **Back up** window you can also set a vault to back up automatically — every few hours, or once a day at a time you choose. Scheduled backups run while the app is open and only when the vault is unmounted, so they never interrupt what you are doing; a run that finds the vault mounted simply waits for the next opportunity. Daily times are your computer's own local time and are shown with your time zone, so a "09:00" backup happens at 09:00 for you and keeps doing so correctly across daylight-saving changes.
 
-**Version history — undo an overwrite or a delete.** Both a backup and a two-way mirror keep the prior versions of files that change or are removed, so accidentally saving over a document or deleting one is recoverable. Each time one runs, a file about to be overwritten or deleted is first set aside — still encrypted, under your vault's own key — into a timestamped snapshot before the new copy lands.
+### Version history
+
+Undo an accidental overwrite or delete. Both a backup and a two-way mirror keep the prior versions of files that change or are removed, so saving over a document or deleting one by mistake is recoverable. Each time one runs, a file about to be overwritten or deleted is first set aside — still encrypted, under your vault's own key — into a timestamped snapshot before the new copy lands.
 
 A backup keeps these with the backup. A mirror keeps them on both sides: the destination's prior copies stay with the destination, and your own machine's prior copies go into a private store *outside* the vault, so the vault folder and its tamper check are never affected. They are safe by construction — a version is only ever the old copy set aside before the new one is written, so your current copy is never left incomplete, and a version store is never synced back into the live mirror.
 
 Browse them with **Versions** on a vault (or `vdisk versions <vault>`): each snapshot shows its time, where it came from, and the files it holds, decrypted with your password. Restoring is non-destructive — the chosen version comes back into the vault under a new "(restored …)" name, so your current file is left exactly as it is and you decide which to keep. On the command line that is `vdisk restore-version <vault> <timestamp> <file>`; add `--from` to pick a store when the same moment exists in more than one place.
 
-By default the last ten snapshots per store are kept, and older ones are pruned automatically. You can tighten that with an age limit or a total-size limit. The newest snapshot is always kept, so a recovery point never disappears. Pruning only ever touches the version snapshots, never your live data, and runs quietly in the background — a slow or unreachable store simply leaves its history untrimmed until next time. It is on by default and needs no setup beyond having a backup or a mirror.
+By default the last ten snapshots per store are kept, and older ones are pruned automatically. You can tighten that in **Settings** with an age limit or a total-size limit. The newest snapshot is always kept, so a recovery point never disappears. Pruning only ever touches the version snapshots, never your live data, and runs quietly in the background — a slow or unreachable store simply leaves its history untrimmed until next time. It is on by default and needs no setup beyond having a backup or a mirror.
 
 **Off-site, over SFTP.** A backup destination can also be a remote **SFTP server** (a home NAS, a seedbox, any SSH host). Add one in the **Back up** window under *Add an SFTP server…*, with a password or an SSH key file, and use **Test** to check the connection before saving. The backup is uploaded already encrypted, so the server only ever holds scrambled data — it never has your password or your files in the clear.
 
@@ -894,7 +909,9 @@ A vault is stored as many individually encrypted files, which is what keeps it p
 
 For everyday use, the first part below is all you really need — the check runs on its own and simply warns you if something looks off. The later parts are reference for when you want deep content-level checking, a strict tripwire, a portable fingerprint, or court-recognized timestamped proof.
 
-**It just happens.** Every time you mount a vault, it is checked against a signed baseline of its file set. If anything was added, removed, or changed while the vault was not in use, you are told right away — and it still mounts, because this is a warning, never a lockout. Your own edits are folded into the baseline as your new trusted state, so they are never mistaken for tampering.
+### The automatic check
+
+It just happens. Every time you mount a vault, it is checked against a signed baseline of its file set. If anything was added, removed, or changed while the vault was not in use, you are told right away — and it still mounts, because this is a warning, never a lockout. Your own edits are folded into the baseline as your new trusted state, so they are never mistaken for tampering.
 
 When does that check refresh? Whenever the always-on web app or background service is running, it happens the moment you unmount. It covers the command line too, because `vdisk mount` and `vdisk unmount` hand the mount to that running process, so the command line and the app behave identically. With no such process running, the catch-up happens the next time you open the vault instead: it recognizes the interrupted session — a plain command-line unmount, or a crash, forced quit, or power loss — and quietly accepts the changes you made during it.
 
@@ -902,23 +919,31 @@ A change made while no session was active is the case that actually warrants a l
 
 A brand-new vault gets its baseline automatically, so there is nothing to set up and nothing to run by hand. The on-mount check reads only the file list and sizes, so it stays fast even on a large vault, and content changes to any single file are caught on read regardless, because the encryption is authenticated. Operating-system metadata that the system creates and removes on its own (such as macOS `.DS_Store` and `._` sidecar files) is ignored, so it never causes a false alarm. If a change was intentional — you added, moved, or removed files yourself outside a normal session — take a snapshot to accept it as the new baseline; until you do, the warning keeps appearing.
 
-**Optional deep check.** For a thorough, content-level check — one that also catches a same-size replacement, such as a file quietly swapped for an older version of itself — `vdisk snapshot` fingerprints every file's contents and `vdisk audit` compares against it, reporting exactly what changed. Both are also in the web interface under **Tamper check** on each vault.
+### Deep content check
+
+For a thorough, content-level check — one that also catches a same-size replacement, such as a file quietly swapped for an older version of itself — `vdisk snapshot` fingerprints every file's contents and `vdisk audit` compares against it, reporting exactly what changed. Both are also in the web interface under **Tamper check** on each vault.
 
 The deep snapshot and audit read every file, so on a large vault they take a while, and the vault must be unmounted first so it is compared in a settled state. Taking a snapshot is a reviewed action: it first shows what would be recorded and asks you to confirm, so a new baseline is never established by a stray click. A plain snapshot is a point-in-time check: audit against it before you next mount the vault, because the automatic baseline reverts to the fast structural check when you unmount. To keep content-level detection permanently — so a same-size swap is always caught — seal the vault (below); a seal is never auto-refreshed.
 
-**Sealing a vault (a strict tripwire).** Automatic tracking is convenient because it accepts your own edits: it re-establishes the baseline every time you unmount, on the assumption that whatever you did during a session was intended. For a vault whose contents are *not* supposed to change — an archive, evidence, a signed release, a set of records you want frozen — that convenience is the wrong default, because a change made while the vault was mounted would be accepted as your own.
+### Sealing a vault (a strict tripwire)
+
+Automatic tracking is convenient because it accepts your own edits: it re-establishes the baseline every time you unmount, on the assumption that whatever you did during a session was intended. For a vault whose contents are *not* supposed to change — an archive, evidence, a signed release, a set of records you want frozen — that convenience is the wrong default, because a change made while the vault was mounted would be accepted as your own.
 
 Sealing removes that assumption. `vdisk seal` records a strict, deep, signed baseline that is never refreshed automatically. From then on, any file added, removed, or modified — whether the vault was mounted at the time or not — is flagged on every mount and every audit, and keeps being flagged until you explicitly accept the new state by sealing again. Nothing you do in a normal session can quietly bless a change. (The fast on-mount check catches anything added, removed, or resized; a same-size content swap of one valid file for another is caught by the deep audit, exactly as described under "What each layer covers" below.)
 
 When you genuinely intend the new contents, seal again to accept them. Accepting is a reviewed step, not a rubber stamp: both `vdisk seal` and the web interface first show you exactly which files would be accepted and ask you to confirm, so you never lock in a change you have not looked at. To return to ordinary automatic tracking, run `vdisk unseal`. Taking a plain `vdisk snapshot` of a sealed vault also removes the seal (a snapshot is an automatic-tracking baseline), so it is treated as a deliberate act: the web interface warns first, and the command line refuses unless you re-run it with `--force`. All three are in the web interface under **Tamper check**, and a sealed vault shows a sealed badge in the list.
 
-**Tamper history.** Every detection — and every seal, acceptance, and unseal — is written to a local, persistent log, newest first, so a complete, reviewable trail survives even if the vault, or its in-vault baseline, is later deleted or rolled back. Each entry carries a severity so the serious findings stand out at a glance: losing or altering a file, or a forged or removed baseline, ranks above a merely added file, which ranks above the routine record of a seal you performed yourself. `vdisk tamper-log` (no password needed; the log holds no secrets) shows what happened and when, and the same history is available from **Tamper check** in the web interface.
+### Tamper history
+
+Every detection — and every seal, acceptance, and unseal — is written to a local, persistent log, newest first, so a complete, reviewable trail survives even if the vault, or its in-vault baseline, is later deleted or rolled back. Each entry carries a severity so the serious findings stand out at a glance: losing or altering a file, or a forged or removed baseline, ranks above a merely added file, which ranks above the routine record of a seal you performed yourself. `vdisk tamper-log` (no password needed; the log holds no secrets) shows what happened and when, and the same history is available from **Tamper check** in the web interface.
 
 The history is also tamper-evident in its own right. The entries form a hash chain — each one commits to the one before it, the way blocks link in a blockchain — so editing or reordering any past entry breaks the chain and is reported. The chain starts from a value tied to the vault's own identity. Both ends of it are anchored in a separate local file — the newest entry, and a count of how many old entries have aged out — so quietly deleting the most recent detections, or the oldest, no longer matches the anchor and is caught.
 
 Whenever a read-write session is active, it also stamps the current position with the vault's write-authority signature. An attacker cannot forge that checkpoint, even if they can rewrite every local file, so an attempt to roll the history back to before a detection is caught too. When you view the history, Vaultonaut first tells you whether that record is intact; if it was altered, it says so before listing the entries. This is detection, not a vault — a determined attacker with full access to your machine can still destroy a local file — but combined with the in-vault signed baseline, silently erasing the evidence of tampering is no longer easy.
 
-**Rollback protection.** Each baseline carries a version number that only ever counts up, and the tool remembers the highest version it has seen for each vault. If a vault is ever replaced wholesale with an older, internally-consistent copy of itself — a rollback that a file-by-file check cannot see, because every file still validates — the version number goes backward and you are warned.
+### Rollback protection
+
+Each baseline carries a version number that only ever counts up, and the tool remembers the highest version it has seen for each vault. If a vault is ever replaced wholesale with an older, internally-consistent copy of itself — a rollback that a file-by-file check cannot see, because every file still validates — the version number goes backward and you are warned.
 
 A warning is raised only when the contents actually differ from the last state the tool trusted. Sometimes the version bookkeeping simply falls behind while the contents are unchanged, which can happen when a snapshot is interrupted — for example by the service being stopped mid-write. The tool recognizes that the vault still matches its last trusted state and quietly brings the record back in step on the next mount, without raising a false alarm. Rolling the vault forward again (by accepting the current state with a snapshot) clears a genuine warning.
 
@@ -926,7 +951,9 @@ That remembered-version list lives on your computer, so it is a best-effort loca
 
 **Fingerprint.** Every vault has a short fingerprint — a few groups of letters and digits derived from its current state — shown by `vdisk fingerprint` (no password needed) and in the web **Tamper check**. Write it down or keep it in a password manager, and you can later confirm, even on a different computer, that a vault is the exact version you left. It is the one rollback anchor that travels with you rather than with the vault.
 
-**Vault identity — "is this the genuine vault, or a hacker's recreation?"** Alongside the content fingerprint (which changes every time you edit), each vault has a stable identity — a short code derived from the vault's write-authority key. Unlike the fingerprint, the identity never changes: it survives edits, snapshots, and password changes, because it comes from the vault's own key, not its contents. That makes it the durable answer to "is this really my vault?" A hacker's recreation, or a vault swapped for a lookalike, carries a different identity, and a copy they modified fails the signature check.
+### Vault identity
+
+Is this the genuine vault, or a hacker's recreation? Alongside the content fingerprint (which changes every time you edit), each vault has a stable identity — a short code derived from the vault's write-authority key. Unlike the fingerprint, the identity never changes: it survives edits, snapshots, and password changes, because it comes from the vault's own key, not its contents. That makes it the durable answer to "is this really my vault?" A hacker's recreation, or a vault swapped for a lookalike, carries a different identity, and a copy they modified fails the signature check.
 
 The identity alone only tells you *which* key signs the vault; the real guarantee is the pair — the identity matches the one you recorded *and* the vault's signed baseline still verifies. Vaultonaut checks both together, which is what an attacker cannot reproduce without your private write key. So record the identity once, out of band — write it down, or keep it in a password manager.
 
@@ -934,7 +961,9 @@ To confirm any vault or shared copy is genuinely yours, open **Tamper check** an
 
 **History continuity.** Vaultonaut catches a rollback (an older version swapped in) and a fork (the same version number with different contents). It also checks that each new baseline links to the one before it, so a baseline that advances the version by one must follow on from the exact previous state. If an intermediate version was hidden or the history was quietly rewritten, that break in the chain is reported — even though the version counter still moved forward. (A genuine gap from editing on another machine is treated as normal, not tampering.)
 
-**What each layer covers.** The protection comes in layers, each catching a different kind of change:
+### What each layer covers
+
+The protection comes in layers, each catching a different kind of change:
 
 - Structure — the automatic on-mount check catches files added, removed, renamed, or resized (including truncation, which changes size).
 - Contents — protected separately and always. The encryption is authenticated, so any change to a file's bytes fails to decrypt and is caught the moment it is read; an attacker without your password cannot substitute different contents that still decrypt.
@@ -950,7 +979,9 @@ The vault's settings file is protected too. Its security fields — the salt, th
 
 The signature also lets a third party who cannot decrypt the vault verify a baseline is authentic, provided they get the public key (or the fingerprint) from you out of band rather than from the vault they are checking. One limit is worth knowing: no offline, portable tool can make a whole-vault rollback strictly *impossible* without external hardware — the version counter and the recordable fingerprint are what make it reliably *detectable* instead.
 
-**Timestamped proof — "this existed, exactly like this, by this moment."** The tamper tools above tell *you* whether a vault changed. Attestation goes one step further and lets you prove a vault's exact state to *anyone*, at a definite point in time — useful for intellectual property, contracts, evidence, or any record whose age and integrity might one day be questioned.
+### Timestamped proof
+
+The tamper tools above tell *you* whether a vault changed. Attestation goes one step further and lets you prove a vault's exact state to *anyone*, at a definite point in time — useful for intellectual property, contracts, evidence, or any record whose age and integrity might one day be questioned.
 
 `vdisk attest <vault>` (or **Timestamp proof** in the web interface, under Tamper check) takes a hash that binds the vault's stable identity, its content fingerprint, and its version, and asks a trusted timestamping authority to sign that hash together with the current time. What comes back is a standard RFC 3161 timestamp token: independent, court-recognized proof that this exact state existed no later than the certified moment. Only the hash is ever sent — the vault, its file names, and its contents never leave your machine, so the proof reveals nothing about what the vault holds. Take a snapshot first (so there is a state to certify), then attest.
 
@@ -967,7 +998,9 @@ The proofs also form a **tamper-evident chain** — each one commits to the one 
 
 Turn on **Auto-timestamp** (the toggle by Auto-lock, or leave it off) to have each new snapshot and seal timestamped automatically, so the chain always keeps pace with the vault's real state. It needs a network connection, is skipped quietly when you are offline, and never blocks the snapshot.
 
-**A proof anyone can check.** All of this normally lives with the vault, but you can also package it into a small, self-contained **proof bundle** that a third party can verify on their own — without the vault, without a password, and without trusting you. Run `vdisk make-bundle <vault>` (it asks for the password once, to read the signed baseline) and it writes a folder holding the manifest, the signed baseline, the identity succession, the timestamp proofs, and the vault's original-identity anchor. Everything in it is a hash or a public key, so it never contains your file contents.
+### Portable proof
+
+All of this normally lives with the vault, but you can also package it into a small, self-contained **proof bundle** that a third party can verify on their own — without the vault, without a password, and without trusting you. Run `vdisk make-bundle <vault>` (it asks for the password once, to read the signed baseline) and it writes a folder holding the manifest, the signed baseline, the identity succession, the timestamp proofs, and the vault's original-identity anchor. Everything in it is a hash or a public key, so it never contains your file contents.
 
 Give that folder to anyone, and they get a plain verdict — GENUINE, TAMPERED, or ROLLED-BACK — with each underlying check shown. There are two ways to check it, and neither needs your vault or your password:
 
@@ -991,6 +1024,8 @@ A mounted vault presents files owned by you, with a standard default permission,
 - It keeps the volume responsive: restoring that per-file metadata forces an extra operation on every file, and on macOS the Finder and its preview generation can drive that hard enough to stall the volume.
 
 Everything that makes a vault portable is preserved on every platform: file contents, file and folder names, the folder structure, and each file's modification time, along with the encryption itself. A vault created on one operating system opens identically on any other.
+
+Symbolic links are carried too. Each one is stored as a small link file and appears as a link again on the mounted drive, which is what lets things like macOS application bundles copy in whole. On Windows, creating a real symbolic link can require extra privileges, so a carried link may show up as its plain link file there instead of a live link.
 
 ## Frequently asked questions
 
