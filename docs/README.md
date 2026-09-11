@@ -739,7 +739,7 @@ For object storage with an access key, save it once with `vdisk cloud add --type
 
 Either way, then create a vault on it with `vdisk create <path> --cloud <id> --remote-path <folder>`, and mount it like any other vault. On accounts that need denser file names to fit their length limits, the tool picks the right name encoding automatically at creation.
 
-**Tamper-proof (write-once) vaults.** On Amazon S3 or S3-compatible storage — including Backblaze B2 through its S3 endpoint — a cloud vault can be made tamper-proof. Add `--worm --retain-days <N>` when you create it, or tick **Tamper-proof** in the create form. Every version the vault saves is then locked for N days: it cannot be deleted or overwritten by anyone, so ransomware, an accidental delete, or a malicious wipe cannot destroy your data. It stays zero-knowledge, because the lock applies to the already-encrypted objects.
+**Tamper-proof (write-once) vaults.** On Amazon S3 or S3-compatible storage — including Backblaze B2 through its S3 endpoint — a cloud vault can be made tamper-proof. Add `--worm --retain-days <N>` when you create it, or tick **Tamper-proof** in the create form. Every version the vault saves is then locked for N days: while the lock holds it cannot be deleted or overwritten, so ransomware, an accidental delete, or a malicious wipe cannot destroy your data. How absolute that is depends on the mode below. It stays zero-knowledge, because the lock applies to the already-encrypted objects.
 
 Two things are worth knowing:
 

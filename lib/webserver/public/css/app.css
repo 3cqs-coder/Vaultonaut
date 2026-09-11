@@ -104,6 +104,11 @@ body {
    Every color is a token, so all four themes and both platforms follow along.
 --------------------------------------------------------------------------- */
 .app { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh; }
+/* Skip-to-content link: a keyboard user tabs past the whole nav rail to reach the main content in one press. It is
+   off-screen until focused, then appears at the top-left so it is visible when it matters. */
+.skip-link { position: absolute; left: 8px; top: -48px; z-index: 100; background: var(--accent-btn); color: var(--accent-text); padding: 8px 14px; border-radius: 8px; text-decoration: none; transition: top .15s ease; }
+.skip-link:focus { top: 8px; }
+#main:focus { outline: none; } /* the skip target takes focus programmatically; do not draw a focus ring on the whole panel */
 
 /* Left rail */
 .rail {
