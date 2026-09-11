@@ -75,8 +75,10 @@ function stageApp() {
 	// not a native canvas). A transitive OPTIONAL peer dependency can still leave a platform-specific *.node addon in a
 	// local node_modules (e.g. a canvas backend pulled in as an unused optional peer). Excluding native addons keeps a
 	// locally built bundle from shipping an unused, wrong-platform binary — bloat plus a supply-chain surface on a
-	// security product. CI installs without optional deps, so its bundle never carries one; this makes a local
-	// `npm run build` match. If a real native dependency is ever adopted, this filter must be revisited.
+	// security product. This `.node` filter is the ONLY thing that keeps the bundle clean: a plain `npm install` (in CI
+	// and locally alike) does NOT omit optional deps, so the addon IS present in node_modules and must be filtered here.
+	// Do not remove this on the assumption that the install already excluded it. If a real native dependency is ever
+	// adopted, this filter must be revisited.
 	const nmFilter = (src) => { const b = path.basename(src); return b !== '.git' && b !== '.test-data' && !b.endsWith('.node'); };
 	fs.cpSync(path.join(REPO, 'node_modules'), path.join(APP_DIR, 'node_modules'), { recursive: true, filter: nmFilter });
 	return APP_DIR;

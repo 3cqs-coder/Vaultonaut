@@ -180,6 +180,8 @@ A bare name such as `Personal` is stored in the vaults folder inside your per-us
 
 To start from files you already have, `node vaultonaut.js import <folder>` (or **Import an existing folder** in the web create form) creates a new vault and copies that folder's contents into it, encrypting them on the way in. Your originals are left untouched — delete them yourself once you have confirmed the vault opens and holds everything.
 
+Before you store anything important, set up a recovery key or a Recovery Kit (see [Keys and recovery](#keys-and-recovery)). Vaultonaut has no back door, so a forgotten password means the data is unrecoverable by design. A recovery key is your second way in.
+
 ## The web interface
 
 Vaultonaut includes a small local web interface for people who prefer buttons to commands. Start it with:
@@ -1052,6 +1054,11 @@ Short answers to the questions that come up most, each pointing to the section w
 
 - **No driver found when mounting.** Run `node vaultonaut.js doctor` and follow the printed instructions to install the driver for your system.
 - **A vault does not open.** The most likely cause is a wrong password. Vaultonaut checks the password before mounting and reports this clearly.
+- **I forgot my password.** There is no back door, so the password itself cannot be recovered. If you set up a recovery key or a Recovery Kit beforehand, use it to open the vault and set a new password. If you did not, the data cannot be recovered. See [Keys and recovery](#keys-and-recovery).
+- **A tamper warning appears, or files look changed.** The vault still opens — it is a warning, not a lock. The usual harmless causes are a cloud sync tool leaving a conflicted copy, or your own edits made while the vault was open elsewhere. Review what changed and, if it is expected, accept it by taking a new snapshot. See [Tamper detection](#tamper-detection).
+- **A drive is stuck, will not unmount, or shows "not responding."** Try **Force unmount** on the vault's card, **Run repair** in Settings, or `vdisk unmount --force`. If even that cannot release it, `vdisk unmount --recover` is the last resort and frees a wedged drive in place, with nothing lost. See [Keeping vaults intact](#keeping-vaults-intact).
+- **A backup was refused.** This is a safeguard, not a failure. A backup is refused when the source looks emptied or damaged, when protected files are missing, or when a different vault already holds that backup's name — so a bad run can never overwrite a good backup. Check the source vault, then run it again. See [Backing up off-site](#backing-up-off-site).
+- **A cloud vault will not open, or its sign-in expired.** Cloud access tokens expire. Run the connect step for that provider again to refresh it, then open the vault. See [Vaults that live in the cloud](#vaults-that-live-in-the-cloud).
 - **The engine is missing.** Run `npm run setup` while connected to the internet to download it.
 - **A file name is rejected as too long.** Because names are always encrypted, a name longer than roughly 140 characters can be rejected by the underlying storage; shorten unusually long file names before copying them into a vault.
 - **macOS: prefer FUSE-T over macFUSE.** FUSE-T needs no kernel extension and no reboot, and it is what makes Finder copies work: copying files into a vault with Finder writes macOS extended attributes that only FUSE-T handles, so with macFUSE alone a Finder copy fails with "error code -8062". You can still mount, read, and add files with macFUSE another way (the **Add files** button, or `cp -X`), so it is not a hard block, just a limit. If you already have macFUSE for other apps, leave it installed: Vaultonaut points only its own engine at FUSE-T and never disturbs macFUSE, so both coexist. The doctor tells you what is installed and warns if FUSE-T is missing.

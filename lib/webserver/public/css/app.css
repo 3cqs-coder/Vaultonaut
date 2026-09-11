@@ -26,8 +26,10 @@
 	--muted: #5b6475;   /* clears WCAG AA (>=4.5:1) on both --panel and --panel-2 */
 	--faint: #8a93a6;   /* tertiary text (paths, counts) — decorative, larger, so a lower ratio is acceptable */
 	--border: #e2e6ef;
-	--accent: #2f6bff;
-	--accent-text: #ffffff;
+	--accent: #2f6bff;         /* accent for focus rings, borders, and decorative fills (needs 3:1 vs the theme bg) */
+	--accent-text: #ffffff;    /* text ON an accent fill */
+	--accent-btn: #2b64f2;     /* button-fill accent: darker than --accent so white text clears WCAG AA (4.5:1) */
+	--accent-ink: #1e56d6;     /* accent used AS small text on --panel / --accent-soft: darker so it clears 4.5:1 */
 	--accent-soft: #eaf1ff;
 	--accent-quiet: #d4e2ff;
 	--good: #0c6e3e;
@@ -49,7 +51,7 @@
 		color-scheme: dark;
 		--bg: #0e1117; --rail: #12161f; --panel: #161b25; --panel-2: #1d2430; --hover: #232b39;
 		--text: #e6ebf5; --muted: #9aa4b6; --faint: #6b7488; --border: #262e3d;
-		--accent: #4d82ff; --accent-text: #ffffff; --accent-soft: #182642; --accent-quiet: #2b3a5c;
+		--accent: #4d82ff; --accent-text: #ffffff; --accent-btn: #2f66ea; --accent-ink: #7aa2ff; --accent-soft: #182642; --accent-quiet: #2b3a5c;
 		--good: #34d399; --good-bg: #10281f; --warn: #fbbf24; --warn-bg: #2a2211; --warn-soft: #2a2211;
 		--danger: #f87171; --danger-fill: #b91c1c;
 		--star: #e0a400;   /* the same warm gold; redefined here so every theme sets the full token set */
@@ -60,7 +62,7 @@
 	color-scheme: dark;
 	--bg: #0e1117; --rail: #12161f; --panel: #161b25; --panel-2: #1d2430; --hover: #232b39;
 	--text: #e6ebf5; --muted: #9aa4b6; --faint: #6b7488; --border: #262e3d;
-	--accent: #4d82ff; --accent-text: #ffffff; --accent-soft: #182642; --accent-quiet: #2b3a5c;
+	--accent: #4d82ff; --accent-text: #ffffff; --accent-btn: #2f66ea; --accent-ink: #7aa2ff; --accent-soft: #182642; --accent-quiet: #2b3a5c;
 	--good: #34d399; --good-bg: #10281f; --warn: #fbbf24; --warn-bg: #2a2211; --warn-soft: #2a2211;
 	--danger: #f87171; --danger-fill: #b91c1c;
 	--star: #e0a400;   /* the same warm gold; redefined here so every theme sets the full token set */
@@ -71,7 +73,7 @@
 	color-scheme: light;
 	--bg: #f4ecdf; --rail: #fbf6ec; --panel: #fbf6ec; --panel-2: #efe6d5; --hover: #eee2cd;
 	--text: #3a2f22; --muted: #715f45; --faint: #9c8c74; --border: #e2d4b8;
-	--accent: #a4641f; --accent-text: #ffffff; --accent-soft: #f3e4cf; --accent-quiet: #e6d2b3;
+	--accent: #a4641f; --accent-text: #ffffff; --accent-btn: #a4641f; --accent-ink: #94571a; --accent-soft: #f3e4cf; --accent-quiet: #e6d2b3;
 	--good: #276b43; --good-bg: #e4efdb; --warn: #955f10; --warn-bg: #f7ecd2; --warn-soft: #f7ecd2;
 	--danger: #a8231c; --danger-fill: #a8231c;
 	--star: #b5791f;   /* a deeper gold that holds contrast on the cream sepia panel */
@@ -139,13 +141,13 @@ img.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; } /* the b
 }
 .rail-item .ic { width: 18px; height: 18px; flex: 0 0 auto; }
 @media (hover: hover) { .rail-item:hover { background: var(--hover); color: var(--text); } }
-.rail-item.active { background: var(--accent-soft); color: var(--accent); font-weight: 650; }
+.rail-item.active { background: var(--accent-soft); color: var(--accent-ink); font-weight: 650; }
 .rail-item.active::before {
 	content: ""; position: absolute; left: -14px; top: 8px; bottom: 8px;
 	width: 3px; border-radius: 0 3px 3px 0; background: var(--accent);
 }
 .rail-count { margin-left: auto; font: 650 11px/1 var(--mono); color: var(--muted); } /* --muted (not --faint): the count carries real information, so it must clear WCAG AA */
-.rail-item.active .rail-count { color: var(--accent); }
+.rail-item.active .rail-count { color: var(--accent-ink); }
 
 /* Plain-language reassurance: "you're protected" — the emotional counterweight
    to a security tool that could otherwise feel intimidating. */
@@ -250,9 +252,9 @@ img.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; } /* the b
 .badge.mounted { color: var(--good); background: var(--good-bg); }
 .badge.idle { color: var(--muted); background: var(--panel); border: 1px solid var(--border); }
 .badge.invalid { color: var(--danger); background: transparent; border: 1px solid var(--danger); }
-.badge.sealed { color: var(--accent); background: transparent; border: 1px solid var(--accent); }
+.badge.sealed { color: var(--accent-ink); background: transparent; border: 1px solid var(--accent); }
 .badge.protected { color: var(--good); background: transparent; border: 1px solid var(--good); }
-.badge.updating { color: var(--accent); background: transparent; border: 1px solid var(--accent); }
+.badge.updating { color: var(--accent-ink); background: transparent; border: 1px solid var(--accent); }
 .badge.mirror { color: var(--muted); background: transparent; border: 1px solid var(--border); }
 .badge.serving { color: var(--good); background: var(--good-bg); border: 1px solid var(--good); }
 /* Serve connection details — the address/username/password to copy to another machine. Theme-aware
@@ -263,7 +265,7 @@ img.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; } /* the b
 .conn-label { flex: 0 0 78px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
 .conn-val { flex: 1 1 180px; min-width: 0; overflow-x: auto; white-space: nowrap; font-family: var(--mono); font-size: 12.5px; color: var(--text); background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 4px 8px; user-select: all; }
 .copy-btn { flex: 0 0 auto; font-size: 12px; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--panel); color: var(--text); cursor: pointer; }
-@media (hover: hover) { .copy-btn:hover { border-color: var(--accent); color: var(--accent); } }
+@media (hover: hover) { .copy-btn:hover { border-color: var(--accent); color: var(--accent-ink); } }
 /* Progress bar for long self-heal operations (protect / check & repair). */
 .progress { margin: 10px 0 4px; display: flex; flex-direction: column; gap: 6px; }
 .progress-track { height: 8px; border-radius: 999px; background: var(--border); overflow: hidden; }
@@ -286,18 +288,18 @@ img.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; } /* the b
 
 /* Buttons */
 button { font: inherit; }
-.primary-btn { background: var(--accent); color: var(--accent-text); border: none; border-radius: 8px; padding: 9px 16px; cursor: pointer; font-weight: 600; }
+.primary-btn { background: var(--accent-btn); color: var(--accent-text); border: none; border-radius: 8px; padding: 9px 16px; cursor: pointer; font-weight: 600; }
 @media (hover: hover) { .primary-btn:hover { filter: brightness(1.05); } }
 .ghost-btn { background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; cursor: pointer; }
 @media (hover: hover) { .ghost-btn:hover { border-color: var(--accent); } }
-.link-btn { background: none; border: none; color: var(--accent); cursor: pointer; padding: 8px 4px; }
+.link-btn { background: none; border: none; color: var(--accent-ink); cursor: pointer; padding: 8px 4px; }
 .size-recheck { color: var(--muted); font-size: .9em; }
 .danger { color: var(--danger); border-color: transparent; }
 
 /* "More" menu on a vault card: a native <details> disclosure styled as a dropdown, so the occasional and
    advanced actions stay one tap away without crowding the card. No library and no positioning script. */
 .more { position: relative; }
-.more > summary { list-style: none; cursor: pointer; color: var(--accent); padding: 8px 4px; user-select: none; }
+.more > summary { list-style: none; cursor: pointer; color: var(--accent-ink); padding: 8px 4px; user-select: none; }
 .more > summary::-webkit-details-marker { display: none; }
 .more > summary::after { content: " ▾"; }
 .more[open] > summary::after { content: " ▴"; }
@@ -432,7 +434,7 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 .help-matches { flex: 0 0 auto; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 8px 16px; border-bottom: 1px solid var(--border); background: var(--panel); max-height: 92px; overflow-y: auto; }
 .help-matches::before { content: "Jump to:"; font-size: 12px; color: var(--muted); margin-right: 2px; }
 .help-chip { border: 1px solid var(--border); background: var(--panel-2); color: var(--text); border-radius: 999px; padding: 3px 10px; font-size: 12px; cursor: pointer; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-@media (hover: hover) { .help-chip:hover { border-color: var(--accent); color: var(--accent); } }
+@media (hover: hover) { .help-chip:hover { border-color: var(--accent); color: var(--accent-ink); } }
 .help-chip-n { display: inline-block; margin-left: 5px; padding: 0 6px; border-radius: 999px; background: var(--panel); color: var(--muted); font-size: .85em; } /* per-section match count on a "Jump to" chip */
 .help-body { flex: 1 1 auto; overflow: auto; padding: 18px 26px 40px; line-height: 1.6; }
 .help-body > :first-child { margin-top: 0; }
@@ -440,7 +442,7 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 .help-body h1 { font-size: 1.6em; }
 .help-body h2 { font-size: 1.3em; border-bottom: 1px solid var(--border); padding-bottom: .3em; }
 .help-body h3 { font-size: 1.1em; }
-.help-body a { color: var(--accent); }
+.help-body a { color: var(--accent-ink); }
 .help-body code { background: var(--panel-2); border: 1px solid var(--border); border-radius: 5px; padding: .1em .35em; font-size: .9em; }
 .help-body pre { background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; overflow-x: auto; }
 .help-body pre code { background: none; border: none; padding: 0; }
@@ -474,7 +476,7 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 .pick-fname { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pick-size { flex: none; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .import-count { font-size: 13px; }
-.browse-item.vault { color: var(--accent); font-weight: 600; }
+.browse-item.vault { color: var(--accent-ink); font-weight: 600; }
 .vault-tag { font-size: 11px; font-weight: 600; color: var(--accent-text); background: var(--accent); border-radius: 999px; padding: 1px 8px; }
 .vault-tag.file { color: var(--text); background: transparent; border: 1px solid var(--border); font-weight: 500; } /* a pickable packed file, distinct from a vault; outlined so it reads in both themes */
 .browse-empty { padding: 16px; text-align: center; }
@@ -603,7 +605,7 @@ input.mask { -webkit-text-security: disc; }
 .star-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
 .notes-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 12px; max-height: 140px; overflow-y: auto; }
 .note-item { text-align: left; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; padding: 6px 10px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); cursor: pointer; }
-.note-item.active { border-color: var(--accent); color: var(--accent); }
+.note-item.active { border-color: var(--accent); color: var(--accent-ink); }
 /* A note-item used as a plain (non-clickable) row — the row itself does nothing; only a control inside it acts. */
 .note-item.static { cursor: default; }
 .note-meta { font-size: 12px; margin: 2px 0 0; }
@@ -678,11 +680,11 @@ input.switch:disabled { opacity: .5; cursor: not-allowed; }
 input.switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* Device (biometric) key badge */
-.key-kind.device { color: var(--accent); border-color: var(--accent); }
+.key-kind.device { color: var(--accent-ink); border-color: var(--accent); }
 
 /* Touch ID localhost hint */
 .bio-hint { margin: 0 0 14px; padding: 8px 12px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; font-size: 12.5px; color: var(--muted); }
-.bio-hint a { color: var(--accent); }
+.bio-hint a { color: var(--accent-ink); }
 
 /* Backup dialog destination row */
 .backup-dest { display: flex; align-items: center; gap: 10px; }
