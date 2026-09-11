@@ -71,7 +71,13 @@ function stageApp() {
 		fs.copyFileSync(from, to);
 	}
 
-	const nmFilter = (src) => { const b = path.basename(src); return b !== '.git' && b !== '.test-data'; };
+	// The app is PURE-JS at runtime — nothing loads a native addon (PDF text extraction uses the pure-JS PDF.js build,
+	// not a native canvas). A transitive OPTIONAL peer dependency can still leave a platform-specific *.node addon in a
+	// local node_modules (e.g. a canvas backend pulled in as an unused optional peer). Excluding native addons keeps a
+	// locally built bundle from shipping an unused, wrong-platform binary — bloat plus a supply-chain surface on a
+	// security product. CI installs without optional deps, so its bundle never carries one; this makes a local
+	// `npm run build` match. If a real native dependency is ever adopted, this filter must be revisited.
+	const nmFilter = (src) => { const b = path.basename(src); return b !== '.git' && b !== '.test-data' && !b.endsWith('.node'); };
 	fs.cpSync(path.join(REPO, 'node_modules'), path.join(APP_DIR, 'node_modules'), { recursive: true, filter: nmFilter });
 	return APP_DIR;
 }

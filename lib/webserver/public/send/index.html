@@ -40,12 +40,12 @@
 					<input id="pw" type="password" autocomplete="off" placeholder="Enter the password you were given"></label>
 				<button class="primary" id="openBtn" type="button">Open</button>
 			</div>
-			<div class="status" id="status" hidden></div>
+			<div class="status" id="status" role="status" aria-live="polite" hidden></div>
 			<div id="view"></div>
 			<div class="meta" id="meta" hidden></div>
 		</div>
 	</div>
-	<div class="toast" id="toast" hidden></div>
+	<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 	<script src="/shared/secret-schema.js"></script>
 	<script src="app.js"></script>
 </body>

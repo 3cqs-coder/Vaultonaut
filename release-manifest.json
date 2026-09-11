@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.0.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-11T00:32:26.413Z",
+  "generatedAt": "2026-09-11T12:37:42.667Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -17,8 +17,8 @@
     },
     {
       "path": "docs/README.md",
-      "sha256": "3c986bc6e8723b6a2055aa8895caba10377bb5a10c8932a6f72f24a00039c9f8",
-      "size": 162903
+      "sha256": "f66735d08ad91a717d8e69f6721e37bad62e004b3de18989087fc0baef4168db",
+      "size": 162934
     },
     {
       "path": "lib/Attest.js",
@@ -52,8 +52,8 @@
     },
     {
       "path": "lib/Common.js",
-      "sha256": "b5b20d4e3bd3cd707b064113df7e43709a00d31d0eeaec3bcf5b57ec8d3a08e0",
-      "size": 47876
+      "sha256": "bb3b27e52c2b6d37ad876551be566c456d11a25be4ca7cad447867a1276f2cd7",
+      "size": 48774
     },
     {
       "path": "lib/Decoy.js",
@@ -107,8 +107,8 @@
     },
     {
       "path": "lib/Guardian.js",
-      "sha256": "4bdee2acd8da9cd83bad2759a6031c2a8ce4be82e81f28f987de82ce22c33b7e",
-      "size": 5773
+      "sha256": "52940f120a799fb79570ead8f41775967b45f4a9c60bd4e2e7a3141d9b79f5d7",
+      "size": 5889
     },
     {
       "path": "lib/Integrity.js",
@@ -187,8 +187,8 @@
     },
     {
       "path": "lib/Recovery.js",
-      "sha256": "89c0a5bca83d1a73c2eb8317e93bf2a2da783b6e567286a0503f778eefab6fd4",
-      "size": 79171
+      "sha256": "b25e9b66e9c6b2085c61294f85482379a4d3be51693e0da3c8d91e0a8511eb12",
+      "size": 79287
     },
     {
       "path": "lib/RecoveryKit.js",
@@ -227,8 +227,8 @@
     },
     {
       "path": "lib/SearchWorker.js",
-      "sha256": "8e98ee4dfbf69c019bd615f8960ea722d729b5cb215f6ff0aafd400120da2d01",
-      "size": 10479
+      "sha256": "c0aa06486b2295d02908d82023725cdc575c6a32d51c51c5a7252a053e07dbf4",
+      "size": 11463
     },
     {
       "path": "lib/SelfCheck.js",
@@ -277,13 +277,13 @@
     },
     {
       "path": "lib/UpdateCheck.js",
-      "sha256": "46de30cfd5d8b15e8561f85a18dc982242d484898da5a753a2eaf99e9c3c5aa7",
-      "size": 6901
+      "sha256": "c276f4827e1890f1436bc20230244fa6c11b24d3402a4a63ce98cc44d70f09b9",
+      "size": 7001
     },
     {
       "path": "lib/Vault.js",
-      "sha256": "897a9eff3062436e7a66f6ab448fd2e265a58a22af15e90966eace58ea1b026b",
-      "size": 729217
+      "sha256": "b92dca40326a0399e6fcb1d85cf8e6283a992d489ee25c0fc8b5fc6eeeb1dcfd",
+      "size": 730962
     },
     {
       "path": "lib/Watchdog.js",
@@ -357,8 +357,8 @@
     },
     {
       "path": "lib/webserver/index.js",
-      "sha256": "ed5abd9d3c8783ea85ce86a529c8d87cf013e6bedfce385169afa7889a8e53d1",
-      "size": 137605
+      "sha256": "628a9888df0f7782f396b015fc0befa5891586d06c2e89a126daeca31eb78908",
+      "size": 137670
     },
     {
       "path": "lib/webserver/kitView.js",
@@ -472,8 +472,8 @@
     },
     {
       "path": "lib/webserver/public/mobile/app.css",
-      "sha256": "c986908e909c247c06df495e57286898e1e86d478c7836c500b3322d6acfc9cf",
-      "size": 9418
+      "sha256": "10e47436d91ff8f7a5102935d290e9fa76411b3db27ab39eb97f7d3e309a37c1",
+      "size": 9267
     },
     {
       "path": "lib/webserver/public/mobile/app.js",
@@ -512,8 +512,8 @@
     },
     {
       "path": "lib/webserver/public/mobile/sw.js",
-      "sha256": "42afd52289a05ee08f23bad49c98441275a93a9b78f83fef7c7036449627490f",
-      "size": 7501
+      "sha256": "7cf6d4c108d5df64c03168cfa725c8114b71adf05723138cabd88d45ef091428",
+      "size": 7528
     },
     {
       "path": "lib/webserver/public/mobile/theme-boot.js",
@@ -547,8 +547,8 @@
     },
     {
       "path": "lib/webserver/public/send/index.html",
-      "sha256": "64da3951f127224addc2a116d6352c7af6ca3060999322821a21894a7e67c764",
-      "size": 3387
+      "sha256": "2d3ec9d44e99d3dfd27ccd8d81426204125ddf0a82693e6610fff3ed39ba355d",
+      "size": 3453
     },
     {
       "path": "lib/webserver/public/shared/secret-schema.js",
