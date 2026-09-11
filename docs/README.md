@@ -985,12 +985,12 @@ Two things the math inside a bundle cannot settle on its own, so the verifier is
 
 ## Permissions
 
-A mounted vault presents files owned by you, with a standard default permission, and enforces permission checks while it is mounted. It does not preserve each file's Unix mode, owner, group, or access and creation times. Dropping those values is deliberate, for two reasons:
+A mounted vault presents files owned by you, with a standard default permission, and enforces permission checks while it is mounted. Each file's modification time — the "date modified" your file manager shows — is always kept. It is preserved when you copy files into a vault, and self-healing restores it too, because that is the timestamp that matters. A vault does not carry each file's Unix mode, owner, or group, nor the two lesser timestamps: the last-access time and the platform's own creation time. Dropping those values is deliberate, for two reasons:
 
 - They are not portable across machines or to Windows anyway, so leaving them out keeps a vault fully interchangeable between macOS, Linux, and Windows.
 - It keeps the volume responsive: restoring that per-file metadata forces an extra operation on every file, and on macOS the Finder and its preview generation can drive that hard enough to stall the volume.
 
-Everything that makes a vault portable is preserved on every platform: file contents, file and folder names, and each file's modification time, along with the encryption itself. A vault created on one operating system opens identically on any other.
+Everything that makes a vault portable is preserved on every platform: file contents, file and folder names, the folder structure, and each file's modification time, along with the encryption itself. A vault created on one operating system opens identically on any other.
 
 ## Frequently asked questions
 
