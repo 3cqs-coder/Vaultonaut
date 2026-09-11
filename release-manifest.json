@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.0.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-11T22:22:42.187Z",
+  "generatedAt": "2026-09-11T22:48:57.102Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -57,8 +57,8 @@
     },
     {
       "path": "lib/Common.js",
-      "sha256": "bb3b27e52c2b6d37ad876551be566c456d11a25be4ca7cad447867a1276f2cd7",
-      "size": 48774
+      "sha256": "c51b91f31ebac5579c1d4434e165c2b3dee331e15a91a7a0010284404f95f5eb",
+      "size": 49547
     },
     {
       "path": "lib/Decoy.js",
@@ -147,8 +147,8 @@
     },
     {
       "path": "lib/Net.js",
-      "sha256": "4e0f97775fce49038ae9c5b00778506e2e78996991bf3edeeffaedc35786665a",
-      "size": 28162
+      "sha256": "330773aa47a74b75f98c8f44aabb3dd712b13dd36a140dd07b323157cf163d20",
+      "size": 28032
     },
     {
       "path": "lib/OwnerClient.js",
@@ -177,8 +177,8 @@
     },
     {
       "path": "lib/RamCache.js",
-      "sha256": "2de984808ee74b492d8ad1076f591ea5997fa6e5d37e70ab7981d78bcb810fc9",
-      "size": 18229
+      "sha256": "cdbe9236d7a802063fae694bd4d4adc9c6898d0e4853ecbc1b44da28b9fc004f",
+      "size": 18481
     },
     {
       "path": "lib/Rclone.js",
@@ -212,13 +212,13 @@
     },
     {
       "path": "lib/Relay.js",
-      "sha256": "0e5dd3441de57abcdb483ae9b045cad603c167f1dfb5be58175f3f20c8b54b7f",
-      "size": 17062
+      "sha256": "4bd4932d1cc68b4540389e0fffa8ea83fb0978e1fbc2b39eabb265620a08a770",
+      "size": 17729
     },
     {
       "path": "lib/ReleaseIntegrity.js",
-      "sha256": "d7149970db96e500e63dba1c510c51f53c73f2a9141020957a10addeaa717051",
-      "size": 20909
+      "sha256": "6c2985d7a84a3878b26ef739e4e7d43cae4bf62d2649b90e63792d2534cdb355",
+      "size": 20777
     },
     {
       "path": "lib/SdNotify.js",
@@ -287,8 +287,8 @@
     },
     {
       "path": "lib/Vault.js",
-      "sha256": "29e19b5b0a13f11dddab7f022f62532473611b116f3c97d836e09915463d49a1",
-      "size": 750305
+      "sha256": "a7bf299500190d8bc2b01b583e1978ed92aaf31cbfb91266b698f103d2e83ca7",
+      "size": 751364
     },
     {
       "path": "lib/Watchdog.js",
@@ -507,8 +507,8 @@
     },
     {
       "path": "lib/webserver/public/mobile/index.html",
-      "sha256": "a16cd5a6f2b814ad914a81ed2cad35c1f858cefcc5af55e88c7e62d652785fac",
-      "size": 3563
+      "sha256": "7e64f2ed2b1f0a4661fd6d36dcaf2056a03a184186acada2a13216ee5cb20012",
+      "size": 4031
     },
     {
       "path": "lib/webserver/public/mobile/rclone-reader.js",
@@ -522,8 +522,8 @@
     },
     {
       "path": "lib/webserver/public/mobile/theme-boot.js",
-      "sha256": "8a40291cdf143b778feeb23b885c5d4ad03e18427b50aa143fba00c4d8c7e2de",
-      "size": 1682
+      "sha256": "0bf3cd606e725f388a05126f17ce95dcf58c783566e1320d3ec53590685ba43f",
+      "size": 2354
     },
     {
       "path": "lib/webserver/public/mobile/vendor/LICENSES.md",

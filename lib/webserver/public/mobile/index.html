@@ -4,9 +4,13 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 	<meta name="theme-color" content="#0e1117">
-	<script src="theme-boot.js"></script>
 	<meta name="apple-mobile-web-app-capable" content="yes">
-	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<!-- 'default' is readable in EVERY theme (a normal opaque bar with dark glyphs). theme-boot.js upgrades this to the
+	     edge-to-edge 'black-translucent' only when a dark theme is resolved, where white glyphs read cleanly over the
+	     dark app. Placed BEFORE theme-boot.js so the script can find and adjust it. A single static dark value here would
+	     leave an installed light/sepia home-screen app with white glyphs over a near-white bar — effectively invisible. -->
+	<meta name="apple-mobile-web-app-status-bar-style" content="default">
+	<script src="theme-boot.js"></script>
 	<link rel="manifest" href="manifest.webmanifest">
 	<link rel="icon" href="icon.svg" type="image/svg+xml">
 	<link rel="apple-touch-icon" href="apple-touch-icon.png">
