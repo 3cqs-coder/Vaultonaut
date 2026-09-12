@@ -204,6 +204,7 @@ img.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; } /* the b
 .panel-head h2 { font-size: 17px; margin: 0; letter-spacing: -.01em; }
 .muted { color: var(--muted); }
 .fine { color: var(--muted); font-size: 13px; } /* fine print (e.g. the notes password-health explainer); mirrors the mobile stylesheet so the two never drift */
+.fine.bad-text { color: var(--danger); } /* fine print flagged as an error (e.g. a scheduled-unlock date that is in the past) */
 
 /* Environment banner */
 .banner {
