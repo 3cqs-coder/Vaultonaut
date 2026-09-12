@@ -237,6 +237,8 @@ The desktop app is optional. The command-line install described above is unchang
 
 In the app, **Start at login** runs Vaultonaut in the background whenever you log in, so scheduled work such as backups and mirroring keeps happening even when the window is closed. You open the window whenever you want it; unlocking a vault is always something you do yourself.
 
+Closing the window quits the app and locks any vault you have open, flushing saved work first. When a vault is unlocked, it asks you to confirm before quitting, so one stray click on the close button does not tear down your session. With nothing open, it closes right away.
+
 ## How new versions are published
 
 New releases go through a few steps before they reach you, so you can trust that a download on the releases page has been built and reviewed rather than posted straight from someone's machine.

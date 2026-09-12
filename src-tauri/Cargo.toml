@@ -10,6 +10,9 @@ tauri-build = { version = "2", features = [] }
 
 [dependencies]
 tauri = { version = "2", features = [] }
+# Native confirmation dialog shown before a quit locks and unmounts any open vault. Used only from Rust (the shell
+# itself asks), so it adds no frontend IPC surface; it renders a real OS dialog on macOS, Windows, and Linux.
+tauri-plugin-dialog = "2"
 
 [target.'cfg(unix)'.dependencies]
 libc = "0.2"

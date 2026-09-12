@@ -46,6 +46,16 @@ const BACKGROUND_DRAIN_GRACE: Duration = Duration::from_secs(300);
 static SHUTTING_DOWN: AtomicBool = AtomicBool::new(false);
 static DRAIN_DONE: AtomicBool = AtomicBool::new(false);
 
+// True once the interface has been shown (the window navigated to the running backend). Before that the window
+// shows only the "starting"/error splash, where nothing is unlocked and there is no one to confirm with — so a
+// close then just quits, as it always did. After it, a close asks first when a vault is open.
+static UI_READY: AtomicBool = AtomicBool::new(false);
+// True while a quit-confirmation dialog is open, so a second close/quit gesture cannot stack a second dialog.
+static CONFIRMING: AtomicBool = AtomicBool::new(false);
+// The per-launch token, shared with the backend, that gates the loopback mount-count probe used by the quit
+// confirmation. Set once at launch; read from both the window-close and the app-quit handlers.
+static QUIT_TOKEN: std::sync::OnceLock<String> = std::sync::OnceLock::new();
+
 // The running Node backend, shared between the readiness thread and the exit handler.
 type SharedChild = Arc<Mutex<Option<Child>>>;
 struct Backend(SharedChild);
@@ -210,6 +220,9 @@ fn show_outcome<R: tauri::Runtime>(handle: &tauri::AppHandle<R>, ready: bool) {
             if ready {
                 if let Ok(url) = format!("http://127.0.0.1:{}", UI_PORT).parse() {
                     let _ = window.navigate(url);
+                    // The interface is now what the window shows, so a close from here on may need to lock open
+                    // vaults — the quit confirmation applies only past this point.
+                    UI_READY.store(true, Ordering::SeqCst);
                 }
             } else {
                 let _ = window.eval("document.documentElement.setAttribute('data-state','error')");
@@ -257,6 +270,95 @@ fn shutdown_in_background<R: tauri::Runtime>(handle: tauri::AppHandle<R>, shared
     });
 }
 
+// Ask the backend, over loopback, how many vaults are currently unlocked (mounted). Same request shape as
+// probe_ready, but with the per-launch token in a header so only this shell can read the count. Returns None on
+// any failure (no connection, a timeout, a foreign server, an unparsable body) — the caller treats None as "ask
+// to be safe", so a probe failure never lets a close tear vaults down without confirmation.
+fn probe_mounted(port: u16, token: &str, timeout: Duration) -> Option<u32> {
+    use std::io::{Read, Write};
+    let mut stream = TcpStream::connect(("127.0.0.1", port)).ok()?;
+    stream.set_read_timeout(Some(timeout)).ok()?;
+    stream.set_write_timeout(Some(timeout)).ok()?;
+    let req = format!(
+        "GET /__mounted HTTP/1.0\r\nHost: 127.0.0.1\r\nX-Vaultonaut-Token: {}\r\nConnection: close\r\n\r\n",
+        token
+    );
+    stream.write_all(req.as_bytes()).ok()?;
+    let mut buf: Vec<u8> = Vec::new();
+    let mut chunk = [0u8; 1024];
+    loop {
+        match stream.read(&mut chunk) {
+            Ok(0) => break,
+            Ok(n) => {
+                buf.extend_from_slice(&chunk[..n]);
+                if buf.len() > 8192 {
+                    break;
+                }
+            }
+            Err(_) => break,
+        }
+    }
+    parse_mounted(&String::from_utf8_lossy(&buf))
+}
+
+// Pull the integer out of the tiny {"mounted":N} body without a JSON dependency. None if the key is absent (for
+// example a 404 from the token check or a foreign server), which the caller reads as "ask to be safe".
+fn parse_mounted(text: &str) -> Option<u32> {
+    let key = "\"mounted\"";
+    let start = text.find(key)? + key.len();
+    let digits: String = text[start..]
+        .chars()
+        .skip_while(|c| !c.is_ascii_digit())
+        .take_while(|c| c.is_ascii_digit())
+        .collect();
+    digits.parse::<u32>().ok()
+}
+
+// A window-close or app-quit gesture. Closing locks and unmounts every open vault, so confirm first when at least
+// one is open (or when the count cannot be read, so an uncertain probe never tears vaults down silently); with
+// nothing open it quits straight away, as it always did. The backend probe and the native dialog run OFF the main
+// thread — the dialog's blocking_show requires it, and it keeps the UI responsive — and the dialog always offers
+// Quit, so this can never make the app unclosable. Before the interface is shown (the splash) it just quits.
+fn request_quit_confirmation<R: tauri::Runtime>(handle: tauri::AppHandle<R>, shared: SharedChild) {
+    use tauri_plugin_dialog::{DialogExt, MessageDialogButtons, MessageDialogKind};
+    if SHUTTING_DOWN.load(Ordering::SeqCst) {
+        return; // a drain is already running — nothing to confirm
+    }
+    if CONFIRMING.swap(true, Ordering::SeqCst) {
+        return; // a confirmation dialog is already open; don't stack another
+    }
+    if !UI_READY.load(Ordering::SeqCst) {
+        shutdown_in_background(handle, shared); // splash/error state: nothing open, close immediately
+        return;
+    }
+    std::thread::spawn(move || {
+        let token = QUIT_TOKEN.get().map(String::as_str).unwrap_or("");
+        let count = probe_mounted(UI_PORT, token, Duration::from_millis(2000));
+        let proceed = match count {
+            Some(0) => true, // nothing unlocked — no need to ask
+            _ => {
+                let body = match count {
+                    Some(1) => "One vault is unlocked. Quitting will lock and unmount it. Quit Vaultonaut now?".to_string(),
+                    Some(n) => format!("{} vaults are unlocked. Quitting will lock and unmount them. Quit Vaultonaut now?", n),
+                    None => "Any unlocked vaults will be locked and unmounted. Quit Vaultonaut now?".to_string(),
+                };
+                handle
+                    .dialog()
+                    .message(body)
+                    .title("Quit Vaultonaut?")
+                    .kind(MessageDialogKind::Warning)
+                    .buttons(MessageDialogButtons::OkCancelCustom("Quit".into(), "Keep running".into()))
+                    .blocking_show()
+            }
+        };
+        if proceed {
+            shutdown_in_background(handle, shared); // sets SHUTTING_DOWN; CONFIRMING stays set as the shutdown proceeds
+        } else {
+            CONFIRMING.store(false, Ordering::SeqCst); // user kept it running — a later close asks again
+        }
+    });
+}
+
 // On Linux the interface runs inside a WebKitGTK WebView, whose DMABUF-based accelerated-compositing renderer
 // fails on a wide range of GPU + driver + compositor combinations (NVIDIA especially, and many Wayland setups):
 // the GTK window paints its background color but the WebView surface never composites, so the app shows a blank
@@ -289,6 +391,7 @@ fn main() {
     tune_linux_webview();
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init()) // native quit-confirmation dialog, shown from Rust only (no frontend IPC)
         .setup(|app| {
             // Launch the Node application through the bundled runtime on the fixed loopback port. Its output is
             // captured to a log file (see backend_log_stdio) so a startup failure is diagnosable; a file, unlike a
@@ -304,6 +407,7 @@ fn main() {
             // A per-launch readiness token: the backend echoes it at /__ready, and the shell confirms that echo
             // before navigating the trusted window, so a foreign process squatting the loopback port is never shown.
             let ready_tok = ready_token();
+            let _ = QUIT_TOKEN.set(ready_tok.clone()); // so the quit-confirmation probe can authenticate to the backend
             let mut cmd = Command::new(&node);
             cmd.arg(&entry)
                 .arg("ui")
@@ -328,8 +432,10 @@ fn main() {
                     let shared: SharedChild = Arc::new(Mutex::new(Some(child)));
                     app.manage(Backend(shared.clone()));
 
-                    // Close WITHOUT freezing the window. On a close request, hide the window immediately (so it
-                    // vanishes at once) and run the backend's drain-and-lock on a BACKGROUND thread, then exit.
+                    // Close WITHOUT freezing the window, and without losing work to a stray click. A close request
+                    // first confirms with the user when a vault is open (request_quit_confirmation), since closing
+                    // locks and unmounts every open vault. Once confirmed, the window hides immediately (so it
+                    // vanishes at once) and the backend's drain-and-lock runs on a BACKGROUND thread, then exit.
                     // Doing that multi-second shutdown on the UI thread (as the RunEvent::Exit handler alone would)
                     // makes the desktop pop an "application is not responding" dialog before the app finally closes.
                     // The full shutdown that locks every open vault still runs — only its thread moves off the UI.
@@ -339,7 +445,7 @@ fn main() {
                         win.on_window_event(move |event| {
                             if let tauri::WindowEvent::CloseRequested { api, .. } = event {
                                 api.prevent_close();
-                                shutdown_in_background(close_handle.clone(), close_shared.clone());
+                                request_quit_confirmation(close_handle.clone(), close_shared.clone());
                             }
                         });
                     }
@@ -388,7 +494,7 @@ fn main() {
                         let has_child = shared.lock().map(|g| g.is_some()).unwrap_or(false);
                         if has_child {
                             api.prevent_exit();
-                            shutdown_in_background(app_handle.clone(), shared);
+                            request_quit_confirmation(app_handle.clone(), shared);
                         }
                     }
                 }
