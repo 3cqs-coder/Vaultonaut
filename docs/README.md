@@ -253,7 +253,7 @@ You can always confirm a release for yourself. Every published version carries t
 
 This section describes the command-line and from-source install. (In the desktop app, use **Start at login** in Settings, described just above.)
 
-One command sets everything up. It has the web interface start by itself whenever you log in, and it adds a clickable launcher — a menu-bar / Applications entry on macOS, an app-menu entry on Linux, or a Start-menu shortcut on Windows — so a vault is always one click away:
+One command sets everything up. It starts the web interface by itself whenever you log in. It also adds a clickable launcher — a menu-bar / Applications entry on macOS, an app-menu entry on Linux, or a Start-menu shortcut on Windows — so a vault is always one click away:
 
 ```
 node vaultonaut.js autostart install
@@ -506,7 +506,7 @@ Open a vault and you can keep secure items inside it — logins, payment cards, 
 
 A login can hold its two-factor secret, and the app shows the rolling six-digit code with its countdown right beside the password. The code is worked out on your device each time, so the changing code is never stored — only the setup secret is. Every field has a copy button, secret fields stay hidden until you choose to reveal them, and a type icon and quick filter make a long list easy to scan.
 
-Because an item can hold passwords, its title, its fields, and its note are all encrypted a second time, on top of the vault's own encryption. The stored item is ciphertext, so the plaintext exists only for the moment the app decrypts an item to show it. This is stronger than the protection on a normal file. Even a program with access to the vault's files — a search indexer, a backup tool, another app — still cannot read your items. They are encrypted with a key that comes from your vault password, so they decrypt automatically while the vault is unlocked and need no second password, and they stay readable after a password change or a key rotation. Items are written straight to the encrypted store. They are saved the instant you enter them, and they work the same on macOS, Linux, and Windows, whether or not the vault is mounted as a drive.
+Because an item can hold passwords, its title, its fields, and its note are all encrypted a second time, on top of the vault's own encryption. The stored item is ciphertext, so the plaintext exists only for the moment the app decrypts an item to show it. This is stronger than the protection on a normal file. Even a program with access to the vault's files — a search indexer, a backup tool, another app — still cannot read your items. They are encrypted with a key derived from your vault password, so they decrypt automatically while the vault is unlocked, with no second password to enter. They also stay readable after a password change or a key rotation. Items are written straight to the encrypted store. They are saved the instant you enter them, and they work the same on macOS, Linux, and Windows, whether or not the vault is mounted as a drive.
 
 You can also read your items without mounting the vault as a drive. Choose **View files & notes** on a vault, open it in this browser, and your secure items appear there under **Secure notes**, decrypted only in the page — the same low-residue path the file viewer uses. It works on a phone through the one-time code too, so your logins and codes travel with you.
 
@@ -759,7 +759,7 @@ A few local operations do not apply to a cloud vault, because its encrypted file
 
 ## Backing up off-site
 
-Because a vault is already encrypted at rest, backing it up is simply copying it somewhere else — the destination never sees anything but ciphertext. In the web interface, choose **Back up** on a vault and pick a folder — an external drive, a network share, or a synced folder like Dropbox or iCloud Drive; on the command line, `vdisk backup <vault> <folder>`. The copy is a mirror kept up to date incrementally: only files that changed are copied, and files you deleted are removed from the backup too, so a repeat backup stays a faithful copy and is quick even for a large vault.
+Because a vault is already encrypted at rest, backing it up is simply copying it somewhere else — the destination never sees anything but ciphertext. In the web interface, choose **Back up** on a vault and pick a folder — an external drive, a network share, or a synced folder like Dropbox or iCloud Drive; on the command line, `vdisk backup <vault> <folder>`. The copy is a mirror kept up to date incrementally: only changed files are copied, and files you deleted are removed from the backup too. A repeat backup therefore stays a faithful copy, and is quick even for a large vault.
 
 Several safeguards protect the copy you are relying on. A backup is refused when:
 
@@ -793,7 +793,7 @@ Your SFTP login is itself encrypted where it is saved on this computer, under a 
 
 To protect the connection itself, you can **pin the server's host key**: paste the output of `ssh-keyscan <host>` (run on a trusted network, or obtained from the server's administrator) into the destination's *Server host key* field. Once pinned, the backup connects only if the server presents that exact key, so a machine impersonating your server on an untrusted network cannot capture the login you send it. You can replace a pinned key by pasting a new one, or remove it with **Remove the pinned host key** (which asks you to confirm, since un-pinning is a downgrade).
 
-Without a pinned key the server's identity is not verified — your uploaded data stays encrypted either way, but the login could be exposed to an impersonator, so pinning is recommended (and preferring an SSH key file over a password limits the exposure further).
+Without a pinned key the server's identity is not verified. Your uploaded data stays encrypted either way, but the login could be exposed to an impersonator — so pinning is recommended. Preferring an SSH key file over a password limits the exposure further.
 
 ## Mirroring across places
 
