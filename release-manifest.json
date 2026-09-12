@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.0.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-12T21:26:32.052Z",
+  "generatedAt": "2026-09-12T22:04:36.410Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -269,6 +269,16 @@
       "path": "lib/Sync.js",
       "sha256": "dab91e986c9b68d35c9032a66edc26f61c62d56e2824645e6e60a6da5a4d5cee",
       "size": 12811
+    },
+    {
+      "path": "lib/Timelock.js",
+      "sha256": "a9c23c375dd9e165ad7f2ed77f9bd6575e59f8fbe19867fb43f9201475673a52",
+      "size": 17094
+    },
+    {
+      "path": "lib/TimelockWorker.js",
+      "sha256": "f6f11ac2c949b18f43df3966a1a5bbed075098c9316eec5e7ec3d69a9429c4e0",
+      "size": 1029
     },
     {
       "path": "lib/Travel.js",
@@ -577,8 +587,8 @@
     },
     {
       "path": "package.json",
-      "sha256": "671a25b78fa575bb0867a48a049a38d3f011b3486fbc0fa7d548517cc79ce257",
-      "size": 1596
+      "sha256": "3f40036a2d231b7c926d980e5ca916725e6cfbb2da24497e8fa59f0b1cd26bb3",
+      "size": 1627
     },
     {
       "path": "vaultonaut.js",

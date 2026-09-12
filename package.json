@@ -42,6 +42,7 @@
     "test:all": "node lib/test/_runall.js"
   },
   "dependencies": {
+    "@noble/curves": "^2.4.0",
     "archiver": "^8.0.0",
     "ejs": "^6.0.1",
     "express": "^5.2.1",
