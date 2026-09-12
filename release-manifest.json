@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.0.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-12T11:37:45.756Z",
+  "generatedAt": "2026-09-12T12:15:22.505Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -62,8 +62,8 @@
     },
     {
       "path": "lib/Decoy.js",
-      "sha256": "a1b8460f05647de07963f6d6d85af637895272b1ada9bbd08ff7658da1bf8a1e",
-      "size": 12391
+      "sha256": "648c38c9a9912e00cb46b46a77faeedeb89b6d20cc8c88609faf8cc4a65d254e",
+      "size": 13062
     },
     {
       "path": "lib/Der.js",
@@ -267,8 +267,8 @@
     },
     {
       "path": "lib/Sync.js",
-      "sha256": "8cb611812eca6e731cc6fa9ba8eba001046a1f677c2e4be72fe51d50e6d93596",
-      "size": 9386
+      "sha256": "753e0787c49a5e7559240131f7a412490e656e5cb767111a0ff5583454bf2388",
+      "size": 11734
     },
     {
       "path": "lib/Travel.js",
@@ -287,8 +287,8 @@
     },
     {
       "path": "lib/Vault.js",
-      "sha256": "444298e2321c9165461e5bdf4ed6b91bb2abda086cbba9db609205172b449f1d",
-      "size": 764627
+      "sha256": "67d08b5a2fdb281febf8ef0eeac27cde1462890904214da89f07625e876b6cce",
+      "size": 767776
     },
     {
       "path": "lib/Watchdog.js",
@@ -547,13 +547,13 @@
     },
     {
       "path": "lib/webserver/public/send/app.js",
-      "sha256": "c5f36acf393654d9c201affc4a0746f8ebe7abc6264c7e7439a2aec875028e93",
-      "size": 4793
+      "sha256": "a93dd6bd70d3d60c779627768c5595086dd54b5814c0a9f6f9a4f5cebc1ee5bc",
+      "size": 5237
     },
     {
       "path": "lib/webserver/public/send/index.html",
-      "sha256": "3d58f81c9e7e3870600aeabc77d8e7220492cc077ab9155803962dbedfb0ab6a",
-      "size": 3754
+      "sha256": "9b405c6b9cafd1b74a166677768265a96f2aaa29947c2ef2c2f91658c6771887",
+      "size": 3963
     },
     {
       "path": "lib/webserver/public/shared/secret-schema.js",
