@@ -127,16 +127,73 @@ fn child_has_exited(child: &SharedChild) -> bool {
     false
 }
 
-// Return true once OUR backend is serving on the loopback port. Bounded poll; returns false early if the child
-// exits first (so a foreign process holding the port can never be shown in the trusted window).
-fn wait_for_server(port: u16, timeout: Duration, child: &SharedChild) -> bool {
+// A per-launch, hard-to-predict token the backend echoes at /__ready so the shell can prove the responding server
+// is the backend it just started. It need not be cryptographically strong: a process that squatted the loopback
+// port BEFORE this launch never sees the token (it is passed to our child as an argument, never over the network)
+// and gets a single blind attempt to echo it during the readiness poll, so entropy from the launch instant, this
+// process id, and an address-space-randomized pointer is ample. Pure std — no dependency is added.
+fn ready_token() -> String {
+    use std::collections::hash_map::DefaultHasher;
+    use std::hash::{Hash, Hasher};
+    let mut out = String::new();
+    for i in 0..2u64 {
+        let mut h = DefaultHasher::new();
+        std::time::SystemTime::now().hash(&mut h);
+        std::process::id().hash(&mut h);
+        i.hash(&mut h);
+        let probe = Box::new(0u8);
+        (&*probe as *const u8 as usize).hash(&mut h); // ASLR pointer entropy
+        std::time::SystemTime::now().hash(&mut h);
+        out.push_str(&format!("{:016x}", h.finish()));
+    }
+    out
+}
+
+// GET /__ready over loopback and return the response text, or None. HTTP/1.0 with Connection: close means the
+// server closes the socket after the body, so reading to EOF gets the whole (tiny) response without parsing
+// chunked/keep-alive framing. Read/write timeouts bound it so a silent or dribbling peer never stalls the poll,
+// and the read is capped so a foreign server on the port cannot stream an unbounded body at us.
+fn probe_ready(port: u16, timeout: Duration) -> Option<String> {
+    use std::io::{Read, Write};
+    let mut stream = TcpStream::connect(("127.0.0.1", port)).ok()?;
+    stream.set_read_timeout(Some(timeout)).ok()?;
+    stream.set_write_timeout(Some(timeout)).ok()?;
+    stream
+        .write_all(b"GET /__ready HTTP/1.0\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n")
+        .ok()?;
+    let mut buf: Vec<u8> = Vec::new();
+    let mut chunk = [0u8; 1024];
+    loop {
+        match stream.read(&mut chunk) {
+            Ok(0) => break,
+            Ok(n) => {
+                buf.extend_from_slice(&chunk[..n]);
+                if buf.len() > 8192 {
+                    break;
+                }
+            }
+            Err(_) => break,
+        }
+    }
+    Some(String::from_utf8_lossy(&buf).into_owned())
+}
+
+// Return true once OUR backend is serving on the loopback port — proven by the readiness endpoint echoing the
+// per-launch token, NOT merely by the port accepting a connection. A foreign process that squatted the port
+// answers the TCP connect but cannot echo the token, so it is never mistaken for our backend and shown in the
+// trusted window. Bounded poll; returns false early if the child exits first (a crash, or EADDRINUSE).
+fn wait_for_server(port: u16, timeout: Duration, token: &str, child: &SharedChild) -> bool {
     let deadline = Instant::now() + timeout;
     while Instant::now() < deadline {
         if child_has_exited(child) {
             return false;
         }
-        if TcpStream::connect(("127.0.0.1", port)).is_ok() {
-            return true;
+        if let Some(resp) = probe_ready(port, Duration::from_secs(2)) {
+            if !token.is_empty() && resp.contains(token) {
+                return true;
+            }
+            // The port answered but did not echo our token — a foreign/other server, or our backend has bound the
+            // port but not finished starting. Keep polling until it answers with the token, or the child exits.
         }
         std::thread::sleep(Duration::from_millis(200));
     }
@@ -244,12 +301,17 @@ fn main() {
             ensure_executable(&node);
             let entry = resource_dir.join("app").join("vaultonaut.js");
 
+            // A per-launch readiness token: the backend echoes it at /__ready, and the shell confirms that echo
+            // before navigating the trusted window, so a foreign process squatting the loopback port is never shown.
+            let ready_tok = ready_token();
             let mut cmd = Command::new(&node);
             cmd.arg(&entry)
                 .arg("ui")
                 .arg("--port")
                 .arg(UI_PORT.to_string())
                 .arg("--desktop")
+                .arg("--ready-token")
+                .arg(&ready_tok)
                 .stdin(Stdio::piped()); // kept open so the shell can send a cross-platform "quit" line on shutdown (see stop_backend)
             let (out, err) = backend_log_stdio();
             cmd.stdout(out).stderr(err);
@@ -284,8 +346,9 @@ fn main() {
 
                     // Wait for the server off the main thread (so the window and its "starting" splash stay
                     // responsive), then, back on the main thread, show the interface or the error state.
+                    let wait_tok = ready_tok.clone();
                     std::thread::spawn(move || {
-                        let ready = wait_for_server(UI_PORT, STARTUP_TIMEOUT, &shared);
+                        let ready = wait_for_server(UI_PORT, STARTUP_TIMEOUT, &wait_tok, &shared);
                         show_outcome(&handle, ready);
                         // Never leave an orphan holding the port: if the backend is alive but never bound (a timeout,
                         // not a crash), stop it now instead of waiting for the user to close the error window. Taking
