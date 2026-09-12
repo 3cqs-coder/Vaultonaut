@@ -260,7 +260,13 @@ fn stop_backend(child: &mut Child, grace: Duration) {
 // more than once: the child is taken out of the shared slot, so a second call finds nothing and just exits.
 fn shutdown_in_background<R: tauri::Runtime>(handle: tauri::AppHandle<R>, shared: SharedChild) {
     SHUTTING_DOWN.store(true, Ordering::SeqCst); // from here on, a second quit gesture is held off until the drain finishes
-    if let Some(win) = handle.get_webview_window("main") { let _ = win.hide(); }
+    if let Some(win) = handle.get_webview_window("main") {
+        // Hiding is a UI operation, and this is reached from a background thread (the quit-confirmation dialog runs
+        // off the main thread). Marshal the hide to the main thread the same way show_outcome does for its window
+        // calls; done directly from a background thread the hide can be dropped, leaving the window visible for the
+        // whole multi-second drain — the frozen-window experience this path exists to avoid.
+        let _ = handle.run_on_main_thread(move || { let _ = win.hide(); });
+    }
     std::thread::spawn(move || {
         if let Some(mut child) = shared.lock().ok().and_then(|mut g| g.take()) {
             stop_backend(&mut child, BACKGROUND_DRAIN_GRACE);
@@ -332,6 +338,16 @@ fn request_quit_confirmation<R: tauri::Runtime>(handle: tauri::AppHandle<R>, sha
         return;
     }
     std::thread::spawn(move || {
+        // Clear the "a dialog is open" latch however this thread leaves — the normal paths below, and an unlikely
+        // panic in the dialog backend. Without this, a panic after the swap(true) above would leave CONFIRMING set
+        // forever, so every later close/quit gesture would return at the guard and the window could never be
+        // closed. Resetting it after a confirmed quit is harmless: shutdown_in_background has set SHUTTING_DOWN,
+        // which this function checks first, so a re-entrant gesture is held off before it ever reaches CONFIRMING.
+        struct ConfirmLatch;
+        impl Drop for ConfirmLatch {
+            fn drop(&mut self) { CONFIRMING.store(false, Ordering::SeqCst); }
+        }
+        let _latch = ConfirmLatch;
         let token = QUIT_TOKEN.get().map(String::as_str).unwrap_or("");
         let count = probe_mounted(UI_PORT, token, Duration::from_millis(2000));
         let proceed = match count {
@@ -352,9 +368,7 @@ fn request_quit_confirmation<R: tauri::Runtime>(handle: tauri::AppHandle<R>, sha
             }
         };
         if proceed {
-            shutdown_in_background(handle, shared); // sets SHUTTING_DOWN; CONFIRMING stays set as the shutdown proceeds
-        } else {
-            CONFIRMING.store(false, Ordering::SeqCst); // user kept it running — a later close asks again
+            shutdown_in_background(handle, shared);
         }
     });
 }

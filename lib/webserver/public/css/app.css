@@ -567,6 +567,11 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 	   comfortable minimum as the controls above; the visual text size is unchanged. */
 	.sf-btn, .sf-kind, .mini-select { min-height: 40px; }
 	.sf-remove { width: 40px; height: 40px; }
+	/* iOS (Safari on iPhone and iPad) zooms the page in when a focused text field's font is under 16px, and never
+	   zooms back out. Several controls here are intentionally smaller than that for density; on a touch device that
+	   density is not worth the zoom jump, so lift every text-entry control to 16px. Pointer devices (a normal
+	   desktop) keep the denser sizing, since this rule lives only in the touch block. */
+	input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea { font-size: 16px; }
 }
 
 /* Tamper-check results */
