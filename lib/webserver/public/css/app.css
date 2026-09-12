@@ -128,7 +128,7 @@ body {
 img.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; } /* the brand mark carries its own rounded-square ground */
 .brand-text { display: flex; flex-direction: column; line-height: 1.12; min-width: 0; }
 .brand-name { font-weight: 700; font-size: 16px; margin: 0; letter-spacing: -.01em; } /* product name in the rail; the login page reuses it as its <h1>, so keep the heading-margin reset */
-.version { color: var(--faint); font-size: 11px; }
+.version { color: var(--muted); font-size: 11px; } /* --muted is AA-tuned; the version string is informational, so it must clear contrast in every theme (--faint is decorative and dips below AA on the dark rail) */
 
 .rail-nav { display: flex; flex-direction: column; gap: 2px; }
 /* A rail entry is a button or link that reads as a quiet nav item until hovered
@@ -290,6 +290,9 @@ img.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; } /* the b
 .badge.notresponding { color: var(--warn); background: var(--warn-bg); }
 .card-stuck { border-color: var(--warn); }
 .card .stuck-note { color: var(--warn); margin-top: 4px; }
+/* An unreadable (moved / disconnected) vault is not broken, just not reachable — inform in the muted tone, not the
+   alarming one, so the user knows it is recoverable and that Remove only forgets it. */
+.card .invalid-note { color: var(--muted); margin-top: 4px; }
 
 /* Buttons */
 button { font: inherit; }
