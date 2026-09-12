@@ -31,10 +31,20 @@ permissions:
 
 jobs:
   # Run the unit suite before building or releasing anything. A tagged release must never draft from a broken app,
-  # and this runs the FULL drift/regression suite that the fast smoke-only pre-commit hook skips. One cheap Linux
-  # runner is enough — the suite is platform-agnostic Node with no native build step.
+  # and this runs the FULL drift/regression suite that the fast smoke-only pre-commit hook skips. Linux is the
+  # GATING platform (the suite is platform-agnostic Node with no native build step). macOS and Windows also run, to
+  # exercise the many platform-specific branches and the unmount ladder that a Linux-only run never reaches, but they
+  # are NON-BLOCKING for now: many tests skip without a mount driver on the hosted runners, and the cross-platform
+  # paths have not all been proven green there yet, so a failure on those platforms must not block a release. Once
+  # they run clean, drop the continue-on-error so they gate too. fail-fast is off so one platform never cancels the
+  # others, and the per-test timeout in the runner keeps a hang on any platform from stalling the whole job.
   test:
-    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.os != 'ubuntu-22.04' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
