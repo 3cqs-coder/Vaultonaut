@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.0.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-12T02:50:19.851Z",
+  "generatedAt": "2026-09-12T03:14:28.678Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -32,8 +32,8 @@
     },
     {
       "path": "lib/Autostart.js",
-      "sha256": "4a975c9be3aa6daa731c7ab6f8a781ef404a02516cc34f514bbed6cba7a349c6",
-      "size": 17759
+      "sha256": "4d0bb039208f58fcd45f45d7bff9ec4a882e73d6e419d6c9051030aafedd15cd",
+      "size": 17765
     },
     {
       "path": "lib/Bootstrap.js",
@@ -57,8 +57,8 @@
     },
     {
       "path": "lib/Common.js",
-      "sha256": "c57b8a34a11de83acd91fd9b9ee650d1fb6112e76eeebe13f195575f074d69b0",
-      "size": 50520
+      "sha256": "83ebef1e28a11d3eee1605ca83cc98c33951b3543cbf6bfe0579ee1e7759a503",
+      "size": 51572
     },
     {
       "path": "lib/Decoy.js",
@@ -447,8 +447,8 @@
     },
     {
       "path": "lib/webserver/public/js/app.js",
-      "sha256": "0978243bc89d167f85730b63ec99fc550d11afe87180a77c3e2a76999ced6546",
-      "size": 291845
+      "sha256": "b165b382d722580196d01f851c203781bbcd7abf8107eaf821dcadc6d00d9b5c",
+      "size": 291862
     },
     {
       "path": "lib/webserver/public/js/login.js",
@@ -477,8 +477,8 @@
     },
     {
       "path": "lib/webserver/public/mobile/app.css",
-      "sha256": "9e40d2d98016a9240ffe285156337d78af78ba02adfd007b1181fc02fadbf26c",
-      "size": 9450
+      "sha256": "a2563e232e593fe7088b839a943d57d332607ce225751699b3ead120f2c46355",
+      "size": 9748
     },
     {
       "path": "lib/webserver/public/mobile/app.js",
