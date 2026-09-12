@@ -558,6 +558,7 @@ A few things to know before you rotate:
 - It needs roughly double the vault's size in free space while it runs.
 - It can take a while for a large vault, since it rewrites everything.
 - It invalidates every other password, key, and read link: the one you rotate with keeps working, and you re-add the others afterward.
+- It turns off an armed emergency (dead-man) access, since that sealed grant was made under the old key. Your trusted contact stays enrolled, so re-arming it afterward is one step.
 - Copies elsewhere (a mirror, a backup, a served node) still hold the *old* encrypted data until you re-encrypt or delete them, and — as always — nothing can recall plaintext someone already downloaded.
 
 The tool reminds you of this right after a rotation, and your next mirror or off-site backup re-primes on its own — it replaces the whole store cleanly rather than trying to merge old and new encrypted data. Record the new identity afterward (or make a fresh Recovery Kit).

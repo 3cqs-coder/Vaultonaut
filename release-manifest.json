@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.0.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-12T01:20:01.864Z",
+  "generatedAt": "2026-09-12T01:45:50.703Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -17,8 +17,8 @@
     },
     {
       "path": "docs/README.md",
-      "sha256": "ae06eadca1751c71d056f28df26be5bdefbbba81833f8991816dceda7fa5db73",
-      "size": 167981
+      "sha256": "75ce0dfb55bc0bb8b9ea43275c2651c6ab93db56dd4e159936bb11dae7af755b",
+      "size": 168162
     },
     {
       "path": "docs/banner.png",
@@ -187,8 +187,8 @@
     },
     {
       "path": "lib/RcloneSetup.js",
-      "sha256": "985c77dd99606e29a40389a69dab4a1d8ecb07d7cf71bfedf142f213fefdcc88",
-      "size": 22299
+      "sha256": "01e5cc1e7db74c865085e432cb51ab0b9a45e9e810a517feafcd914df2e12a8a",
+      "size": 25146
     },
     {
       "path": "lib/Recovery.js",
@@ -237,8 +237,8 @@
     },
     {
       "path": "lib/SelfCheck.js",
-      "sha256": "3347204e109d05b8192d22a03aaab99ee1d24cfebf1a7f12a5ccb2b2926558b4",
-      "size": 55404
+      "sha256": "8dd3951a5502e56d1a49fef957fcbb78e8064d3fb9fb1a929e078f19005631dd",
+      "size": 55824
     },
     {
       "path": "lib/Serve.js",
@@ -347,8 +347,8 @@
     },
     {
       "path": "lib/templates/notices.txt",
-      "sha256": "203434988ea86be056737c2bebd0554a8f253acedeb6c4650afb2d921cf48e65",
-      "size": 3043
+      "sha256": "aa7d731fa78d15c33149f3c6d3921fd1f2e9e40e0d4d9a4b047d72bbc6f70032",
+      "size": 3227
     },
     {
       "path": "lib/templates/recovery-kit.html",
@@ -482,13 +482,18 @@
     },
     {
       "path": "lib/webserver/public/mobile/app.js",
-      "sha256": "b0bddc8b687c15cc06df18d24888843277d0ecf74d6176244ff28dee0891e003",
-      "size": 43557
+      "sha256": "114643e2d03d154262a2542c67a5c7203d192456bed2e91ead6a4ff3c88e85c3",
+      "size": 43556
     },
     {
       "path": "lib/webserver/public/mobile/apple-touch-icon.png",
       "sha256": "545fdbfbc80f2d30a134374eea3e1371fb262a97689c02b1d892ca6f969f8408",
       "size": 7542
+    },
+    {
+      "path": "lib/webserver/public/mobile/crypt-reader.js",
+      "sha256": "8a0f414e5aadfeab610cc09afc76073a321406439d1b5ec50f9a3e98fd99d86e",
+      "size": 13980
     },
     {
       "path": "lib/webserver/public/mobile/icon-192.png",
@@ -507,18 +512,13 @@
     },
     {
       "path": "lib/webserver/public/mobile/index.html",
-      "sha256": "7e64f2ed2b1f0a4661fd6d36dcaf2056a03a184186acada2a13216ee5cb20012",
-      "size": 4031
-    },
-    {
-      "path": "lib/webserver/public/mobile/rclone-reader.js",
-      "sha256": "ea88347339aa8de0f4488232ff7ca12de306a8ca23c389eef002d7ba05b2909a",
-      "size": 13960
+      "sha256": "8b9deda56a00ad4af9f926bea9796a6c788d8b3736f3a8e504ac6ad38478734c",
+      "size": 4030
     },
     {
       "path": "lib/webserver/public/mobile/sw.js",
-      "sha256": "7cf6d4c108d5df64c03168cfa725c8114b71adf05723138cabd88d45ef091428",
-      "size": 7528
+      "sha256": "a3b7b853d8ee9a2da843997a570fdabd0dba81fec6a89b1f651993e64fb3f76a",
+      "size": 7525
     },
     {
       "path": "lib/webserver/public/mobile/theme-boot.js",
@@ -577,8 +577,8 @@
     },
     {
       "path": "package.json",
-      "sha256": "abcf90eeae7ef370c4756c61a7a41271e1cc4d33eda331af1dce15daced2fc3a",
-      "size": 1546
+      "sha256": "120248ae96c33ec29584cf8151633f3d9a3629c4f05ad1e1f658e45cdada6e34",
+      "size": 1539
     },
     {
       "path": "vaultonaut.js",

@@ -37,6 +37,7 @@ Emergency access seals READ-ONLY access to a trusted contact. Understand the hon
 Rotating this vault re-encrypts EVERY file under a new key and changes its identity — the way
 to cut off a leaked read link for good. Be aware:
   • every OTHER password, read link, recovery key, keyfile, and security-key sign-in is invalidated; re-add the ones you keep afterward;
+  • an armed emergency (dead-man) access is turned off, since its sealed grant was made under the old key — re-arm it afterward if you still want it (your contact stays enrolled);
   • it needs roughly DOUBLE the vault size in free space, temporarily;
   • a mirror, backup, or served copy still holds old-key data until you re-encrypt or delete it;
   • it is safe to interrupt — the vault is untouched unless it finishes.
