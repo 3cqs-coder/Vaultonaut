@@ -7,6 +7,8 @@
   "files": [
     "vaultonaut.js",
     "verify.js",
+    "release-manifest.json",
+    "release-manifest.sig",
     "lib/",
     "!lib/test",
     "!lib/scripts",
