@@ -235,9 +235,9 @@ Vaultonaut is also available as a native desktop app, for people who would rathe
 
 The desktop app is optional. The command-line install described above is unchanged, and it is what a server without a screen uses to run backups and mirroring on their own. The two are the same program underneath: the desktop app is a native window onto the same local service.
 
-In the app, **Start at login** runs Vaultonaut in the background whenever you log in, so scheduled work such as backups and mirroring keeps happening even when the window is closed. You open the window whenever you want it; unlocking a vault is always something you do yourself.
+In the app, **Start at login** runs Vaultonaut in the background whenever you log in, so scheduled work such as backups and mirroring keeps happening even when the window is closed. You open the window whenever you want it; unlocking a vault is always something you do yourself. When the background service is already running, opening the app simply shows it, rather than starting a second copy.
 
-Closing the window quits the app and locks any vault you have open, flushing saved work first. When a vault is unlocked, it asks you to confirm before quitting, so one stray click on the close button does not tear down your session. With nothing open, it closes right away.
+Closing the window behaves differently depending on whether the background service is running. If it is (you turned on Start at login), closing the window just puts the app away and leaves the service running, so your vaults and scheduled work are untouched. If it is not, closing the window also stops the app and locks any vault you have open, flushing saved work first; when a vault is unlocked it asks you to confirm first, so one stray click does not tear down your session, and with nothing open it closes right away.
 
 ## How new versions are published
 

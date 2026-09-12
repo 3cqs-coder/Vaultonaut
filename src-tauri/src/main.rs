@@ -26,6 +26,10 @@ use tauri::Manager;
 // reachable from the network). This matches the application's own default port (Common.DEFAULT_UI_PORT); a
 // drift-guard test keeps the two in sync.
 const UI_PORT: u16 = 7420;
+// The exit code the backend uses to tell the shell that a trusted Vaultonaut is ALREADY running on the port (the
+// login/background service), so the shell should attach to it rather than show its startup-error screen. Must match
+// Common.DESKTOP_ATTACH_EXIT_CODE; a drift-guard test keeps the two in sync.
+const EXIT_ATTACH: i32 = 97;
 // How long to wait for the backend to start serving before giving up and showing the fallback message. Generous,
 // because a cold first run can be slow — on Windows especially, the OS antivirus scans the freshly installed
 // runtime and its modules the first time they are executed and read. A real crash does NOT wait this out: the
@@ -52,6 +56,11 @@ static DRAIN_DONE: AtomicBool = AtomicBool::new(false);
 static UI_READY: AtomicBool = AtomicBool::new(false);
 // True while a quit-confirmation dialog is open, so a second close/quit gesture cannot stack a second dialog.
 static CONFIRMING: AtomicBool = AtomicBool::new(false);
+// True when the shell ATTACHED to an already-running instance (the login/background service) instead of launching its
+// own backend. In that mode the shell does not own the backend, so closing the window or quitting must NOT drain,
+// lock, or stop it — it just closes the window and leaves the background service running, exactly what the user asked
+// for by enabling start-at-login. So the close/quit handlers short-circuit (no confirmation, no shutdown) here.
+static ATTACHED: AtomicBool = AtomicBool::new(false);
 // The per-launch token, shared with the backend, that gates the loopback mount-count probe used by the quit
 // confirmation. Set once at launch; read from both the window-close and the app-quit handlers.
 static QUIT_TOKEN: std::sync::OnceLock<String> = std::sync::OnceLock::new();
@@ -126,15 +135,27 @@ fn backend_log_stdio() -> (Stdio, Stdio) {
     (Stdio::null(), Stdio::null())
 }
 
-// Has our spawned backend already exited? If it has (for example it hit EADDRINUSE because an unrelated program
-// holds the port, or it crashed), we must NOT navigate to whatever is on that port — it would not be ours.
-fn child_has_exited(child: &SharedChild) -> bool {
+// The exit code of our spawned backend if it has already exited, else None. It exits early for a few reasons: it hit
+// EADDRINUSE because another program holds the port, it crashed, or — the case we care about — it found a trusted
+// Vaultonaut already running and exited with EXIT_ATTACH to tell us to show that instance. `None` code (killed by a
+// signal) maps to -1, which is never EXIT_ATTACH.
+fn child_exit_code(child: &SharedChild) -> Option<i32> {
     if let Ok(mut guard) = child.lock() {
         if let Some(c) = guard.as_mut() {
-            return matches!(c.try_wait(), Ok(Some(_)));
+            if let Ok(Some(status)) = c.try_wait() {
+                return Some(status.code().unwrap_or(-1));
+            }
         }
     }
-    false
+    None
+}
+
+// The result of waiting for the backend to come up: our own backend is serving (Ready), a trusted instance was
+// already running and we should attach to it (Attach), or neither happened in time (Failed).
+enum Startup {
+    Ready,
+    Attach,
+    Failed,
 }
 
 // A per-launch, hard-to-predict token the backend echoes at /__ready so the shell can prove the responding server
@@ -188,26 +209,27 @@ fn probe_ready(port: u16, timeout: Duration) -> Option<String> {
     Some(String::from_utf8_lossy(&buf).into_owned())
 }
 
-// Return true once OUR backend is serving on the loopback port — proven by the readiness endpoint echoing the
-// per-launch token, NOT merely by the port accepting a connection. A foreign process that squatted the port
-// answers the TCP connect but cannot echo the token, so it is never mistaken for our backend and shown in the
-// trusted window. Bounded poll; returns false early if the child exits first (a crash, or EADDRINUSE).
-fn wait_for_server(port: u16, timeout: Duration, token: &str, child: &SharedChild) -> bool {
+// Wait for OUR backend to start serving — proven by the readiness endpoint echoing the per-launch token, NOT merely
+// by the port accepting a connection. A foreign process that squatted the port answers the TCP connect but cannot
+// echo the token, so it is never mistaken for our backend and shown in the trusted window. Bounded poll. If the
+// child exits first, its exit code decides: EXIT_ATTACH means a trusted instance is already running and we should
+// attach to it; any other early exit (a crash, or EADDRINUSE against an untrusted squatter) is a failure.
+fn wait_for_server(port: u16, timeout: Duration, token: &str, child: &SharedChild) -> Startup {
     let deadline = Instant::now() + timeout;
     while Instant::now() < deadline {
-        if child_has_exited(child) {
-            return false;
+        if let Some(code) = child_exit_code(child) {
+            return if code == EXIT_ATTACH { Startup::Attach } else { Startup::Failed };
         }
         if let Some(resp) = probe_ready(port, Duration::from_secs(2)) {
             if !token.is_empty() && resp.contains(token) {
-                return true;
+                return Startup::Ready;
             }
             // The port answered but did not echo our token — a foreign/other server, or our backend has bound the
             // port but not finished starting. Keep polling until it answers with the token, or the child exits.
         }
         std::thread::sleep(Duration::from_millis(200));
     }
-    false
+    Startup::Failed
 }
 
 // On the main thread, either point the window at the running interface or show the error state. The initial
@@ -458,6 +480,11 @@ fn main() {
                         let close_handle = app.handle().clone();
                         win.on_window_event(move |event| {
                             if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                                // Attached to an already-running service we did not start: just close the window and
+                                // let the app exit; the background service keeps running. Nothing to drain or lock.
+                                if ATTACHED.load(Ordering::SeqCst) {
+                                    return;
+                                }
                                 api.prevent_close();
                                 request_quit_confirmation(close_handle.clone(), close_shared.clone());
                             }
@@ -468,14 +495,23 @@ fn main() {
                     // responsive), then, back on the main thread, show the interface or the error state.
                     let wait_tok = ready_tok.clone();
                     std::thread::spawn(move || {
-                        let ready = wait_for_server(UI_PORT, STARTUP_TIMEOUT, &wait_tok, &shared);
-                        show_outcome(&handle, ready);
-                        // Never leave an orphan holding the port: if the backend is alive but never bound (a timeout,
-                        // not a crash), stop it now instead of waiting for the user to close the error window. Taking
-                        // the child here also means the close/quit handlers find nothing left to do. No-op if it exited.
-                        if !ready {
-                            if let Some(mut child) = shared.lock().ok().and_then(|mut g| g.take()) {
-                                stop_backend(&mut child, SHUTDOWN_GRACE);
+                        match wait_for_server(UI_PORT, STARTUP_TIMEOUT, &wait_tok, &shared) {
+                            // Our own backend is serving — show it and take ownership of its shutdown, as before.
+                            Startup::Ready => show_outcome(&handle, true),
+                            // A trusted instance (the login/background service) is already running. Show THAT instance
+                            // and mark attached, so a close leaves it running instead of draining and locking it. Our
+                            // spawned child has already exited (it told us to attach), so there is nothing to stop.
+                            Startup::Attach => {
+                                ATTACHED.store(true, Ordering::SeqCst);
+                                show_outcome(&handle, true);
+                            }
+                            // Neither came up in time. Show the error state, and never leave an orphan holding the
+                            // port: if the backend is alive but never bound, stop it now. No-op if it already exited.
+                            Startup::Failed => {
+                                show_outcome(&handle, false);
+                                if let Some(mut child) = shared.lock().ok().and_then(|mut g| g.take()) {
+                                    stop_backend(&mut child, SHUTDOWN_GRACE);
+                                }
                             }
                         }
                     });
@@ -497,7 +533,10 @@ fn main() {
                 // background thread before exiting, so a quit never freezes the UI thread. The has-child peek stops
                 // the exit(0) that the background thread later calls from re-entering here and preventing its own exit.
                 tauri::RunEvent::ExitRequested { api, .. } => {
-                    if DRAIN_DONE.load(Ordering::SeqCst) {
+                    if ATTACHED.load(Ordering::SeqCst) {
+                        // Attached to a service we did not start: let the app exit without draining or locking it, so
+                        // the background service the user started at login keeps running.
+                    } else if DRAIN_DONE.load(Ordering::SeqCst) {
                         // The background drain has finished — this is its own final exit (or a quit after it). Let it through.
                     } else if SHUTTING_DOWN.load(Ordering::SeqCst) {
                         // A drain is already running (e.g. the window was closed, or a first Cmd+Q): a SECOND quit gesture
@@ -515,9 +554,13 @@ fn main() {
                 // Last-resort backstop: if the app ever exits without going through the responsive path, stop the
                 // backend here so vaults are still locked and in-flight writes flush. Short grace — runs on the main thread.
                 tauri::RunEvent::Exit => {
-                    if let Some(backend) = app_handle.try_state::<Backend>() {
-                        if let Some(mut child) = backend.0.lock().ok().and_then(|mut g| g.take()) {
-                            stop_backend(&mut child, SHUTDOWN_GRACE);
+                    // In attached mode we never started the backend, so there is nothing of ours to stop — and we must
+                    // not touch the background service the user started at login.
+                    if !ATTACHED.load(Ordering::SeqCst) {
+                        if let Some(backend) = app_handle.try_state::<Backend>() {
+                            if let Some(mut child) = backend.0.lock().ok().and_then(|mut g| g.take()) {
+                                stop_backend(&mut child, SHUTDOWN_GRACE);
+                            }
                         }
                     }
                 }
