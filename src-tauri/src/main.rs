@@ -371,7 +371,11 @@ fn request_quit_confirmation<R: tauri::Runtime>(handle: tauri::AppHandle<R>, sha
         }
         let _latch = ConfirmLatch;
         let token = QUIT_TOKEN.get().map(String::as_str).unwrap_or("");
-        let count = probe_mounted(UI_PORT, token, Duration::from_millis(2000));
+        // Give the probe longer than the backend's own answer budget for /__mounted (Common.withTimeout, 3000ms), so
+        // a slow state read (a wedged or slow disk) lets the backend answer instead of the socket timing out first and
+        // falling back to asking. A probe failure is still fail-safe (it asks before quitting), but this lets an
+        // accurate zero-count skip the needless confirmation dialog.
+        let count = probe_mounted(UI_PORT, token, Duration::from_millis(4000));
         let proceed = match count {
             Some(0) => true, // nothing unlocked — no need to ask
             _ => {
