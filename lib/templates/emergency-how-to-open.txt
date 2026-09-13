@@ -1,12 +1,29 @@
 How to open this emergency access
 
-These ".sealed" files each contain read-only access to a vault, sealed to your
-public key. Only your private key can open them. On a computer with {{name}}:
+These ".sealed" files each contain read-only access to a vault. Each one is sealed
+to your public key AND time-locked, so it can be opened only with your private key,
+and only once its release moment has arrived. On a computer with {{name}}:
 
   {{cli}} emergency-open <file>.sealed --key <your-private-key>
 
-That prints a read link. Mount a copy of the vault with it:
+If it is not yet time, the command will say so — try again after the release date.
+If this computer has no internet, fetch the unlock key on another device that does,
+then pass it in:
+
+  {{cli}} emergency-open <file>.sealed --key <your-private-key> --signature <hex>
+
+Opening prints a read link. Mount a copy of the vault with it:
 
   {{cli}} mount <vault-folder> --read-cap <the-read-link>
 
 You can read the files. You cannot change the vault, its keys, or its owner.
+
+If a ".backstop.json" file is included, it is an optional fallback for the unlikely
+case that the time-beacon cannot be reached. The vault's trustees can recover access
+without it: each trustee runs
+
+  {{cli}} emergency trustee-open <file>.backstop.json --key <their-private-key>
+
+to get their share, then whoever is coordinating combines the required number:
+
+  {{cli}} emergency recover <share1> <share2> ...

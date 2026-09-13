@@ -343,8 +343,8 @@ vdisk decoy <status|set|list|remove>   Advanced: pair a vault with a decoy opene
 vdisk travel   <on|off|status>   Advanced: before travel, hide all vaults from this app and lock them (restore with a travel password)
 vdisk threshold-key <name|path> --shares <n> --threshold <k> [--read-only]   Split the unlock key k-of-n; any k shares mount it
 vdisk emergency-access <name|path> --shares <n> --threshold <k>   Read-only inheritance access: any k of n trusted contacts can read it
-vdisk emergency <keypair|enroll|add-contact|remove-contact|contacts|arm|check-in|status|disarm>   Dead-man's switch: release read access to your beneficiaries if you stop checking in
-vdisk emergency-open <sealed-file> --key <private-key>   Contact side: open released access with your private key
+vdisk emergency <keypair|enroll|add-contact|remove-contact|contacts|arm|check-in|status|disarm|backstop|trustee-open|recover>   Dead-man's switch or scheduled unlock: release read access to beneficiaries on inactivity or a date (route with 'arm <vault> --contact <id> [--date <when>]')
+vdisk emergency-open <sealed-file> --key <private-key> [--signature <hex>]   Contact side: open released access with your private key (--signature opens offline)
 vdisk rmkey    <name|path> <id>  Remove a key (unlock with a different one)
 vdisk mount    <name|path>       Mount a vault as a drive
 vdisk unmount  <name|path|mount> Unmount a vault (add --force if it is stuck, or --recover for a wedged drive --force cannot release)
@@ -863,24 +863,29 @@ A threshold key also gives you a safe way to make sure trusted people can reach 
 
 ### A dead-man's switch
 
-You can also arrange for trusted people to gain read-only access automatically if you stop checking in — for incapacitation, not just a planned handover. Use **Emergency…** in the app, or the `vdisk emergency` commands. It works the honest way:
+You can also arrange for trusted people to gain read-only access automatically if you stop checking in, or on a date you choose — for incapacitation or a planned handover. Use **Emergency…** in the app, or the `vdisk emergency` commands. It works the honest way:
 
 1. Each beneficiary makes a keypair and gives you only the public half (**Generate a keypair** in the app, or `vdisk emergency keypair`).
 2. You enroll the first one (paste the public key, or `vdisk emergency enroll --contact-key <their public key> --label <name>`), and add any others the same way (**Add beneficiary**, or `vdisk emergency add-contact --contact-key <key> --label <name>`).
-3. You route each vault to the beneficiary who should inherit it — **Route this vault** in the app, or `vdisk emergency arm <vault> --contact <name-or-id>`. Routing seals that vault's read link to that person's public key, so only their private key can ever open it.
+3. You route each vault to the beneficiary who should inherit it, and choose when it should unlock — **Route this vault** in the app, or `vdisk emergency arm <vault> --contact <name-or-id>`. Routing seals that vault's read link to that person's public key, so only their private key can ever open it. Add `--date <when>` to unlock on a specific day instead of on inactivity.
 
-This is what makes the handover *granular*: different vaults can go to different people — your bank vault to your spouse, your business vault to your partner — and no beneficiary can open a vault that was not routed to them. When access is released, each person gets their own set of sealed files, holding only the vaults meant for them.
+This is what makes the handover granular: different vaults can go to different people — your bank vault to your spouse, your business vault to your partner — and no beneficiary can open a vault that was not routed to them. When access is released, each person gets their own set of sealed files, holding only the vaults meant for them.
 
-A timer only controls when the sealed access is handed over: as long as you check in (**Check in**, `vdisk emergency check-in`, or just using the app), nothing happens. If you miss the whole inactivity window plus a grace period, the sealed access is released, and each beneficiary opens their own with their private key (`vdisk emergency-open <file> --key <their private key>`). Removing a beneficiary later drops the sealed grants routed to them, since those could never be opened by anyone else anyway.
+Two gates protect the sealed access, and both must pass to open it. The first is a real time lock: the access cannot be opened before its moment, not by the beneficiary and not by changing a computer's clock, because the unlock key is published by a public time-beacon network only when the moment arrives. The second is the beneficiary's own key. So a copy that leaks, or that a beneficiary keeps, is useless until its time, and useless to anyone but that beneficiary even then.
 
-Because this sealed access can sit unopened for years, it is sealed with post-quantum protection: a hybrid of a classical key exchange and a quantum-resistant one (ML-KEM), so a copy recorded today stays safe even against a future quantum computer. It stays safe as long as *either* method holds. This is automatic — there is nothing to choose.
+For the dead-man's switch, the moment is your inactivity window plus a grace period. Checking in resets the inactivity timer (**Check in**, `vdisk emergency check-in`, or just using the app); re-routing the vault pushes the time lock further out, so while you are active the access never becomes openable. Stop, and the access is released for the beneficiary to open with their private key (`vdisk emergency-open <file> --key <their private key>`). For a scheduled unlock, the moment is the date you picked. If a beneficiary has no internet when it is time to open, they can fetch the unlock key on another device and pass it in with `--signature`. Removing a beneficiary later drops the grants routed to them, since those could never be opened by anyone else anyway.
+
+Because this sealed access can sit unopened for years, it is also sealed with post-quantum protection: a hybrid of a classical key exchange and a quantum-resistant one (ML-KEM), so a copy recorded today stays safe even against a future quantum computer. It stays safe as long as either method holds. This is automatic.
+
+**Optional recovery backstop.** The time lock relies on the public time-beacon network being reachable when it is time to open. For the unlikely case that it is ever gone, you can set up a fallback: a group of trustees, any agreed number of whom can together recover a released grant without the beacon. Add them in the app's **Recovery backstop** section, or with `vdisk emergency backstop set`. It is off by default. Choose people you trust, because a group of them acting together could recover access early — that is the price of a fallback that does not depend on the beacon.
 
 Be clear about the limits, because this is not magic:
 
 - The access is read-only, enforced by the kind of key it is.
-- The timer runs on this computer, so it cannot fire if this computer is gone — it fits "something happened to me" better than "my machine was lost or destroyed."
-- Once access is released, or if a sealed copy leaks, the contact can read that copy; to be certain no old copy can ever open the vault again, rotate the vault's keys rather than only disarming.
-- A long trip can trip the timer, which is why there is a grace period and why any check-in cancels a pending release.
+- The inactivity check runs on this computer, so it fits "something happened to me" better than "my machine was lost or destroyed." The time lock itself does not depend on this computer.
+- After the unlock moment, the beneficiary — and anyone who holds a copy — can read that copy. To be certain no old copy can ever open the vault again, rotate the vault's keys rather than only turning it off.
+- A long trip can trip the inactivity timer, which is why there is a grace period and why checking in resets it.
+- Opening a released grant needs the time-beacon network to be reachable, unless you set up the recovery backstop.
 - This grants data access, not legal authority — it is not a will.
 
 ## Locking

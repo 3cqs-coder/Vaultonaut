@@ -104,8 +104,8 @@ All commands:
   vdisk repair-schedule <list|add|remove>   Check a shard folder set on a schedule and auto-repair (add: --folders <…> --every <h> | --daily HH:MM)
   vdisk threshold-key <path> --shares <n> --threshold <k> [--read-only]  Split the unlock key k-of-n; any k shares mount it
   vdisk emergency-access <path> --shares <n> --threshold <k>   Read-only inheritance access: any k of n trusted contacts can read it
-  vdisk emergency <keypair|enroll|add-contact|remove-contact|contacts|arm|check-in|status|disarm>   Dead-man's switch: release read access to beneficiaries if you stop checking in (route each vault to one, with 'arm <vault> --contact <id>')
-  vdisk emergency-open <sealed-file> --key <private-key>   Contact side: open released access with your private key
+  vdisk emergency <keypair|enroll|add-contact|remove-contact|contacts|arm|check-in|status|disarm|backstop|trustee-open|recover>   Dead-man's switch or scheduled unlock: release read access to beneficiaries on inactivity or a date (route with 'arm <vault> --contact <id> [--date <when>]')
+  vdisk emergency-open <sealed-file> --key <private-key> [--signature <hex>]   Contact side: open released access with your private key (--signature opens offline)
   vdisk doctor                     Check the engine and the mount driver
   vdisk install-driver             Download and launch the mount driver installer
   vdisk open                       Open the app in your browser (starts the background service if needed)
