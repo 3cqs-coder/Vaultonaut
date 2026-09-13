@@ -484,6 +484,14 @@ None of it is proprietary. There is no closed, vendor-controlled algorithm anywh
 
 Because the format is open and standard, your data is not tied to any one program or vendor. Vaultonaut includes its own small, dependency-free decryptor — the same code the phone viewer uses to open files in the browser with no engine at all — and the test suite checks it against real vault files byte for byte. So you are never locked in: a vault can be read by more than one independent implementation, and the format could be re-created from its public specification if it ever needed to be.
 
+### Strong, unpredictable keys
+
+The strength of a vault rests on its keys being truly unpredictable. Every key, seed, and salt Vaultonaut creates is drawn from the operating system's own cryptographic random source, at full strength: master keys and seeds are 256 bits, and each salt is 128 bits. None of it comes from a predictable or clock-based source.
+
+This matters because of how keys have been broken elsewhere. When a tool generates a key from a weak or predictable random source, the key can be guessed offline, without ever touching the vault or the device that made it. Losses of this kind have been large, and no later fix can rescue a key that was already made weak. Vaultonaut's keys cannot be guessed this way, because each one carries full strength from a trusted source.
+
+Vaultonaut also fails safe rather than falling back. If the system cannot provide secure randomness, the operation stops instead of quietly using a weaker source. A built-in check runs with every test pass and confirms that all key material stays full-strength, so a future change cannot silently weaken it.
+
 ## Keys and recovery
 
 A vault can have more than one key. Each key is another sealed copy of the same master key, so every key opens the vault, and adding, changing, or removing one is instant and never re-encrypts a file. This gives you several things:
