@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.0.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-13T15:53:51.553Z",
+  "generatedAt": "2026-09-13T18:53:10.153Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -102,8 +102,13 @@
     },
     {
       "path": "lib/Extract.js",
-      "sha256": "e8af1a27ba85e4cc9db57152e032f55b2d64d5c2e383c4746f38283c418fbe99",
-      "size": 11707
+      "sha256": "5051cee25a8a90d4cf697b5c24fd914d8c34b960d70834a5c8dadb600b2e0343",
+      "size": 21754
+    },
+    {
+      "path": "lib/ExtractProcess.js",
+      "sha256": "549760a57354d78c302cefbb9b623f0f2ca56ee7c7df4649e38dadce3e9ec354",
+      "size": 2689
     },
     {
       "path": "lib/FileLock.js",
@@ -177,8 +182,8 @@
     },
     {
       "path": "lib/RamCache.js",
-      "sha256": "cdbe9236d7a802063fae694bd4d4adc9c6898d0e4853ecbc1b44da28b9fc004f",
-      "size": 18481
+      "sha256": "66c6b8c4be6aed1af41d2a1e0bc477449e327a5b5aed1727ee33feca9be69197",
+      "size": 19362
     },
     {
       "path": "lib/Rclone.js",
@@ -227,13 +232,13 @@
     },
     {
       "path": "lib/SearchDefs.js",
-      "sha256": "316a648d47e6c341e49fe1d385ff21021b20a9dac49fad7f526cbd00a67ba6ec",
-      "size": 13688
+      "sha256": "ec7ab6bcdb7de4f2306bc94420cf87a9d1a0db240a71adc61354e636130a1154",
+      "size": 14008
     },
     {
       "path": "lib/SearchWorker.js",
-      "sha256": "befa24770ffcae87ea2b464dcf8c2b1f9ac8c958e540395620625005dd55ee61",
-      "size": 13707
+      "sha256": "6df40fe12250a06f92263b79f6d7e60259b97b5fda5e268579f2e356dca655bc",
+      "size": 18003
     },
     {
       "path": "lib/SelfCheck.js",
@@ -307,8 +312,8 @@
     },
     {
       "path": "lib/WorkerRun.js",
-      "sha256": "e794070970e2e3ed57df3bc39bcf4297239e013a0ee82f8feeae1d73aec519be",
-      "size": 5302
+      "sha256": "d814003ebd2e336a383fbc0e18b2c528325cc7404069fdd8371de83c6a9f0fab",
+      "size": 11858
     },
     {
       "path": "lib/assets/logo.icns",
@@ -367,8 +372,8 @@
     },
     {
       "path": "lib/verify-bundle.js",
-      "sha256": "3805ae623e212b60b1be07a401813767477c93c34a7aea393a79777a282c4272",
-      "size": 27674
+      "sha256": "d4ace4e3b45a9158afdbb1194b941d405adc8e52ec1640fb135b5ef0f0183a5c",
+      "size": 28694
     },
     {
       "path": "lib/webserver/index.js",
