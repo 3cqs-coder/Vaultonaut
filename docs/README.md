@@ -753,9 +753,10 @@ Two honest limits come with cloud storage. A cloud vault needs a network connect
 
 A few local operations do not apply to a cloud vault, because its encrypted files live at the provider rather than on this machine:
 
-- Self-heal recovery data and full key rotation are not used — the provider handles durability, every chunk is still verified on read, and a password change is still instant.
+- Self-heal recovery data is not used, because the provider handles durability and every chunk is still verified on read.
+- Full key rotation is not yet available for cloud vaults, since it would re-encrypt and re-upload the whole store. A password change is still instant. One consequence follows from this: if a read key leaks, you cannot fully cut it off by rotating. To revoke it, create a new cloud vault and move your files into it.
 - Local backup, two-way mirror, packing to a single file, and splitting into shards are not offered here, since each would copy only the vault's keys and not its data. To safeguard the keys that open it, export a Recovery Kit instead.
-- Serving to another machine, the built-in file viewer (View files & notes, in this browser or on a phone), and emergency (inheritance) access are not available either — point a second machine at the same cloud storage instead.
+- Serving to another machine, the built-in file viewer (View files & notes, in this browser or on a phone), and emergency (inheritance) access are not yet available either — point a second machine at the same cloud storage instead.
 
 ## Backing up off-site
 
