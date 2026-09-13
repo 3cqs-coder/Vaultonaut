@@ -150,4 +150,4 @@ if (require.main === module) {
 	process.exit(r.verdict === 'GENUINE' ? 0 : 1);
 }
 
-module.exports = { verifyRelease, EXCLUDE_TOP, EXCLUDE_NAME, coveredTopEntries, extraneousFiles }; // EXCLUDE_* and the scan helpers exported so a test can assert they match lib/ReleaseIntegrity.js
+module.exports = { verifyRelease, EXCLUDE_TOP, EXCLUDE_NAME, coveredTopEntries, extraneousFiles, KNOWN_SCHEMA, KNOWN_ALGO }; // EXCLUDE_*/schema/algo and the scan helpers exported so a test can assert they match lib/ReleaseIntegrity.js
