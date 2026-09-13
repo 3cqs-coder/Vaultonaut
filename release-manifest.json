@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.0.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-13T23:12:09.300Z",
+  "generatedAt": "2026-09-13T23:41:35.361Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -17,8 +17,8 @@
     },
     {
       "path": "docs/README.md",
-      "sha256": "1552b10c6e2eb0b0bd53cf392a3b6d268ddcfdd6df516793bf4d94f77990265b",
-      "size": 173858
+      "sha256": "c35c6779ead7e736fe2b05cd5a2f7a746fc080f838a09b8ba5739ef539bac551",
+      "size": 173863
     },
     {
       "path": "docs/banner.png",
@@ -52,8 +52,8 @@
     },
     {
       "path": "lib/Commands.js",
-      "sha256": "da4a5159b227790a3f53cb21e1cfcbf902ba54eb2c145ff81858bd6ccf6da370",
-      "size": 179261
+      "sha256": "a812a1c93da174b94c6adc5f6c39d0cadac76dade791b5f963e1c67aecf0023e",
+      "size": 179363
     },
     {
       "path": "lib/Common.js",
@@ -197,8 +197,8 @@
     },
     {
       "path": "lib/Recovery.js",
-      "sha256": "e737a32dac81c9b8b8c3a96236620b474d0d5d76912515b8835d0145765bc8b2",
-      "size": 92127
+      "sha256": "39b8a99a487a45233c3826451608509646eaa1e42fcd6a83b6534f60cbbef4f4",
+      "size": 92230
     },
     {
       "path": "lib/RecoveryKit.js",
@@ -312,8 +312,8 @@
     },
     {
       "path": "lib/WorkerRun.js",
-      "sha256": "ac53a36b9521d931cb7fe1c9736e487b103d61f72d44375e228ffeb7ea6491bd",
-      "size": 13374
+      "sha256": "481c60c2de32b976d921eb495aada93b49527e866ac52d831bf23d8c48616335",
+      "size": 13710
     },
     {
       "path": "lib/assets/logo.icns",
@@ -392,8 +392,8 @@
     },
     {
       "path": "lib/webserver/public/css/app.css",
-      "sha256": "7d255786bd207f360d09f7a894d6b61777934501dd0ea80c1906b33517124a08",
-      "size": 59913
+      "sha256": "bda0011ea7081d6519302b38f99059a48368558f61616805bfb7b55c4d2338d6",
+      "size": 59817
     },
     {
       "path": "lib/webserver/public/fonts/aFTR7PB1QTsUX8KYvrGyEY2tbZX9.woff2",
@@ -462,8 +462,8 @@
     },
     {
       "path": "lib/webserver/public/js/app.js",
-      "sha256": "aa9b7645d13f68bf2e0529c904d84e9e4e8997480e627f13a8d6f1fd060bb9ab",
-      "size": 305002
+      "sha256": "ed13940bb7afff68189adcb0ee2cd8c6a63977a5377ae3a765d56261f4b26aea",
+      "size": 306418
     },
     {
       "path": "lib/webserver/public/js/login.js",
@@ -477,8 +477,8 @@
     },
     {
       "path": "lib/webserver/public/js/theme-boot.js",
-      "sha256": "3a1a8c211a8095680b5c077ba6f713d6e7579f8a2f59c4b02bf62d32168d0fff",
-      "size": 813
+      "sha256": "b74dc90a950915f2c5e7dfdd8d3cf90d6b61a397c1cea5a981c863bfb543387a",
+      "size": 1715
     },
     {
       "path": "lib/webserver/public/js/vendor/marked/marked.min.js",
@@ -582,13 +582,13 @@
     },
     {
       "path": "lib/webserver/public/views/index.ejs",
-      "sha256": "cf57128275802a7dca1c1c4511015065af6c111f64d0119b5736401ab90cad12",
-      "size": 86004
+      "sha256": "4c137e4a5c9a6416c38b2613c14f7f4fb286aa3c63f22aef584df50d653c8a23",
+      "size": 86169
     },
     {
       "path": "lib/webserver/public/views/login.ejs",
-      "sha256": "353269b10057828e1e746dcde2323b0e397c7c06a3dcc09f869073ff1929da5b",
-      "size": 1699
+      "sha256": "a46cc4a2dc3cb1e3ef01b3a1617ff0c3ddfbc5325c49382dbcfb4f019821bbca",
+      "size": 1854
     },
     {
       "path": "lib/webserver/sendLinks.js",

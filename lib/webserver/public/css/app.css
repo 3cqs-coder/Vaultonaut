@@ -255,7 +255,6 @@ img.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; } /* the b
    reads as a chip rather than plain padded text. Modifier classes below (.mounted/.sealed/…) override these. */
 .badge { font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; color: var(--muted); background: var(--panel); border: 1px solid var(--border); }
 .badge.mounted { color: var(--good); background: var(--good-bg); }
-.badge.idle { color: var(--muted); background: var(--panel); border: 1px solid var(--border); }
 .badge.invalid { color: var(--danger); background: transparent; border: 1px solid var(--danger); }
 .badge.sealed { color: var(--accent-ink); background: transparent; border: 1px solid var(--accent); }
 .badge.protected { color: var(--good); background: transparent; border: 1px solid var(--good); }

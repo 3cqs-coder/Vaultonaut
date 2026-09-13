@@ -489,7 +489,7 @@ Because the format is open and standard, your data is not tied to any one progra
 
 ### Strong, unpredictable keys
 
-The strength of a vault rests on its keys being truly unpredictable. Every key, seed, and salt Vaultonaut creates is drawn from the operating system's own cryptographic random source, at full strength: master keys and seeds are 256 bits, and each salt is 128 bits. None of it comes from a predictable or clock-based source.
+The strength of a vault rests on its keys being truly unpredictable. Every key, seed, and salt Vaultonaut creates is drawn from the operating system's own cryptographic random source, at full strength: master keys and seeds are 256 bits, and salts are 128 bits or more. None of it comes from a predictable or clock-based source.
 
 This matters because of how keys have been broken elsewhere. When a tool generates a key from a weak or predictable random source, the key can be guessed offline, without ever touching the vault or the device that made it. Losses of this kind have been large, and no later fix can rescue a key that was already made weak. Vaultonaut's keys cannot be guessed this way, because each one carries full strength from a trusted source.
 
