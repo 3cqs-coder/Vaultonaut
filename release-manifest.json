@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.0.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-13T02:52:21.205Z",
+  "generatedAt": "2026-09-13T03:22:53.191Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -192,8 +192,8 @@
     },
     {
       "path": "lib/Recovery.js",
-      "sha256": "57dec71fc4164639b1206eb3ffaa46556f6156180873db597b963ab0d081355d",
-      "size": 86104
+      "sha256": "4e9fbc191b20b6277d361d50db03a739a4e20e7cb57cbfbc044d91c26d66a419",
+      "size": 88420
     },
     {
       "path": "lib/RecoveryKit.js",
@@ -297,8 +297,8 @@
     },
     {
       "path": "lib/Vault.js",
-      "sha256": "b2f4b8832e798c64bce7ed50619892bd597e05b0fb1d4df9d0791fbcb722889b",
-      "size": 792315
+      "sha256": "1d1dee0ce82058ce31dcf32bcc539acf6fbfd7473ccc077b0e2d2e25f2ee6f3d",
+      "size": 794073
     },
     {
       "path": "lib/Watchdog.js",
@@ -457,8 +457,8 @@
     },
     {
       "path": "lib/webserver/public/js/app.js",
-      "sha256": "4b56208edb1dff45990f8eb7a3d93c60a0e17311c408d333301bf3db5379e0b6",
-      "size": 302347
+      "sha256": "6b6f85997c3949190e4f064ca17315774b3db8de7ac8c2d7cdf6346d5c06444d",
+      "size": 302667
     },
     {
       "path": "lib/webserver/public/js/login.js",
