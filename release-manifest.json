@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.0.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-13T13:49:12.435Z",
+  "generatedAt": "2026-09-13T14:18:38.115Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -52,8 +52,8 @@
     },
     {
       "path": "lib/Commands.js",
-      "sha256": "8b32948096534f6254af7219365993d133c6c15b980de1e59db2637f49112fd8",
-      "size": 176271
+      "sha256": "74591e62c137702479f534ea74e2dc5adfe752ad4686c534a3158a78523c95fc",
+      "size": 179111
     },
     {
       "path": "lib/Common.js",
@@ -182,8 +182,8 @@
     },
     {
       "path": "lib/Rclone.js",
-      "sha256": "59dc09205d0e4b75a2768f5f687177497e9b943140a291952d4c91f8fdf96ca3",
-      "size": 56077
+      "sha256": "f214741a75cd10879bed27164167bf5585612cbce80b78fec5c76029e149f0c2",
+      "size": 56929
     },
     {
       "path": "lib/RcloneSetup.js",
@@ -297,8 +297,8 @@
     },
     {
       "path": "lib/Vault.js",
-      "sha256": "d10cb59e1d1a1715b950eca684b881caa22f3d7189fa23b0fda0d7d5b853eaf6",
-      "size": 798545
+      "sha256": "4ba937ffd9feadf1a1bdebb85d31c3461582d7d1a58c937ae5fa84ae0638b5ea",
+      "size": 799285
     },
     {
       "path": "lib/Watchdog.js",
@@ -352,8 +352,8 @@
     },
     {
       "path": "lib/templates/help.txt",
-      "sha256": "62c14a721af7dbe5f0632efc5c4852a213113fbf6298a0feb583af9dd1ea734e",
-      "size": 17505
+      "sha256": "22b17e26172d3c74aa532f727a73a014f74e77e436d0f6a22ad79f1190a1bb35",
+      "size": 17572
     },
     {
       "path": "lib/templates/notices.txt",
@@ -372,13 +372,13 @@
     },
     {
       "path": "lib/webserver/index.js",
-      "sha256": "a340b982e8af571b0bb58496ac1a6e2e0c6c362aad44517bb6facfb140965473",
-      "size": 149138
+      "sha256": "3bffa6df24550b1173a1166aa372258eb8da7dafd5590b79c103ec7f4ce9aa31",
+      "size": 149460
     },
     {
       "path": "lib/webserver/kitView.js",
-      "sha256": "10d45eb356831d4168281287328203cf31cc9cc4cff27243eae16addc7bdf167",
-      "size": 4036
+      "sha256": "e7026ed317c1551e77d75e211e5d3a1342a93cc00e6874100a5ebc6eb4303c45",
+      "size": 4035
     },
     {
       "path": "lib/webserver/mobileRoutes.js",
