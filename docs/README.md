@@ -305,6 +305,8 @@ To keep everything in a different place â€” a portable drive, or a shared path â
 
 Vaults work from external drives exactly as they do from internal storage. Create a vault by giving a full path to the drive, or add an existing vault by pointing Vaultonaut at its `.vault` folder wherever the drive is mounted. Because a vault carries no absolute paths inside it, the same folder opens on any machine and any operating system.
 
+The drive's own format matters for one thing: the largest single file. Vaultonaut encrypts each file into its own store file of about the same size, so a file in the vault cannot be larger than the drive's format allows. On a drive formatted as exFAT, APFS, NTFS, or a Linux file system, there is no practical limit. On an older FAT32 drive, no single file can reach 4 GB, so a large video or disk image in the vault will not fit there. For a portable drive you will move between Windows, macOS, and Linux, exFAT is the best choice: every system reads it, and it has no such size limit. File permissions and ownership are not stored on exFAT or FAT drives, so Vaultonaut simply does not restore them there; your file contents are unaffected.
+
 ## Commands
 
 Once installed, the command is `vdisk` (short, for everyday use); `vaultonaut` is an alias for the same tool if you prefer to type the full name. Without installing, run it directly with `node vaultonaut.js <command>`.
