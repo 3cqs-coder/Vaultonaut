@@ -26,7 +26,7 @@ All commands:
   vdisk read-only <path>           Add a read-only password (opens the vault for reading, never to change it)
   vdisk read-cap  <path>           Make a shareable read-only link (add --expires <days>, --label <name>; mount a copy with --read-cap)
   vdisk share-keypair              Recipient: make a keypair; send the sender the public key, keep the private key
-  vdisk share-seal <path> --to <public-key>   Seal read-only access to a recipient's public key (post-quantum; add --expires, --out <file>)
+  vdisk share-seal <path> --to <public-key>   Seal read-only access to a recipient's public key (post-quantum; add --expires, --label <name>, --out <file>)
   vdisk share-open <bundle> --key <private-key>   Recipient: open a sealed share, revealing a read cap to mount a copy
   vdisk team-enable <path>         Turn a vault into a team vault (you become the owner)
   vdisk member-add <path> --to <public-key>   Add a member by their public key (add --write for read-write, --label <name>)
