@@ -117,6 +117,25 @@ jobs:
         working-directory: src-tauri
         run: npm run build
 
+      # macOS: guarantee the shipped .app is validly signed, then PROVE it in the log. Tauri ad-hoc-signs during the
+      # bundle (bundle.macOS.signingIdentity "-"), but re-signing here with --force --deep is idempotent and makes the
+      # signature bulletproof even if a nested binary (the bundled Node runtime) was missed. A broken or absent
+      # signature is what makes a downloaded app show "damaged"; --verify FAILS THE BUILD loudly if signing did not
+      # take, so a damaged binary can never reach a release again. spctl is expected to say "rejected" (ad-hoc is not
+      # notarized) and that is fine — the app still opens via right-click -> Open. No-op on Windows and Linux.
+      - name: Sign and verify the macOS app
+        if: matrix.label == 'macos'
+        shell: bash
+        working-directory: src-tauri
+        run: |
+          APP=$(find target/release/bundle/macos -maxdepth 1 -name '*.app' | head -n1)
+          if [ -z "$APP" ]; then echo "No .app bundle found to sign"; exit 1; fi
+          echo "Signing: $APP"
+          codesign --force --deep --sign - --timestamp=none "$APP"
+          codesign --verify --deep --strict --verbose=2 "$APP"
+          codesign -dv --verbose=4 "$APP" || true
+          echo "Signature verified — the .app is signed."
+
       # These globs must cover whatever bundle.targets in tauri.conf.json produces. If a future Tauri adds or
       # renames an installer format, extend this list (a missing format is silent unless the whole set is empty).
       # The current set covers macOS dmg, Windows msi + nsis exe, and Linux deb + rpm.
@@ -132,9 +151,9 @@ jobs:
             src-tauri/target/release/bundle/**/*.deb
             src-tauri/target/release/bundle/**/*.rpm
 
-  # When a version tag is pushed, gather every platform's installers and attach them to a GitHub Release. It is
-  # created as a DRAFT: nothing is published until you review it and press publish — right for a security app, and
-  # it also lets you add the host-independent signature and notes first. It uses the runner's built-in `gh` CLI
+  # When a version tag is pushed, gather every platform's installers, attach them to a GitHub Release, and PUBLISH
+  # it, so the downloads are live for the public the moment the build finishes — no manual publish step. A re-run
+  # replaces the assets on the same release and keeps it published. It uses the runner's built-in `gh` CLI
   # rather than a third-party action, so no outside code runs in this write-access job. (This job is
   # GitHub-specific; on Forgejo, replace it with Forgejo's release API. The build jobs above stay identical.)
   release:
@@ -167,6 +186,8 @@ jobs:
           # un-publishes an already-published release (it just clobbers its assets).
           if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber "${FILES[@]}"
+            # If it was still a draft from an earlier run, publish it now so downloads go live.
+            gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --draft=false
           else
-            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --draft --title "$TAG" --generate-notes "${FILES[@]}"
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --title "$TAG" --generate-notes "${FILES[@]}"
           fi
