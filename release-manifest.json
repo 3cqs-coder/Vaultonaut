@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.0.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-14T14:55:50.335Z",
+  "generatedAt": "2026-09-14T15:57:24.159Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -17,8 +17,8 @@
     },
     {
       "path": "docs/README.md",
-      "sha256": "df84fffb0299efe5a5983c494eba9504668e7899b36f9e27c35698db7150992d",
-      "size": 182957
+      "sha256": "e3e2377670ee2e8006da539f48f0463b666e22dad5b77de2291f018cb56afb2a",
+      "size": 182964
     },
     {
       "path": "docs/banner.png",
@@ -57,8 +57,8 @@
     },
     {
       "path": "lib/Common.js",
-      "sha256": "7e5080d8639fc1baf656688e41b96cb80ece4de537c0dfbf405175ed70c438b5",
-      "size": 61245
+      "sha256": "dddbf0fcca6c48abf5b1d7fa3fd1f559f1838f4b67c65b111402d5458c498718",
+      "size": 62110
     },
     {
       "path": "lib/Decoy.js",
@@ -122,8 +122,8 @@
     },
     {
       "path": "lib/Integrity.js",
-      "sha256": "703116b2dcc73b5fbfc3dd21238904f78301031aa1ef3b2ce5be4737177f8072",
-      "size": 48882
+      "sha256": "9f9c847b03d4dddc7c8f562a3c7a9748a83516380193bfcdfb3b5f5dffb76766",
+      "size": 50209
     },
     {
       "path": "lib/IpMatch.js",
@@ -162,8 +162,8 @@
     },
     {
       "path": "lib/OwnerClient.js",
-      "sha256": "64b8d0b05c84e92607ec7822b7d7a92e126989fcd4d5ee5373076eaac65a4e7b",
-      "size": 7142
+      "sha256": "ec98c442a57abf9dfd0d1f8c7d547aeb1f0827399c2e927dde37b1915cc405f8",
+      "size": 7320
     },
     {
       "path": "lib/PackWorker.js",
@@ -187,13 +187,13 @@
     },
     {
       "path": "lib/RamCache.js",
-      "sha256": "f2b5a5f0cc96a82112e0cacc3fe0970563db851f3d04bfd6d02ef4839b81fbda",
-      "size": 21032
+      "sha256": "e9f338056f5a1df91a499bc258b7932dc239035c50691e19908d83f052f64073",
+      "size": 21351
     },
     {
       "path": "lib/Rclone.js",
-      "sha256": "5873bc6e74a136c2b8dbb3faf9882ac96b34aec335482cbbdef7dfcc765c987a",
-      "size": 59645
+      "sha256": "ec59539f13563735d67fce0a32dde3c551bd119963feabafae2485a583e417ed",
+      "size": 60056
     },
     {
       "path": "lib/RcloneSetup.js",
@@ -252,8 +252,8 @@
     },
     {
       "path": "lib/Serve.js",
-      "sha256": "c174753fdd5404fc18e3d41407c5383f800efd7b61e89b60b88c3ec1051f3749",
-      "size": 11359
+      "sha256": "4bbb32ac7f17a8d736390a2354771b22dc515bd85e94c990d2cd450d39b3ec40",
+      "size": 12153
     },
     {
       "path": "lib/Shamir.js",
@@ -292,8 +292,8 @@
     },
     {
       "path": "lib/Travel.js",
-      "sha256": "8b7d26a4df3e2d08e049c9a04e21d9f37ad1958c1b60edca756883238d7b9e1d",
-      "size": 3388
+      "sha256": "ae92168ff9dc2e09e1d6cdb77f8af2600611ded2f38bc69446d2e81d01782a12",
+      "size": 3400
     },
     {
       "path": "lib/UiAuth.js",
@@ -307,8 +307,8 @@
     },
     {
       "path": "lib/Vault.js",
-      "sha256": "34b6fe3c7ccd8c2c10a37768757d4fcf04e5ead24d2129112cef4c55d062052a",
-      "size": 822012
+      "sha256": "ddc61060d6aa4ca742cdbc1595395119383b43a27f81b0c6d726f0e2edf372d1",
+      "size": 823642
     },
     {
       "path": "lib/Watchdog.js",
@@ -377,8 +377,8 @@
     },
     {
       "path": "lib/verify-bundle.js",
-      "sha256": "e1cce64ea9fa3d52d97b4be8b490d3b9ed315c7907d253cbda26be3aec9bd30b",
-      "size": 32308
+      "sha256": "d8ac4aed3c181d2ed01b30585ec229e5d227ba5607a0a8c8b467f710c19bd5fd",
+      "size": 32353
     },
     {
       "path": "lib/webserver/index.js",
@@ -497,8 +497,8 @@
     },
     {
       "path": "lib/webserver/public/mobile/app.css",
-      "sha256": "a2563e232e593fe7088b839a943d57d332607ce225751699b3ead120f2c46355",
-      "size": 9748
+      "sha256": "e9976a608533ac7b52a2ceb072d96cdc37c802353422766dc1e40daf85d4593f",
+      "size": 9844
     },
     {
       "path": "lib/webserver/public/mobile/app.js",
@@ -572,8 +572,8 @@
     },
     {
       "path": "lib/webserver/public/send/index.html",
-      "sha256": "37a286d0cf5344874882ee073a0b23217ca7a88d5ef239e93ca8765346d7e2b6",
-      "size": 4007
+      "sha256": "d96e4e4c262e8e32ff24f1a635b8e641084d0ef6b869fc607c7342c23b380f61",
+      "size": 4055
     },
     {
       "path": "lib/webserver/public/shared/safe-text.js",

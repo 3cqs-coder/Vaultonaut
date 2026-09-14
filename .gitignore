@@ -39,6 +39,7 @@ data/service.pid
 
 docs/*
 !docs/README.md
+!docs/SECURITY.md
 !docs/banner.png
 !docs/banner.svg
 
