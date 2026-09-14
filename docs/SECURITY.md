@@ -24,8 +24,8 @@ timeline. Reporters who want credit are named. Please do not test against data o
 
 ## Supported versions
 
-Vaultonaut is in active development and has not had a stable release yet. Until it does, only the latest commit on
-the default branch receives security fixes. This section will be updated when versioned releases begin.
+Security fixes go into the latest release and the latest commit on the default branch. Older releases do not receive
+back-ported fixes, so always update to the newest release.
 
 ## What Vaultonaut protects
 
