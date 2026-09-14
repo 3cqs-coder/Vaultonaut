@@ -109,7 +109,7 @@ All commands:
   vdisk doctor                     Check the engine and the mount driver
   vdisk install-driver             Download and launch the mount driver installer
   vdisk open                       Open the app in your browser (starts the background service if needed)
-  vdisk ui [--port 7420]           Launch the local web interface (if it is already running, says so instead of failing; add --bind <address> to expose it to the network — a password is then required; restrict callers with --allow-ip / --deny-ip; on Windows add --supervised to auto-restart it if it ever crashes)
+  vdisk ui [--port 7420]           Launch the local web interface (if it is already running, says so instead of failing; add --bind <address> to expose it to the network — a password is then required; restrict callers with --allow-ip / --deny-ip; add --diagnostic-log to keep a daily log file for this run, off by default; on Windows add --supervised to auto-restart it if it ever crashes)
   vdisk stop                       Stop the running web/background service (refuses while a vault is open; --force stops and locks open vaults)
   vdisk web-password [set|clear]   Set or clear the web-interface login (required before --bind exposes it beyond loopback)
   vdisk autostart <install|uninstall|status>   Start the UI at login and add a clickable launcher (install adds both; add --bind <address> to start it reachable from other devices — a password is then required; --no-shortcut skips the launcher)

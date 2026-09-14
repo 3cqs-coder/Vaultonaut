@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.0.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-14T00:41:30.358Z",
+  "generatedAt": "2026-09-14T01:18:02.412Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -17,8 +17,8 @@
     },
     {
       "path": "docs/README.md",
-      "sha256": "4b620796a464113a4e4fab309e86abd2b52071353dc81c52b95035a0cc60128b",
-      "size": 174836
+      "sha256": "a3f5e1e0c79834683c7c7323e6333eb1dfae4ca5356ee26f53e3a29e2dab471b",
+      "size": 175461
     },
     {
       "path": "docs/banner.png",
@@ -52,13 +52,13 @@
     },
     {
       "path": "lib/Commands.js",
-      "sha256": "a812a1c93da174b94c6adc5f6c39d0cadac76dade791b5f963e1c67aecf0023e",
-      "size": 179363
+      "sha256": "709a5b914cd6ec04c54b90806228c95cef01265f4d961b463c1e52f6676e882c",
+      "size": 179842
     },
     {
       "path": "lib/Common.js",
-      "sha256": "48ad7e87d71d2f3880e55e0eb1443a55bd2f1783f46f98e74708cd91e8804142",
-      "size": 60341
+      "sha256": "b3d1bc4d8aaa2cd3b0efa41c27fb1b4879562a5c584d5fe254be06dc3a7864ba",
+      "size": 60871
     },
     {
       "path": "lib/Decoy.js",
@@ -147,8 +147,8 @@
     },
     {
       "path": "lib/Logger.js",
-      "sha256": "32a3402d305c7e9a46bd3cb377a07a19dda391fa2d94aeda93933e50ce4515a1",
-      "size": 7514
+      "sha256": "91808fc684b80f6b115fb3874f2a3eeed4c80aa413e24b11e17491e52d8b334f",
+      "size": 11693
     },
     {
       "path": "lib/Mobile.js",
@@ -362,8 +362,8 @@
     },
     {
       "path": "lib/templates/help.txt",
-      "sha256": "22b17e26172d3c74aa532f727a73a014f74e77e436d0f6a22ad79f1190a1bb35",
-      "size": 17572
+      "sha256": "2832d529e74d53b6989cbf74dbc8dc94c1042950dff25cd26f4d07d8ba252a1b",
+      "size": 17648
     },
     {
       "path": "lib/templates/notices.txt",
@@ -382,8 +382,8 @@
     },
     {
       "path": "lib/webserver/index.js",
-      "sha256": "aac7ca2a751aa8cd67d96b4147504d1f34561504196da3e16b52fed3f5db5ce5",
-      "size": 150366
+      "sha256": "5f4bead83f0e800c16000923bed8c7b124eaa56714cf0c2968924bb56b3d81e6",
+      "size": 150813
     },
     {
       "path": "lib/webserver/kitView.js",
@@ -467,8 +467,8 @@
     },
     {
       "path": "lib/webserver/public/js/app.js",
-      "sha256": "ed13940bb7afff68189adcb0ee2cd8c6a63977a5377ae3a765d56261f4b26aea",
-      "size": 306418
+      "sha256": "4c3ca5fca1a54e6a4ee10753fe10c307990c7881194896fedf2f521a04ad7bbb",
+      "size": 307138
     },
     {
       "path": "lib/webserver/public/js/login.js",
@@ -587,8 +587,8 @@
     },
     {
       "path": "lib/webserver/public/views/index.ejs",
-      "sha256": "4c137e4a5c9a6416c38b2613c14f7f4fb286aa3c63f22aef584df50d653c8a23",
-      "size": 86169
+      "sha256": "a882e76bce010ef43ea0c06ff2c2b73ab11f8954c0738a3b24437cb88fc837c0",
+      "size": 86686
     },
     {
       "path": "lib/webserver/public/views/login.ejs",
