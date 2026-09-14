@@ -7,12 +7,15 @@ and only once its release moment has arrived. On a computer with {{name}}:
   {{cli}} emergency-open <file>.sealed --key <your-private-key>
 
 If it is not yet time, the command will say so — try again after the release date.
-If this computer has no internet, fetch the unlock key on another device that does,
-then pass it in:
+If this computer has no internet, run the command anyway: once the release moment
+has passed, it prints the exact web link to open on another device and tells you
+which value to copy. Then pass that value in:
 
   {{cli}} emergency-open <file>.sealed --key <your-private-key> --signature <hex>
 
-Opening prints a read link. Mount a copy of the vault with it:
+Opening prints a read link. You also need a copy of the vault's encrypted folder
+(these ".sealed" files are only the keys, not the data — ask for the vault folder,
+or a backup of it, if you do not already have it). Then mount it with the link:
 
   {{cli}} mount <vault-folder> --read-cap <the-read-link>
 
