@@ -47,6 +47,16 @@ function verifySigPq(pqPubB64, payloadBuf, sigB64) {
 	try { if (!pqPubB64 || !sigB64) return false; const pub = crypto.createPublicKey({ key: Buffer.from(String(pqPubB64), 'base64'), format: 'der', type: 'spki' }); return crypto.verify(null, payloadBuf, pub, Buffer.from(String(sigB64), 'base64')); }
 	catch (_) { return false; }
 }
+// Does this runtime carry ML-DSA (OpenSSL 3.5, Node 24.7+)? Probed once. A Node built against an older OpenSSL passes
+// the version check but cannot verify the post-quantum half; treating that inability as tampering would false-report a
+// genuine release, so the check below falls back to the classical signature alone when this is false.
+let _pqAvail = null;
+function pqAvailable() {
+	if (_pqAvail !== null) return _pqAvail;
+	try { const kp = crypto.generateKeyPairSync('ml-dsa-65'); _pqAvail = crypto.verify(null, Buffer.from('probe'), kp.publicKey, crypto.sign(null, Buffer.from('probe'), kp.privateKey)); }
+	catch (_) { _pqAvail = false; }
+	return _pqAvail;
+}
 // Hash a file of ANY size without loading it whole into memory (a fixed 1 MB buffer), so verifying a large asset is
 // bounded. Sync, to keep verifyRelease synchronous and this file trivially portable.
 function hashFile(abs) {
@@ -128,8 +138,10 @@ function verifyRelease(dir, pubHexArg) {
 	// post-quantum signing (no pinned key or no .sig.pq) is checked classically alone, never falsely reported tampered.
 	const edOk = !!sigB64 && verifySig(pubHex, manifestBuf, sigB64);
 	// Once a post-quantum key is pinned in the copy, its signature is REQUIRED — a stripped .sig.pq then fails, so a
-	// quantum forger cannot downgrade to a classical-only check by deleting it. No pinned key -> classical alone.
-	const pqOk = !pqPubB64 ? true : verifySigPq(pqPubB64, manifestBuf, sigPqB64);
+	// quantum forger cannot downgrade to a classical-only check by deleting it. No pinned key -> classical alone. If this
+	// runtime cannot do ML-DSA at all, the post-quantum half is unverifiable here, so fall back to the classical
+	// signature rather than false-reporting a genuine release (the capability, not an attacker, decides this).
+	const pqOk = (!pqPubB64 || !pqAvailable()) ? true : verifySigPq(pqPubB64, manifestBuf, sigPqB64);
 	const sigOk = edOk && pqOk;
 	add('manifest-signature', sigOk, sigOk ? (pqPubB64 && sigPqB64 ? 'Verified with both the classical and the post-quantum signature.' : '') : (!edOk ? 'The manifest signature does not verify against this key.' : 'The post-quantum signature does not verify.'));
 	if (!sigOk) return { verdict: 'TAMPERED', ...out, usedEmbedded };
