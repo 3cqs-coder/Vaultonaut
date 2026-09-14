@@ -24,12 +24,15 @@ on:
       - '[0-9]+.[0-9]+.[0-9]+-*'     # 1.0.0-beta, 1.0.0-rc.1
       - 'v[0-9]+.[0-9]+.[0-9]+'      # v1.0.0
       - 'v[0-9]+.[0-9]+.[0-9]+-*'    # v1.0.0-beta
-  workflow_dispatch:    # or start a build by hand at any time — no tag and no version change needed
+  workflow_dispatch:    # or start a build by hand at any time
     inputs:
       release_tag:
-        description: "Also draft/refresh a release at this tag. Leave blank to just build the installers as downloadable artifacts (no release, no version bump)."
-        required: false
-        default: ""
+        # REQUIRED so a manual run can never finish with the release step silently skipped (which wasted a full
+        # build once). GitHub will not let you start the run until this is filled in. Enter the release tag to build
+        # and attach the installers to, for example 1.0.0. The build always uploads the installers as downloadable
+        # artifacts too, so you still get the files regardless.
+        description: "Release tag to build and attach the installers to (e.g. 1.0.0) — required."
+        required: true
 
 # Least privilege: the build jobs only need to read the repository, so the workflow's token is read-only by
 # default. The release job below re-grants itself the contents: write it needs to create the release, so write
