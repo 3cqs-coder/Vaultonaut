@@ -160,7 +160,13 @@ jobs:
           # Collect into an array so a path with a space is still passed as one argument (this file is reused
           # across projects, and another product's name could contain spaces).
           mapfile -t FILES < <(find installers -type f)
-          # Create the draft release, or if one already exists at this tag (a rebuild of the same version),
-          # replace its attached installers rather than failing.
-          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --draft --title "$TAG" --generate-notes "${FILES[@]}" \
-            || gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber "${FILES[@]}"
+          # Idempotent: if a release already exists at this tag, REPLACE its installers; otherwise create one draft.
+          # Do NOT use `gh release create ... || upload`: for a DRAFT, create succeeds even when a draft already exists
+          # at the tag (GitHub lets multiple drafts share a tag), so that pattern piles up duplicate drafts on every
+          # re-run instead of replacing. Checking for an existing release first keeps it to exactly one and never
+          # un-publishes an already-published release (it just clobbers its assets).
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber "${FILES[@]}"
+          else
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --draft --title "$TAG" --generate-notes "${FILES[@]}"
+          fi
