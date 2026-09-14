@@ -27,6 +27,7 @@ A vault is a self-contained folder. Copy that folder to another computer, an ext
   - [What a vault protects, and what it cannot](#what-a-vault-protects-and-what-it-cannot)
   - [An open format, not home-grown cryptography](#an-open-format-not-home-grown-cryptography)
   - [Strong, unpredictable keys](#strong-unpredictable-keys)
+  - [Ready for quantum computers](#ready-for-quantum-computers)
 - [Keys and recovery](#keys-and-recovery)
   - [Secure notes](#secure-notes)
   - [Finding files by name](#finding-files-by-name)
@@ -74,7 +75,7 @@ The heavy lifting is done by a bundled encryption engine and a small mount drive
 
 ## Requirements
 
-Node.js 24.7 or newer, for the command-line and from-source install described below. The desktop app bundles its own runtime, so it needs no separate Node install (see [Desktop app](#desktop-app)). Every feature works on this version, including the post-quantum protection on anything sealed to a person's public key — emergency access, a sealed read share, a team member's access, and an owner-recovery trustee share.
+Node.js 24.7 or newer, for the command-line and from-source install described below. The desktop app bundles its own runtime, so it needs no separate Node install (see [Desktop app](#desktop-app)). Every feature works on this version, including all of Vaultonaut's post-quantum protection (see [Ready for quantum computers](#ready-for-quantum-computers)).
 
 A mount driver appropriate to your system. This is the one component that cannot be bundled, because mounting a drive is done by the operating system. Vaultonaut detects whether it is present and tells you exactly what to install if it is not:
 
@@ -519,6 +520,19 @@ The strength of a vault rests on its keys being truly unpredictable. Every key, 
 This matters because of how keys have been broken elsewhere. When a tool generates a key from a weak or predictable random source, the key can be guessed offline, without ever touching the vault or the device that made it. Losses of this kind have been large, and no later fix can rescue a key that was already made weak. Vaultonaut's keys cannot be guessed this way, because each one carries full strength from a trusted source.
 
 Vaultonaut also fails safe rather than falling back. If the system cannot provide secure randomness, the operation stops instead of quietly using a weaker source. A built-in check runs with every test pass and confirms that all key material stays full-strength, so a future change cannot silently weaken it.
+
+### Ready for quantum computers
+
+You may have read that a future quantum computer could break today's encryption. Here is what that means for a vault, in plain terms.
+
+Your password and your files are already safe against a quantum computer. The encryption that scrambles your files, and the step that turns your password into a key, are the kinds of math a quantum computer does not meaningfully weaken. At best it could make guessing a password a little faster, and the memory-hard step described above is built to stay expensive even then. So a strong password is still the one thing that matters most: choose a long, unique passphrase, and the rest holds. A weak password is the real risk, quantum computer or not.
+
+Where quantum computers genuinely are a concern, Vaultonaut already uses quantum-resistant methods, and they are all automatic:
+
+- Sharing and inheritance. When you seal read access or emergency access to a person's public key, that uses a hybrid of a classical method and a quantum-resistant one. A copy captured today cannot be opened later by a quantum computer, as long as either method holds.
+- Proof that nothing was forged. Every tamper-detection record, every self-healing index, the team roster, the key-rotation history, and each signed release carry a second signature made with a quantum-resistant algorithm. So a future quantum computer cannot forge a tampered vault, a fake repair, or a counterfeit "genuine" release that would slip past Vaultonaut's checks.
+
+There is nothing to turn on, and none of it changes how you use a vault.
 
 ## Keys and recovery
 
@@ -1025,7 +1039,7 @@ A **foreign file** dropped straight into the encrypted store is also caught. Bec
 
 So someone who reaches your encrypted folder cannot slip an extra file in without it being flagged. Such a file can never surface as real content inside the mounted vault, because the engine will not decrypt it — it is an integrity concern to clean up, not a document you could open by mistake. If one is ever yours, take a snapshot to accept it; otherwise delete it from the vault's `data` folder and check again.
 
-**How the guarantee holds.** The whole file set is reduced to a single root hash (a Merkle tree), and each baseline records that root, the version number, and the previous baseline's root — a tamper-evident chain. Each baseline is protected two ways: a secret tag only the vault password can produce (so no one without it can forge a baseline that hides a change), and a digital signature whose public half is stored in the vault. Both keys come from the vault's internal master key, so they keep working unchanged after a password change, and the scheme carries a version number so a vault stays readable after the tool is updated.
+**How the guarantee holds.** The whole file set is reduced to a single root hash (a Merkle tree), and each baseline records that root, the version number, and the previous baseline's root — a tamper-evident chain. Each baseline is protected two ways: a secret tag only the vault password can produce (so no one without it can forge a baseline that hides a change), and a digital signature whose public half is stored in the vault. That signature is made with two algorithms at once — the classical Ed25519 and the post-quantum ML-DSA-65 — and a baseline is trusted only if both verify, so its authenticity holds even against a future quantum computer. The same double signature protects the manifest seal, the self-healing data, the team roster, and the key-rotation history (see [Ready for quantum computers](#ready-for-quantum-computers)). Both keys come from the vault's internal master key, so they keep working unchanged after a password change, and the scheme carries a version number so a vault stays readable after the tool is updated.
 
 The vault's settings file is protected too. Its security fields — the salt, the key slots, and the published verification key — are sealed with the same write key on every snapshot. So altering them (adding a stray key slot, weakening a setting) is reported by an audit, while your own legitimate key changes re-seal automatically and never raise a false alarm. Removing or altering the baseline — or the stored public key — is always reported as tampering.
 

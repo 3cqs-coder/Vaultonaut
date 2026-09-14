@@ -34,15 +34,19 @@ const RI = require(path.join(DEFAULT_REPO, 'lib', 'ReleaseIntegrity'));
 // bad signature, or a stale manifest that no longer matches the staged files — so the build stops rather than ship a
 // bundle whose signature does not verify. Parameterized on appDir/repoDir/pubHex for testability; the real build uses
 // the defaults (the staged app/ and the repository root) and the embedded public key.
-async function embedSignedManifest({ appDir = DEFAULT_APP, repoDir = DEFAULT_REPO, pubHex } = {}) {
+async function embedSignedManifest({ appDir = DEFAULT_APP, repoDir = DEFAULT_REPO, pubHex, pqPubHex } = {}) {
 	if (!fs.existsSync(path.join(appDir, 'vaultonaut.js'))) throw new Error('Nothing staged at ' + appDir + ' — run prepare-sidecar.js first.');
 	const manifestSrc = path.join(repoDir, RI.MANIFEST_NAME);
 	const sigSrc = path.join(repoDir, RI.SIG_NAME);
 	if (!fs.existsSync(manifestSrc) || !fs.existsSync(sigSrc)) return { signed: false };
-	// Copy the committed manifest + signature into the staged bundle, then verify they match the staged files.
+	// Copy the committed manifest + BOTH signatures into the staged bundle, then verify they match the staged files. The
+	// post-quantum signature (.sig.pq) must ship in the bundle, or the installed desktop app's own self-check — which now
+	// requires it once the maintainer's ML-DSA key is pinned — would report the app as altered.
 	fs.copyFileSync(manifestSrc, path.join(appDir, RI.MANIFEST_NAME));
 	fs.copyFileSync(sigSrc, path.join(appDir, RI.SIG_NAME));
-	const r = await RI.verifyInstall(appDir, { pubHex: pubHex || RI.embeddedPubKey() });
+	const sigPqSrc = path.join(repoDir, RI.SIG_PQ_NAME);
+	if (fs.existsSync(sigPqSrc)) fs.copyFileSync(sigPqSrc, path.join(appDir, RI.SIG_PQ_NAME));
+	const r = await RI.verifyInstall(appDir, { pubHex: pubHex || RI.embeddedPubKey(), pqPubHex });
 	if (!r.present) throw new Error('the manifest did not copy into ' + appDir + '.');
 	if (r.pubkey === false) throw new Error('lib/releasePubKey.js has no public key — run "node lib/scripts/sign-release.js --init".');
 	if (!r.signatureValid) throw new Error('the committed manifest signature does not verify against the embedded public key. Re-sign with "node lib/scripts/sign-release.js".');

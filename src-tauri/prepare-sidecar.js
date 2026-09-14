@@ -101,9 +101,10 @@ function dirSizeMB(p) {
 // Two requirements drive the pin below:
 //   1. Every platform's installer must bundle the SAME Node version. The macOS, Windows, and Linux builds each
 //      run on their own machine, so without a pin they would drift to whatever each machine happens to have.
-//   2. The compiled app must enable EVERY feature. One capability is version-gated: the post-quantum protection
-//      on anything sealed to a person's public key needs Node 24.7+ (older runtimes fall back to a classical
-//      method), so the pin must stay at or above 24.7.
+//   2. The compiled app must enable EVERY feature. Post-quantum protection needs Node 24.7+, which ships the required
+//      algorithms via OpenSSL 3.5. Sealing to a public key (ML-KEM) falls back to a classical method on an older
+//      runtime, but the post-quantum SIGNATURES on every integrity record (ML-DSA) are required with no fallback, so
+//      the pin must stay at or above 24.7 and must be an official build that carries OpenSSL 3.5.
 // The pin is single-sourced here and bumped deliberately with a release (the same discipline as the encryption
 // engine's pinned version). The build refuses to run on any other Node so a mismatched or feature-limited runtime
 // can never be shipped.

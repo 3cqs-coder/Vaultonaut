@@ -127,7 +127,9 @@ function verifyRelease(dir, pubHexArg) {
 	// the ML-DSA signature must verify too — so the release is authentic only if both hold. A copy that predates
 	// post-quantum signing (no pinned key or no .sig.pq) is checked classically alone, never falsely reported tampered.
 	const edOk = !!sigB64 && verifySig(pubHex, manifestBuf, sigB64);
-	const pqOk = (!pqPubB64 || !sigPqB64) ? true : verifySigPq(pqPubB64, manifestBuf, sigPqB64);
+	// Once a post-quantum key is pinned in the copy, its signature is REQUIRED — a stripped .sig.pq then fails, so a
+	// quantum forger cannot downgrade to a classical-only check by deleting it. No pinned key -> classical alone.
+	const pqOk = !pqPubB64 ? true : verifySigPq(pqPubB64, manifestBuf, sigPqB64);
 	const sigOk = edOk && pqOk;
 	add('manifest-signature', sigOk, sigOk ? (pqPubB64 && sigPqB64 ? 'Verified with both the classical and the post-quantum signature.' : '') : (!edOk ? 'The manifest signature does not verify against this key.' : 'The post-quantum signature does not verify.'));
 	if (!sigOk) return { verdict: 'TAMPERED', ...out, usedEmbedded };
