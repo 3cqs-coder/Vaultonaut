@@ -21,6 +21,7 @@ const crypto = require('crypto');
 
 const MANIFEST_NAME = 'release-manifest.json';
 const SIG_NAME = 'release-manifest.sig';
+const SIG_PQ_NAME = 'release-manifest.sig.pq';
 const KEY_NAME = 'release-signing-key.json';
 // The manifest format this verifier understands. A future release may use a new schema/hash; its signature would
 // still verify, but the file-hash comparison below assumes THIS shape (sha256, files[].sha256). If the manifest
@@ -33,11 +34,17 @@ const SPKI_PREFIX = Buffer.from('302a300506032b6570032100', 'hex'); // raw Ed255
 // The covered scope — MUST stay in sync with EXCLUDE_TOP / EXCLUDE_NAME in lib/ReleaseIntegrity.js (a test asserts
 // they match). Used only to flag EXTRANEOUS files (present but not in the manifest); the per-file hash check keys off
 // the manifest, so a drift here can only produce a fail-closed (over-cautious) result, never a false pass.
-const EXCLUDE_TOP = new Set(['.git', '.github', '.githooks', 'node_modules', 'package-lock.json', 'data', '.test-data', MANIFEST_NAME, SIG_NAME, KEY_NAME, 'SHA256SUMS', 'SHA256SUMS.sig']);
+const EXCLUDE_TOP = new Set(['.git', '.github', '.githooks', 'node_modules', 'package-lock.json', 'data', '.test-data', MANIFEST_NAME, SIG_NAME, SIG_PQ_NAME, KEY_NAME, 'SHA256SUMS', 'SHA256SUMS.sig']);
 const EXCLUDE_NAME = new Set(['.DS_Store', 'Thumbs.db', KEY_NAME]);
 
 function verifySig(pubHex, payloadBuf, sigB64) {
 	try { const pub = crypto.createPublicKey({ key: Buffer.concat([SPKI_PREFIX, Buffer.from(pubHex, 'hex')]), format: 'der', type: 'spki' }); return crypto.verify(null, payloadBuf, pub, Buffer.from(sigB64, 'base64')); }
+	catch (_) { return false; }
+}
+// The post-quantum (ML-DSA-65) companion check. The public key is the base64 SPKI as published by the maintainer.
+// Provided natively by OpenSSL 3.5 (Node 24.7+). Fails closed on any malformed input.
+function verifySigPq(pqPubB64, payloadBuf, sigB64) {
+	try { if (!pqPubB64 || !sigB64) return false; const pub = crypto.createPublicKey({ key: Buffer.from(String(pqPubB64), 'base64'), format: 'der', type: 'spki' }); return crypto.verify(null, payloadBuf, pub, Buffer.from(String(sigB64), 'base64')); }
 	catch (_) { return false; }
 }
 // Hash a file of ANY size without loading it whole into memory (a fixed 1 MB buffer), so verifying a large asset is
@@ -98,6 +105,9 @@ function extraneousFiles(dir, listedSet) {
 function embeddedPubKey(dir) {
 	try { const m = require(path.resolve(dir, 'lib', 'releasePubKey.js')); return (m && m.pubkey) || null; } catch (_) { return null; }
 }
+function embeddedPqPubKey(dir) {
+	try { const m = require(path.resolve(dir, 'lib', 'releasePubKey.js')); return (m && m.pqPubkey) || null; } catch (_) { return null; }
+}
 
 function verifyRelease(dir, pubHexArg) {
 	dir = path.resolve(dir || '.');
@@ -107,12 +117,19 @@ function verifyRelease(dir, pubHexArg) {
 	try { manifestBuf = fs.readFileSync(path.join(dir, MANIFEST_NAME)); } catch (_) { add('manifest-present', false, 'No ' + MANIFEST_NAME + ' here — this folder has no signed release manifest.'); return { verdict: 'UNVERIFIED', ...out }; }
 	add('manifest-present', true);
 	let sigB64 = null; try { sigB64 = fs.readFileSync(path.join(dir, SIG_NAME), 'utf8').trim(); } catch (_) {}
+	let sigPqB64 = null; try { sigPqB64 = fs.readFileSync(path.join(dir, SIG_PQ_NAME), 'utf8').trim(); } catch (_) {}
 	const usedEmbedded = !pubHexArg;
 	const pubHex = pubHexArg || embeddedPubKey(dir);
+	const pqPubB64 = embeddedPqPubKey(dir);
 	if (!pubHex) { add('public-key', false, 'No public key: pass --pubkey <hex> from the README, or the copy has no embedded key.'); return { verdict: 'UNVERIFIED', ...out }; }
 	add('public-key', true, usedEmbedded ? 'Using the key embedded in this copy (pass --pubkey from the README for a stronger check).' : 'Using the key you supplied.');
-	const sigOk = !!sigB64 && verifySig(pubHex, manifestBuf, sigB64);
-	add('manifest-signature', sigOk, sigOk ? '' : 'The manifest signature does not verify against this key.');
+	// AND-combiner: the classical (Ed25519) signature must verify, and when a post-quantum key and signature are present
+	// the ML-DSA signature must verify too — so the release is authentic only if both hold. A copy that predates
+	// post-quantum signing (no pinned key or no .sig.pq) is checked classically alone, never falsely reported tampered.
+	const edOk = !!sigB64 && verifySig(pubHex, manifestBuf, sigB64);
+	const pqOk = (!pqPubB64 || !sigPqB64) ? true : verifySigPq(pqPubB64, manifestBuf, sigPqB64);
+	const sigOk = edOk && pqOk;
+	add('manifest-signature', sigOk, sigOk ? (pqPubB64 && sigPqB64 ? 'Verified with both the classical and the post-quantum signature.' : '') : (!edOk ? 'The manifest signature does not verify against this key.' : 'The post-quantum signature does not verify.'));
 	if (!sigOk) return { verdict: 'TAMPERED', ...out, usedEmbedded };
 	let manifest; try { manifest = JSON.parse(manifestBuf.toString('utf8')); } catch (_) { add('manifest-readable', false, 'The manifest is not readable JSON.'); return { verdict: 'TAMPERED', ...out, usedEmbedded }; }
 	// The signature is valid, so the manifest is authentic — but if it is a newer FORMAT this build cannot compare
