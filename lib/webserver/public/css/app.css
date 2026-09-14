@@ -253,6 +253,10 @@ img.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; } /* the b
 
 /* Base chip look, so a badge with no modifier (a member role, a version origin, the tamper-proof/WORM chip) still
    reads as a chip rather than plain padded text. Modifier classes below (.mounted/.sealed/…) override these. */
+/* The live-status badge group is a layout-transparent wrapper: `display: contents` removes its own box so the badges
+   inside stay direct flex children of .name (same 8px gap and wrapping as before). It exists only so the self-heal
+   "updating" and mirror "syncing" pills can be refreshed in place while a More menu or dialog is open. */
+.live-badges { display: contents; }
 .badge { font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; color: var(--muted); background: var(--panel); border: 1px solid var(--border); }
 .badge.mounted { color: var(--good); background: var(--good-bg); }
 .badge.invalid { color: var(--danger); background: transparent; border: 1px solid var(--danger); }

@@ -10,6 +10,7 @@ A vault is a self-contained folder. Copy that folder to another computer, an ext
 
 - [How it works](#how-it-works)
 - [Requirements](#requirements)
+- [Running on low-power devices](#running-on-low-power-devices)
 - [Setup](#setup)
 - [Verifying your download](#verifying-your-download)
   - [Checking for updates](#checking-for-updates)
@@ -96,6 +97,16 @@ node vaultonaut.js install-driver
 ```
 
 This downloads the official, checksum-verified driver installer (FUSE-T on macOS, WinFsp on Windows) and opens it; on Linux it prints the one package command to run. The web interface offers the same as a button.
+
+## Running on low-power devices
+
+Vaultonaut runs well on small, always-on machines such as a Raspberry Pi or a home NAS. Two things are worth setting up correctly.
+
+The first is the runtime. The command-line and from-source install need Node.js 24.7 or newer on a 64-bit system. A Raspberry Pi 4 or 5 running a 64-bit operating system meets this. A very old or 32-bit board, such as a Pi Zero or the original Pi, cannot run a current Node.js and is not supported. On Linux the mount driver is simply FUSE, which nearly every distribution already includes.
+
+The second is the unlock cost, and it is the only setting that noticeably affects speed on modest hardware. To make guessing your password expensive, Vaultonaut stretches it with a memory-hard function, and you choose how hard with `--kdf`. The default `standard` level uses 64 MiB of memory and unlocks quickly on any board with at least 1 GB of RAM, so it is the right choice on a small device. The `high` and `max` levels use 256 MiB and 512 MiB. They take a few seconds on a Pi, and `max` needs about half a gigabyte free, so leave `max` for a desktop.
+
+Everything else is built to stay light. File contents use a cipher that is fast in software, so speed does not depend on the hardware AES acceleration that small boards often lack. The demanding background jobs, such as self-healing, whole-vault checks, and search, run on a separate thread and pause to breathe as they work. The interface and any mounted drive stay responsive even on a single slow core. A large vault simply takes longer in the background; it never freezes the device.
 
 ## Setup
 
