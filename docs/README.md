@@ -29,10 +29,10 @@ A vault is a self-contained folder. Copy that folder to another computer, an ext
   - [Strong, unpredictable keys](#strong-unpredictable-keys)
   - [Ready for quantum computers](#ready-for-quantum-computers)
 - [Keys and recovery](#keys-and-recovery)
-  - [Secure notes](#secure-notes)
   - [Finding files by name](#finding-files-by-name)
   - [Read-only access and sharing](#read-only-access-and-sharing)
   - [Viewing files in the app](#viewing-files-in-the-app)
+- [Secure notes](#secure-notes)
 - [Team vaults](#team-vaults)
 - [Per-vault decoy protection (advanced)](#per-vault-decoy-protection-advanced)
 - [Travel mode](#travel-mode)
@@ -550,22 +550,6 @@ A Recovery Kit turns a lost password into a recovery, not a catastrophe. `vdisk 
 
 Store the kit somewhere safe and separate from the vault, such as a locked drawer or a trusted password manager. Because it can contain a recovery key, the file is written readable only by you, and the key inside it is shown only there — treat the whole page as private. Pass `--no-key` to produce an identity-only kit: it records the identity and fingerprint without adding a key or needing your password — useful as a printed record you can check a restored vault against later.
 
-### Secure notes
-
-Open a vault and you can keep secure items inside it — logins, payment cards, crypto recovery phrases, API keys, Wi-Fi passwords, identity details, and plain notes — right in the web interface under **Notes** on any unlocked vault. Pick a type and the item gives you the right fields. A field can be a password, a one-time-code (2FA) secret, a website, a PIN, a date, or plain text, and you can add your own fields to any item. It replaces the scattered places people keep these things today, without leaving your own computer.
-
-A login can hold its two-factor secret, and the app shows the rolling six-digit code with its countdown right beside the password. The code is worked out on your device each time, so the changing code is never stored — only the setup secret is. Every field has a copy button, secret fields stay hidden until you choose to reveal them, and a type icon and quick filter make a long list easy to scan.
-
-Because an item can hold passwords, its title, its fields, and its note are all encrypted a second time, on top of the vault's own encryption. The stored item is ciphertext, so the plaintext exists only for the moment the app decrypts an item to show it. This is stronger than the protection on a normal file. Even a program with access to the vault's files — a search indexer, a backup tool, another app — still cannot read your items. They are encrypted with a key derived from your vault password, so they decrypt automatically while the vault is unlocked, with no second password to enter. They also stay readable after a password change or a key rotation. Items are written straight to the encrypted store. They are saved the instant you enter them, and they work the same on macOS, Linux, and Windows, whether or not the vault is mounted as a drive.
-
-You can also read your items without mounting the vault as a drive. Choose **View files & notes** on a vault, open it in this browser, and your secure items appear there under **Secure notes**, decrypted only in the page — the same low-residue path the file viewer uses. It works on a phone through the one-time code too, so your logins and codes travel with you.
-
-Items travel with the vault through backups, mirrors, and shared copies, and because they are real files in the vault, the tamper check accounts for them like any other content.
-
-A couple of walk-away conveniences match what a password manager does. The Notes window closes itself after a few minutes with no activity, so a note left open on screen does not stay revealed. And when you copy a secret, the clipboard is cleared again a short time later — best-effort, since a browser may not allow it, and only if you have not copied something else in the meantime.
-
-Notes also include an on-device password check, reached with **Check password health** in the Notes window. It scans the logins you have stored and flags three things: a password reused across more than one item, a weak password, and, if you opt in, one that has appeared in a known public breach. The check runs entirely on your machine and shows only which items have an issue, never any password. The breach step is optional and privacy-preserving. Only a short one-way hash prefix of a password is ever sent to look it up, never the password itself, so the service you check against learns nothing about your passwords.
-
 ### Finding files by name
 
 An encrypted vault is invisible to your computer's own search, so Vaultonaut gives you a **Search** on each open vault (or `vdisk search <vault> <text>`) that finds files and folders by name. It reads only names, never file contents, so it is fast even on a large vault. When the vault is open, the search needs no password. When it is closed, the command asks for the password and decrypts just the names to search them — nothing is written to disk.
@@ -625,6 +609,24 @@ A vault has a built-in viewer, so you can look through its files without mountin
 The phone code works once and expires soon. It never carries your password or your keys — it is only a handle the phone trades, over the connection, for read-only access. That phone grant is recorded so you can see and revoke it under **Keys → Who has access** (the local in-browser view is not, since it is ephemeral). Either way the viewer is read-only: it can read the vault but never change it. Locking the vault, revoking the access from the desktop, or choosing **Lock** in the viewer ends the session.
 
 Your phone needs a way to reach this computer. On the same network that can be a local address; from elsewhere it is a VPN or tunnel you already run. For the viewer to install to the home screen and work fully offline, the phone must reach it over a secure `https` address (a reverse proxy, a VPN, or a tunnel with a real certificate) — a browser only grants offline storage to a secure page. Over a plain address you can still view the vault while connected. When you do save a copy for offline use, only the encrypted files are stored on the phone; the decrypted content is never written to the phone's storage.
+
+## Secure notes
+
+Vaultonaut is more than a file vault. Every vault is also a built-in password manager and secure-notes keeper, so the logins, cards, keys, and private notes that usually live in a separate app sit inside the same encrypted vault as your files. One tool holds all of it, one password unlocks it, and nothing is ever sent to another company's server.
+
+Open a vault and you can keep secure items inside it — logins, payment cards, crypto recovery phrases, API keys, Wi-Fi passwords, identity details, and plain notes — right in the web interface under **Notes** on any unlocked vault. Pick a type and the item gives you the right fields. A field can be a password, a one-time-code (2FA) secret, a website, a PIN, a date, or plain text, and you can add your own fields to any item. It replaces the scattered places people keep these things today, without leaving your own computer.
+
+A login can hold its two-factor secret, and the app shows the rolling six-digit code with its countdown right beside the password. The code is worked out on your device each time, so the changing code is never stored — only the setup secret is. Every field has a copy button, secret fields stay hidden until you choose to reveal them, and a type icon and quick filter make a long list easy to scan.
+
+Because an item can hold passwords, its title, its fields, and its note are all encrypted a second time, on top of the vault's own encryption. The stored item is ciphertext, so the plaintext exists only for the moment the app decrypts an item to show it. This is stronger than the protection on a normal file. Even a program with access to the vault's files — a search indexer, a backup tool, another app — still cannot read your items. They are encrypted with a key derived from your vault password, so they decrypt automatically while the vault is unlocked, with no second password to enter. They also stay readable after a password change or a key rotation. Items are written straight to the encrypted store. They are saved the instant you enter them, and they work the same on macOS, Linux, and Windows, whether or not the vault is mounted as a drive.
+
+You can also read your items without mounting the vault as a drive. Choose **View files & notes** on a vault, open it in this browser, and your secure items appear there under **Secure notes**, decrypted only in the page — the same low-residue path the file viewer uses. It works on a phone through the one-time code too, so your logins and codes travel with you.
+
+Items travel with the vault through backups, mirrors, and shared copies, and because they are real files in the vault, the tamper check accounts for them like any other content.
+
+A couple of walk-away conveniences keep an open Notes window from becoming a liability. The Notes window closes itself after a few minutes with no activity, so a note left open on screen does not stay revealed. And when you copy a secret, the clipboard is cleared again a short time later — best-effort, since a browser may not allow it, and only if you have not copied something else in the meantime.
+
+Notes also include an on-device password check, reached with **Check password health** in the Notes window. It scans the logins you have stored and flags three things: a password reused across more than one item, a weak password, and, if you opt in, one that has appeared in a known public breach. The check runs entirely on your machine and shows only which items have an issue, never any password. The breach step is optional and privacy-preserving. Only a short one-way hash prefix of a password is ever sent to look it up, never the password itself, so the service you check against learns nothing about your passwords.
 
 ## Team vaults
 
