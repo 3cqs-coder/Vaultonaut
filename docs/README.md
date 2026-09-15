@@ -26,6 +26,7 @@ A vault is a self-contained folder. Copy that folder to another computer, an ext
 - [External drives](#external-drives)
 - [Commands](#commands)
 - [Running a project from a vault](#running-a-project-from-a-vault)
+- [For developers and power users](#for-developers-and-power-users)
 - [Security](#security)
   - [What a vault protects, and what it cannot](#what-a-vault-protects-and-what-it-cannot)
   - [An open format, not home-grown cryptography](#an-open-format-not-home-grown-cryptography)
@@ -510,6 +511,20 @@ The right approach is a simple rule. Put in the vault what is sensitive — your
 
 - Keep the app in the vault. Symlink the heavy directories out to the ordinary disk, for example `ln -s ~/project-modules/myapp "…/Vaultonaut/MyVault/myapp/node_modules"`. Your source stays encrypted, while `npm install` and `require()` use the fast disk through the link.
 - Keep the app on the ordinary disk (better while actively developing, so npm, git, and builds stay fast) and put only the secrets and data in the vault; the app reads them from the mounted drive.
+
+## For developers and power users
+
+Vaultonaut stays simple on the surface and deep underneath. Everything the web interface and the desktop app can do is also a plain command, so a vault fits into scripts, scheduled jobs, and headless servers as naturally as into a window. Nothing is hidden behind the graphical interface.
+
+**Everything is a command.** The `vdisk` command (its full name is `vaultonaut`, or `node vaultonaut.js` without installing) covers the entire feature set — create, mount, share, back up, mirror, rotate keys, attest, split, and the rest are all in the [Commands](#commands) list above. There is no capability that only the graphical interface can reach.
+
+**Headless by design.** None of this needs a screen. A server with no display can create vaults, run scheduled backups and mirrors, serve a vault as a node for another machine, and check integrity, entirely from the command line. Start the web interface only if you want it; the background service and the CLI do the work without it.
+
+**The same on every platform.** The command line behaves identically on macOS, Windows, and Linux — same commands, same flags, same output — so a script written on one runs on the others.
+
+**Built to automate.** Every command returns a standard exit code, zero on success and non-zero on failure, so a script can branch on the result. Pass `--data-dir <folder>` to point a run at its own isolated data directory, which keeps an automated or test setup fully separate from your everyday vaults. Long operations, such as a key rotation or a large backup, print progress as they run and can be safely interrupted and resumed.
+
+**A local interface underneath.** When the web interface is running, the browser talks to a small JSON service on your own machine. That service is currently the internal contract for the bundled interface, so it can change between releases. A documented, versioned public API for building your own front-ends and integrations is planned; until it lands, the command line is the stable surface to build on.
 
 ## Security
 
