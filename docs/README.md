@@ -1122,6 +1122,7 @@ Symbolic links are carried too. Each one is stored as a small link file and appe
 Short answers to the questions that come up most, each pointing to the section with the full story.
 
 - **Where is my password kept?** Nowhere. It is asked for only when you create or unlock a vault, and used in memory to derive the key — it is never written to disk. See [Security](#security).
+- **Can Vaultonaut hold my passwords and notes too?** Yes. Every vault has built-in secure notes for logins, two-factor codes, cards, keys, and private notes, all encrypted inside the vault and kept only on your computer. See [Secure notes](#secure-notes).
 - **What if I forget my password?** Without a recovery key or a second password, the data is unrecoverable by design — there is no back door. So set up a recovery key or a Recovery Kit ahead of time. See [Keys and recovery](#keys-and-recovery).
 - **Can I open the same vault on another computer, or a different operating system?** Yes. A vault is a self-contained folder that opens on macOS, Windows, or Linux with its password, with nothing inside it tied to one machine. See [External drives](#external-drives).
 - **Is any decrypted data written to my disk?** No. Files are decrypted in memory as you use them, and the small in-place write buffer lives in a RAM disk — nothing decrypted touches the persistent disk. See [How it works](#how-it-works) and [Keeping vaults intact](#keeping-vaults-intact).
