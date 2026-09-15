@@ -4,10 +4,13 @@
 
 Vaultonaut creates portable, password-protected encrypted vaults and mounts them as ordinary drives. Once a vault is unlocked it behaves like any other disk: you open, edit, and save files with any application, and every read and write is encrypted and decrypted on the fly. Nothing is ever written to the vault in the clear.
 
+A vault holds more than files. The same vault is also a built-in password manager and secure-notes keeper, so your logins, two-factor codes, cards, keys, and private notes live in the same encrypted place as your documents. It is an all-in-one, and it runs on your own computer with no account and no cloud required.
+
 A vault is a self-contained folder. Copy that folder to another computer, an external drive, or a cloud-sync folder and it opens anywhere with its password — on macOS, Windows, or Linux.
 
 ## Table of Contents
 
+- [Why Vaultonaut](#why-vaultonaut)
 - [How it works](#how-it-works)
 - [Requirements](#requirements)
 - [Running on low-power devices](#running-on-low-power-devices)
@@ -63,6 +66,21 @@ A vault is a self-contained folder. Copy that folder to another computer, an ext
 - [Troubleshooting](#troubleshooting)
 - [License](#license)
 
+## Why Vaultonaut
+
+Most people juggle a separate tool for each of these jobs. Vaultonaut does them in one place, on your own computer, with nothing sent to another company's server.
+
+- **One encrypted drive for everything.** Unlock a vault and it mounts like a normal disk. Every file is encrypted on the way to disk and decrypted on the way back, and nothing is written in the clear.
+- **A password manager and secure notes, built in.** Keep logins, payment cards, crypto recovery phrases, API keys, Wi-Fi passwords, and plain notes in the same vault. Logins show a rolling two-factor code, and an on-device check flags weak, reused, or breached passwords.
+- **Unlock your way.** A password, a recovery key, a keyfile, Touch ID, Windows Hello, or a hardware security key — any of them opens the vault.
+- **Share without a middleman.** Grant read-only access, seal a share to one specific person, or send a single item by link. Only encrypted data ever leaves your computer, so sharing stays zero-knowledge.
+- **Team vaults.** Give each member their own sealed key slot and role, and rotate keys with one command to truly re-encrypt and revoke access.
+- **Guard against loss.** Off-site backups, mirrors across places, self-healing parity, version history, and splitting a vault across locations all protect against losing data or access.
+- **Prove it was not touched.** Built-in tamper detection, a strict seal, rollback protection, trusted timestamps, and an offline-verifiable proof bundle.
+- **Emergency and inheritance access.** An optional dead-man's switch hands access to a trusted contact if you no longer can.
+- **Private by default, ready for the future.** Loopback-only access, an open and documented vault format, and signatures and key exchange that pair classical and post-quantum schemes.
+- **Everywhere, no account.** Works on macOS, Windows, and Linux, with a zero-knowledge phone viewer, and needs no sign-up and no cloud.
+
 ## How it works
 
 Each vault is a folder containing a small `vault.json` description and a `data` directory that holds your files with their names and contents encrypted. When you mount a vault, the operating system shows you a normal drive; behind it, files are encrypted on their way to disk and decrypted on their way back. When you unmount, the drive disappears and only the encrypted folder remains.
@@ -72,6 +90,8 @@ Decryption happens only in memory. A mounted vault behaves like an ordinary driv
 The in-memory buffer works out of the box on macOS and Linux. On Windows it needs a RAM-disk driver. Without one, a vault still opens and streams, and still writes nothing to disk — only in-place edits and media playback need the driver.
 
 The heavy lifting is done by a bundled encryption engine and a small mount driver that plugs into the operating system (installed once for your platform — see Requirements). You never handle keys directly, and your password is never stored — it is asked for when you create or unlock a vault and used only to derive the encryption key in memory.
+
+A vault is not only for files. The same unlocked vault also works as a password manager and secure-notes keeper, so your logins, two-factor codes, and private notes are kept and read right in the app — see [Secure notes](#secure-notes).
 
 ## Requirements
 
@@ -186,7 +206,7 @@ Automatic checking is turned off by default, on purpose. A check reaches out ove
 
 ## Quick start
 
-Create a vault, mount it, use it, and unmount it:
+There is nothing to switch on. A vault is encrypted by default, works offline, and needs no account and no cloud. Create one, mount it, use it, and unmount it:
 
 ```
 node vaultonaut.js create Personal
