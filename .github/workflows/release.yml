@@ -45,10 +45,12 @@ jobs:
   # and this runs the FULL drift/regression suite that the fast smoke-only pre-commit hook skips. Linux is the
   # GATING platform (the suite is platform-agnostic Node with no native build step). macOS and Windows also run, to
   # exercise the many platform-specific branches and the unmount ladder that a Linux-only run never reaches, but they
-  # are NON-BLOCKING for now: many tests skip without a mount driver on the hosted runners, and the cross-platform
-  # paths have not all been proven green there yet, so a failure on those platforms must not block a release. Once
-  # they run clean, drop the continue-on-error so they gate too. fail-fast is off so one platform never cancels the
-  # others, and the per-test timeout in the runner keeps a hang on any platform from stalling the whole job.
+  # are NON-BLOCKING for now: the mount-cycle tests still skip without a mount driver (FUSE-T / WinFsp) on the hosted
+  # runners, and the cross-platform paths have not all been proven green there yet, so a failure on those platforms
+  # must not block a release. Once they run clean, drop the continue-on-error so they gate too. The step below fetches
+  # the encryption engine first, so the ~90 engine-dependent tests actually run instead of self-skipping; only the
+  # driver-gated mount tests still skip. fail-fast is off so one platform never cancels the others, and the per-test
+  # timeout in the runner keeps a hang on any platform from stalling the whole job.
   test:
     strategy:
       fail-fast: false
@@ -64,6 +66,17 @@ jobs:
       - name: Install app dependencies
         shell: bash
         run: npm install --no-audit --no-fund
+      # Fetch the checksum-verified encryption engine so the engine-dependent tests run instead of self-skipping. It
+      # is a userspace binary download — no admin, kernel extension, or mount driver needed. Retry a few times so a
+      # transient network blip does not fail the job, and fail the step (not silently pass) if it never becomes ready.
+      - name: Download the encryption engine
+        shell: bash
+        run: |
+          for i in 1 2 3; do
+            node -e "require('./lib/RcloneSetup').ensure().then(r=>{console.log(r.ok?'engine ready':'setup failed');process.exit(r.ok?0:1)}).catch(e=>{console.error(String(e&&e.message||e));process.exit(1)})" && exit 0
+            echo "engine setup attempt $i failed; retrying in 5s"; sleep 5
+          done
+          exit 1
       - name: Run the unit suite
         shell: bash
         run: npm run test:all
