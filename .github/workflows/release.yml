@@ -15,7 +15,12 @@ name: Build desktop apps
 
 on:
   push:
-    # Tag a release to build all platforms and draft a release. Matches a bare semver tag (1.0.0, 1.0.0-beta,
+    # A push to a listed BRANCH runs the TESTS ONLY. The build and release jobs are gated (below) to tags and manual
+    # runs, so a branch push never builds installers and never publishes anything — it just verifies the suite. This
+    # is the safe way to check a change (including a CI change) on every push, with no risk of a public release.
+    branches:
+      - master
+    # Tag a release to build all platforms and publish a release. Matches a bare semver tag (1.0.0, 1.0.0-beta,
     # 1.0.0-rc.1) AND an optional "v" prefix (v1.0.0), so it fires regardless of tagging convention. These are
     # GitHub Actions filter globs, not regex: [0-9]+ is one-or-more digits, and the trailing -* covers a pre-release
     # suffix. If you tag some other way, add the pattern here or the build will not run.
@@ -24,6 +29,10 @@ on:
       - '[0-9]+.[0-9]+.[0-9]+-*'     # 1.0.0-beta, 1.0.0-rc.1
       - 'v[0-9]+.[0-9]+.[0-9]+'      # v1.0.0
       - 'v[0-9]+.[0-9]+.[0-9]+-*'    # v1.0.0-beta
+  pull_request:
+    # Same tests-only run for a pull request targeting these branches — no build, no release.
+    branches:
+      - master
   workflow_dispatch:    # or start a build by hand at any time
     inputs:
       release_tag:
@@ -83,6 +92,9 @@ jobs:
 
   build:
     needs: test
+    # Only build installers for a real release: a version-tag push, or a manual run. A plain branch push or a pull
+    # request runs the tests above and stops there — no installers, and (since release needs build) no release job.
+    if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
     strategy:
       fail-fast: false
       matrix:
