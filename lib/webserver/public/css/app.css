@@ -296,9 +296,9 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 
 /* Notification center */
 .notif-wrap { position: relative; display: inline-flex; }
-.notif-badge { position: absolute; top: -5px; right: -5px; min-width: 17px; height: 17px; padding: 0 4px;
-	border-radius: var(--radius-pill); background: var(--accent-btn); color: #fff; font: 700 10px/17px inherit;
-	text-align: center; box-shadow: 0 0 0 2px var(--panel); }
+.notif-badge { position: absolute; top: -5px; right: -5px; min-width: 18px; height: 18px; padding: 0 5px; box-sizing: border-box;
+	border-radius: var(--radius-pill); background: var(--accent-btn); color: #fff; font-size: 10px; font-weight: 700;
+	display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 0 0 2px var(--panel); }
 .notif-panel { position: absolute; top: 48px; right: 0; width: 320px; max-width: 86vw; z-index: 30;
 	background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg);
 	box-shadow: var(--bevel), var(--shadow-lift); overflow: hidden; padding: var(--sp-1); }
