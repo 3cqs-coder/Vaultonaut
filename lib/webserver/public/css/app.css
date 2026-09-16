@@ -276,6 +276,30 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 .main-title p { margin: 5px 0 0; color: var(--muted); font-size: 13.5px; max-width: 58ch; }
 .new-vault-btn { flex: 0 0 auto; }
 
+/* Top controls — the notification bell plus the global actions (refresh / theme / lock / logout) that used to live
+   in the rail foot, all icon-only. */
+.main-actions { display: flex; align-items: center; gap: var(--sp-4); flex: 0 0 auto; }
+.icon-btn { width: 40px; height: 40px; flex: 0 0 auto; border-radius: var(--radius-sm); border: 1px solid var(--border);
+	background: var(--panel); color: var(--text); display: grid; place-items: center; cursor: pointer;
+	box-shadow: var(--bevel); transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease); }
+.icon-btn svg { width: 19px; height: 19px; }
+@media (hover: hover) { .icon-btn:hover { background: var(--panel-2); border-color: var(--accent-quiet); } }
+.icon-btn:active { transform: translateY(1px); }
+
+/* Notification center */
+.notif-wrap { position: relative; display: inline-flex; }
+.notif-badge { position: absolute; top: -5px; right: -5px; min-width: 17px; height: 17px; padding: 0 4px;
+	border-radius: var(--radius-pill); background: var(--accent-btn); color: #fff; font: 700 10px/17px inherit;
+	text-align: center; box-shadow: 0 0 0 2px var(--panel); }
+.notif-panel { position: absolute; top: 48px; right: 0; width: 320px; max-width: 86vw; z-index: 30;
+	background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg);
+	box-shadow: var(--bevel), var(--shadow-lift); overflow: hidden; padding: var(--sp-1); }
+.notif-head { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); padding: 10px 10px 6px; }
+.notif-clear { display: flex; align-items: center; gap: 10px; padding: 12px 10px; color: var(--muted); font-size: 13px; }
+.notif-clear svg { width: 18px; height: 18px; color: var(--good); flex: 0 0 auto; }
+/* the integrity banner sits inside the dropdown now: drop the full-bleed feel, fit the panel */
+.notif-panel .banner { margin: 2px; border-radius: 10px; }
+
 /* Panels: framed content blocks (the Create form, dialogs' bodies). The vaults
    list is frameless so the cards read as the page's primary content. */
 .panel {
@@ -714,7 +738,11 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 	.card .info { flex: 1 1 0; }
 	.card .actions { flex: 1 0 100%; justify-content: flex-start; }
 	.main-top { flex-direction: column; }
-	.new-vault-btn { width: 100%; }
+	/* The top controls become a full-width row on a phone: the icon buttons keep their size and the New vault button
+	   flexes to fill the rest; they wrap if the logout icon is also showing. */
+	.main-actions { width: 100%; flex-wrap: wrap; }
+	.new-vault-btn { flex: 1 1 auto; }
+	.notif-panel { right: auto; left: 0; }
 	/* Trim the welcome card's generous side padding on a phone so the reassurance lines keep a comfortable measure
 	   and never force a sideways scroll; the create CTA also goes full-width to match the header New-vault button. */
 	.empty-state { padding-left: var(--sp-7); padding-right: var(--sp-7); }
