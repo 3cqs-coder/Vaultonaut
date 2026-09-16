@@ -594,6 +594,28 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
    scroll, sticky behaves as static, so it simply sits at the end as before (with a subtle top divider). */
 .dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 10px; position: sticky; bottom: -22px; margin: 18px -22px -22px; padding: 12px 22px; background: var(--panel); border-top: 1px solid var(--border); }
 
+/* Manage surface — the grouped, described action rows that replace the old "More" dropdown, in a wider dialog. */
+.dialog.manage-dialog { width: min(520px, 94vw); }
+.manage-group { margin-top: 18px; }
+.manage-group:first-child { margin-top: 6px; }
+.manage-group-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); margin: 0 0 8px; }
+.manage-group.danger .manage-group-label { color: var(--danger); }
+.alist { display: grid; gap: 8px; }
+.arow { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 11px 12px; border: 1px solid var(--border);
+	border-radius: 10px; background: var(--panel-2); color: var(--text); box-shadow: var(--bevel); cursor: pointer;
+	transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease); }
+@media (hover: hover) { .arow:hover { transform: translateY(-1px); box-shadow: var(--bevel), var(--shadow-lift); border-color: var(--accent-quiet); } }
+.arow:active { transform: translateY(0); }
+.arow .ai { width: 34px; height: 34px; border-radius: 9px; flex: 0 0 auto; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-ink); }
+.arow .ai svg { width: 17px; height: 17px; }
+.arow-t { min-width: 0; flex: 1 1 auto; }
+.arow-t b { display: block; font-size: 13px; font-weight: 700; letter-spacing: -.01em; }
+.arow-d { display: block; font-size: 11.5px; color: var(--muted); margin-top: 1px; }
+.arow .chev { width: 16px; height: 16px; flex: 0 0 auto; color: var(--faint); }
+.arow.danger .ai { background: color-mix(in oklab, var(--danger) 15%, transparent); color: var(--danger); }
+.arow.disabled { opacity: .5; cursor: not-allowed; }
+@media (hover: hover) { .arow.disabled:hover { transform: none; box-shadow: var(--bevel); border-color: var(--border); } }
+
 /* Grouped action grid for busy dialogs (Keys) — even, left-aligned columns that wrap responsively, so a long
    list of actions reads as tidy sections instead of a jagged right-aligned pile. */
 .key-actions { margin-top: 14px; }
