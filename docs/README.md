@@ -441,9 +441,9 @@ vdisk restore  <backup> <dest>   Restore a backed-up vault into a folder
 vdisk mirror   <name|path> <dest> Set up a two-way mirror to a folder, sftp:<id>, or webdav:<id> and prime it
 vdisk sync     <name|path>       Sync the mirror now, both directions (the running service also does this after any unmount)
 vdisk unmirror <name|path>       Stop mirroring (the copy at the destination is left in place)
-vdisk serve    <name|path>       Serve a vault as a node another machine can mirror to (encrypted only)
+vdisk serve    <name|path>       Serve a vault as a node another machine can mirror to (encrypted only; add --relay-code <code> to join a relay hub in one paste)
                                  Add --relay <host[:port]> --token <t> to reach it through a relay (no port forwarding)
-vdisk relay                      Run a relay hub on a public host so nodes behind NAT are reachable (--token or --token-file, --port, --ports)
+vdisk relay                      Run a relay hub on a public host so nodes behind NAT are reachable (--token or --token-file, --port, --ports; add --host <public-host> for a one-paste relay invite code)
 vdisk peer-add <code|address>    Add a peer node to mirror to — paste its connect code, or an address (--label, --user; prompts for the password)
 vdisk peers                      List saved peer nodes
 vdisk peer-test <id>             Check a peer is reachable and the login works
@@ -927,6 +927,8 @@ vdisk relay
 ```
 
 It prints an address and a token. On a shared or public host, pass the token from a file with `--token-file <path>` instead of `--token`, so it never appears on the command line where other accounts on that machine could read it. Then serve the vault with that relay. In the web interface, the Serve window offers *Anywhere, through a relay hub* and remembers the details. On the command line, run `vdisk serve <vault> --relay <hub-address> --token <token>`.
+
+To make joining a node effortless, run the hub with `vdisk relay --host <public-host>` and it also prints a single **relay invite code** — one string that carries both the address and the token. A node then joins with one paste: `vdisk serve <vault> --relay-code <code>`, or paste it into the *Relay invite code* box in the Serve window, which fills the address and token for you. The code contains the token, so it is as sensitive as the token itself — share it privately.
 
 The node connects *outward* to the hub, and the hub gives it a stable public address. It prints a connect code for that address, which you add as a peer on your other machine exactly as above. Both the node and your other machine only ever connect out to the hub, so neither needs an open incoming port anywhere. Only encrypted files cross the relay. Your password and contents never pass through it, so even the hub only ever handles scrambled data. The token controls who may connect.
 

@@ -88,9 +88,9 @@ All commands:
   vdisk mirror   <path> <dest>     Set up a two-way mirror to a folder, sftp:<id>, or webdav:<id> and prime it
   vdisk sync     <path>            Sync the mirror now, both directions (also runs on unmount)
   vdisk unmirror <path>            Stop mirroring (the copy at the destination is left in place)
-  vdisk serve    <path>            Serve a vault as a node another machine can mirror to (encrypted only; add --bind <address>, --port <n>, --read-only)
+  vdisk serve    <path>            Serve a vault as a node another machine can mirror to (encrypted only; add --bind <address>, --port <n>, --read-only, or --relay-code <code> to join a relay in one paste)
                                    Add --relay <host[:port]> --token <t> (or --token-file <path>) to reach it through a relay (no port forwarding)
-  vdisk relay                      Run a relay hub (on a public host) so nodes behind NAT are reachable  (--token or --token-file, --port, --ports)
+  vdisk relay                      Run a relay hub (on a public host) so nodes behind NAT are reachable  (--token or --token-file, --port, --ports; add --host <public-host> to print a one-paste relay invite code)
   vdisk peer-add <code|address>    Add a peer node (a served vault) to mirror to — paste its connect code, or an address  (--label, --user)
   vdisk peers                      List saved peer nodes
   vdisk peer-test <id>             Check a peer is reachable and the login works

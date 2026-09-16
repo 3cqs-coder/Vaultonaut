@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.0.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-16T15:03:03.873Z",
+  "generatedAt": "2026-09-16T15:21:52.964Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -17,8 +17,8 @@
     },
     {
       "path": "docs/README.md",
-      "sha256": "5fd836ed75c3f530a913ca0bd88ef5b841b6b740db27f99efe3d386bd18a27e4",
-      "size": 188557
+      "sha256": "27caed42ac309984a8523ef1c749a491ad9564384a7fe5cd54a073c99ef4d068",
+      "size": 189154
     },
     {
       "path": "docs/banner.png",
@@ -52,8 +52,8 @@
     },
     {
       "path": "lib/Commands.js",
-      "sha256": "d3ba5d52c6fcf18909733e7605b9849a3235320ce64a68440ff98177e4b17a14",
-      "size": 183821
+      "sha256": "340525ead6e199df83a01e271651ad907861a5c31e01a04b942559bee3b7c23e",
+      "size": 185425
     },
     {
       "path": "lib/Common.js",
@@ -312,8 +312,8 @@
     },
     {
       "path": "lib/Vault.js",
-      "sha256": "f6e38b9f038c34d3eb49d49077801e905f765beba3aed7e415eb8f29c8ef7fd6",
-      "size": 829494
+      "sha256": "b998bb5dd381a1d124d00a9e8c1cea828d39968ca1c1f16af4c8653cf74e1f88",
+      "size": 830498
     },
     {
       "path": "lib/Watchdog.js",
@@ -347,8 +347,8 @@
     },
     {
       "path": "lib/index.js",
-      "sha256": "a36eed836ad52f5eaea2ab86d006ea231d7d81b538e7ed6bd940fe525f63efaf",
-      "size": 13083
+      "sha256": "a8719c140ac9835ecf06987a616ae333d45b4fb60c6bf532db7d5dd5adf6f77f",
+      "size": 13235
     },
     {
       "path": "lib/passwordStrength.js",
@@ -372,8 +372,8 @@
     },
     {
       "path": "lib/templates/help.txt",
-      "sha256": "43e473cdb817e355462d9b219213d572da71fb928b3395296b5e89f2e0272b36",
-      "size": 17814
+      "sha256": "95c37913b3bf4d0d68d983c1e0a52bff17078f3c97803173af1ccd1480c3336a",
+      "size": 17932
     },
     {
       "path": "lib/templates/notices.txt",
@@ -477,8 +477,8 @@
     },
     {
       "path": "lib/webserver/public/js/app.js",
-      "sha256": "df6e3b6917cbec8f34f5bf77d36b6d128c017663659ac9d12780174b4019c2ea",
-      "size": 312072
+      "sha256": "489224dfdefa988afb9a07bb76358277e5b38968e655f00d4a1bdf3b3c44a2a9",
+      "size": 313048
     },
     {
       "path": "lib/webserver/public/js/login.js",
@@ -597,8 +597,8 @@
     },
     {
       "path": "lib/webserver/public/views/index.ejs",
-      "sha256": "f3a7652c89fe3c98d32ac5f6f19b856038abc1f4a3b0a756fa20d3652f9de5d5",
-      "size": 87038
+      "sha256": "daf5a2197560dd58e1c358f3887d0e7e7e4ca14ad601e34bdeaa46c34bbbe9de",
+      "size": 87365
     },
     {
       "path": "lib/webserver/public/views/login.ejs",
