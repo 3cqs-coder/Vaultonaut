@@ -90,7 +90,7 @@
 	/* Redesign foundation (additive — consumed by the shell/button/card slices): the "cockpit" workspace tone that
 	   floating panels sit on, the extended accent set (button-gradient bottom, focus ring, glow, active-nav wash),
 	   and the machined top-edge bevel. --accent-strong stays as dark as --accent-ink so white text keeps 4.5:1. */
-	--workspace: #e9edf6;
+	--workspace: #e3e8f2;
 	--accent-strong: #1e56d6;
 	--accent-focus: rgba(47, 107, 255, .20);
 	--accent-glow: 0 6px 20px -6px rgba(47, 107, 255, .5);
@@ -179,7 +179,10 @@ body {
    screens the rail collapses to a slide-in drawer (see the responsive block).
    Every color is a token, so all four themes and both platforms follow along.
 --------------------------------------------------------------------------- */
-.app { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh; }
+.app { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh;
+	/* The "cockpit": a deeper workspace tone (with a faint top sheen, like light on a dashboard) behind a floating
+	   content panel. The rail paints its own --rail over this; only the main area shows the workspace. */
+	background: radial-gradient(135% 90% at 50% -20%, var(--sheen-top) 0%, transparent 55%), var(--workspace); }
 /* Skip-to-content link: a keyboard user tabs past the whole nav rail to reach the main content in one press. It is
    off-screen until focused, then appears at the top-left so it is visible when it matters. */
 .skip-link { position: absolute; left: 8px; top: -48px; z-index: 100; background: var(--accent-btn); color: var(--accent-text); padding: 8px 14px; border-radius: 8px; text-decoration: none; transition: top var(--dur-fast) var(--ease); }
@@ -223,7 +226,7 @@ img.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; } /* the b
 }
 .rail-item .ic { width: 18px; height: 18px; flex: 0 0 auto; }
 @media (hover: hover) { .rail-item:hover { background: var(--hover); color: var(--text); } }
-.rail-item.active { background: var(--accent-soft); color: var(--accent-ink); font-weight: 650; cursor: default; } /* the current view is a passive label, not a button — don't imply it is clickable */
+.rail-item.active { background: var(--accent-wash); color: var(--accent-ink); font-weight: 650; cursor: default; } /* the current view is a passive label, not a button — don't imply it is clickable */
 .rail-item.active::before {
 	content: ""; position: absolute; left: -14px; top: 8px; bottom: 8px;
 	width: 3px; border-radius: 0 3px 3px 0; background: var(--accent);
@@ -260,7 +263,10 @@ img.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; } /* the b
 .rail-scrim { display: none; }
 
 /* Main column */
-.main { padding: 26px 32px 48px; max-width: 960px; }
+.main { max-width: 1120px; width: calc(100% - 48px); margin-inline: auto; margin-block: 22px; min-width: 0;
+	padding: 26px 30px 40px;
+	background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg);
+	box-shadow: var(--bevel), var(--shadow-lift); }
 .main-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
 .main-title h1 { margin: 0; font-size: 22px; letter-spacing: -.02em; }
 .main-title p { margin: 5px 0 0; color: var(--muted); font-size: 13.5px; max-width: 58ch; }
@@ -676,8 +682,10 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 	.rail.open { transform: translateX(0); }
 	.rail-toggle { display: flex; }
 	.rail-scrim { display: block; position: fixed; inset: 0; z-index: 44; background: rgba(10,14,22,.42); }
-	/* clear the fixed hamburger and any notch above the title, and any rounded corners at the sides */
-	.main { padding: max(66px, calc(env(safe-area-inset-top) + 54px)) max(20px, env(safe-area-inset-right)) 44px max(20px, env(safe-area-inset-left)); max-width: none; }
+	/* On a phone the content goes full-bleed (no floating panel): the workspace tone would only waste space. Clear
+	   the float chrome and the fixed hamburger / notch above the title. */
+	.main { padding: max(66px, calc(env(safe-area-inset-top) + 54px)) max(20px, env(safe-area-inset-right)) 44px max(20px, env(safe-area-inset-left));
+		max-width: none; width: auto; margin: 0; border: 0; border-radius: 0; box-shadow: none; background: var(--bg); }
 	.main-top { flex-wrap: wrap; }
 }
 @media (max-width: 860px) and (prefers-reduced-motion: reduce) {
