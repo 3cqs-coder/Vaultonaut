@@ -671,6 +671,10 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 	.card .actions { flex: 1 0 100%; justify-content: flex-start; }
 	.main-top { flex-direction: column; }
 	.new-vault-btn { width: 100%; }
+	/* Trim the welcome card's generous side padding on a phone so the reassurance lines keep a comfortable measure
+	   and never force a sideways scroll; the create CTA also goes full-width to match the header New-vault button. */
+	.empty-state { padding-left: var(--sp-7); padding-right: var(--sp-7); }
+	.empty-state #emptyCreateBtn { width: 100%; }
 	/* On a narrow screen the dropdown flows full-width under the actions instead of overlaying, so a long
 	   label or a wrapped toolbar can never push it off the edge and force the page to scroll sideways. */
 	.more { position: static; width: 100%; }
@@ -687,8 +691,11 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 	/* The everyday row and menu actions (Keys, Remove, revoke, size) and the More-menu itself are the ones a phone
 	   user taps most and sit close to their neighbors, so grow their hit area to the same comfortable minimum to
 	   avoid mis-taps between adjacent controls. The visual text size is unchanged; only the tap target grows. */
-	.link-btn, .ghost-btn { min-height: 40px; }
+	.link-btn, .ghost-btn, .primary-btn { min-height: 40px; }
 	.more-menu .link-btn, .more > summary { min-height: 40px; display: flex; align-items: center; }
+	/* The collapsible create panel's header is a tap target (it opens/closes the section); give it the same
+	   comfortable minimum. It already lays out as a flex row (.panel-head), so the height just grows the hit area. */
+	.create-summary { min-height: 44px; }
 	/* The typed-secret editor's own controls (add/remove a field, the field-type picker, and the key-slot pickers)
 	   live only in this desktop UI — there is no separate touch editor — so a touchscreen laptop, an iPad on the
 	   local server, or the desktop app on a touch display all reach them here. Grow their tap target to the same
