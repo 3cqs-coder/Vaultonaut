@@ -179,10 +179,18 @@ body {
    screens the rail collapses to a slide-in drawer (see the responsive block).
    Every color is a token, so all four themes and both platforms follow along.
 --------------------------------------------------------------------------- */
-.app { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh;
-	/* The "cockpit": a deeper workspace tone (with a faint top sheen, like light on a dashboard) behind a floating
-	   content panel. The rail paints its own --rail over this; only the main area shows the workspace. */
+/* The "cockpit": a top bar over a deeper workspace tone (with a faint top sheen, like light on a dashboard) behind
+   a floating content panel. A single-view app earns a top bar, not a near-empty sidebar. */
+.app { display: flex; flex-direction: column; min-height: 100vh;
 	background: radial-gradient(135% 90% at 50% -20%, var(--sheen-top) 0%, transparent 55%), var(--workspace); }
+
+/* Top bar: brand on the left, all the global controls (Settings, Help, notifications, refresh, theme, lock) on the
+   right. Sticky so it stays put as the content scrolls; it paints its own --rail surface over the workspace. */
+.topbar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 16px; flex: 0 0 auto;
+	padding: 11px 24px; padding-top: max(11px, env(safe-area-inset-top));
+	background: var(--rail); border-bottom: 1px solid var(--border); box-shadow: var(--shadow-soft); }
+.topbar .brand { padding: 0; flex: 0 0 auto; }
+.topbar-actions { margin-left: auto; display: flex; align-items: center; gap: var(--sp-4); flex-wrap: wrap; justify-content: flex-end; }
 /* Skip-to-content link: a keyboard user tabs past the whole nav rail to reach the main content in one press. It is
    off-screen until focused, then appears at the top-left so it is visible when it matters. */
 .skip-link { position: absolute; left: 8px; top: -48px; z-index: 100; background: var(--accent-btn); color: var(--accent-text); padding: 8px 14px; border-radius: 8px; text-decoration: none; transition: top var(--dur-fast) var(--ease); }
@@ -727,27 +735,11 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
    State is a single `.open` class on the rail plus the scrim's [hidden] flag,
    both toggled in app.js — no layout duplication, works on touch and mouse. */
 @media (max-width: 860px) {
-	.app { grid-template-columns: 1fr; }
-	.rail {
-		position: fixed; top: 0; left: 0; height: 100vh; height: 100dvh; width: 268px; max-width: 84vw;
-		transform: translateX(-100%); transition: transform var(--dur-slow) var(--ease);
-		z-index: 45; box-shadow: var(--shadow);
-		/* honor a notch / home indicator when the drawer is full-height at a screen edge */
-		padding-top: max(18px, env(safe-area-inset-top));
-		padding-left: max(14px, env(safe-area-inset-left));
-		padding-bottom: max(16px, env(safe-area-inset-bottom));
-	}
-	.rail.open { transform: translateX(0); }
-	.rail-toggle { display: flex; }
-	.rail-scrim { display: block; position: fixed; inset: 0; z-index: 44; background: rgba(10,14,22,.42); }
-	/* On a phone the content goes full-bleed (no floating panel): the workspace tone would only waste space. Clear
-	   the float chrome and the fixed hamburger / notch above the title. */
-	.main { padding: max(66px, calc(env(safe-area-inset-top) + 54px)) max(20px, env(safe-area-inset-right)) 44px max(20px, env(safe-area-inset-left));
+	.topbar { padding: 10px 16px; padding-top: max(10px, env(safe-area-inset-top)); gap: 10px; }
+	/* On a phone the content goes full-bleed (no floating panel): the workspace tone would only waste space. */
+	.main { padding: 18px max(16px, env(safe-area-inset-right)) 40px max(16px, env(safe-area-inset-left));
 		max-width: none; width: auto; margin: 0; border: 0; border-radius: 0; box-shadow: none; background: var(--bg); }
 	.main-top { flex-wrap: wrap; }
-}
-@media (max-width: 860px) and (prefers-reduced-motion: reduce) {
-	.rail { transition: none; }
 }
 
 /* Mobile */
@@ -766,11 +758,9 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 	.card .info { flex: 1 1 0; }
 	.card .actions { flex: 1 0 100%; justify-content: flex-start; }
 	.main-top { flex-direction: column; }
-	/* The top controls become a full-width row on a phone: the icon buttons keep their size and the New vault button
-	   flexes to fill the rest; they wrap if the logout icon is also showing. */
-	.main-actions { width: 100%; flex-wrap: wrap; }
-	.new-vault-btn { flex: 1 1 auto; }
-	.notif-panel { right: auto; left: 0; }
+	.new-vault-btn { width: 100%; }
+	/* Hide the brand wordmark on a phone so the top-bar controls always fit beside the logo. */
+	.topbar .brand-text { display: none; }
 	/* Trim the welcome card's generous side padding on a phone so the reassurance lines keep a comfortable measure
 	   and never force a sideways scroll; the create CTA also goes full-width to match the header New-vault button. */
 	.empty-state { padding-left: var(--sp-7); padding-right: var(--sp-7); }
