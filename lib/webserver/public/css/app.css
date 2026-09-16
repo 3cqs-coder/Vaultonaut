@@ -297,8 +297,14 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 .notif-head { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); padding: 10px 10px 6px; }
 .notif-clear { display: flex; align-items: center; gap: 10px; padding: 12px 10px; color: var(--muted); font-size: 13px; }
 .notif-clear svg { width: 18px; height: 18px; color: var(--good); flex: 0 0 auto; }
-/* the integrity banner sits inside the dropdown now: drop the full-bleed feel, fit the panel */
-.notif-panel .banner { margin: 2px; border-radius: 10px; }
+/* The integrity findings sit inside the dropdown now, so drop the full-width banner look entirely: a neutral card
+   (never the brown warn fill), with a red edge only for a real error. Higher specificity than .banner.warn/.bad so
+   it always wins regardless of source order. */
+.notif-panel .banner { margin: 2px 2px 6px; padding: 11px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 12.5px; }
+.notif-panel .banner.warn, .notif-panel .banner.bad { background: var(--panel-2); color: var(--text); border-color: var(--border); }
+.notif-panel .banner.bad { box-shadow: inset 3px 0 0 var(--danger); }
+.notif-panel .banner-msg { font-weight: 700; color: var(--text); }
+.notif-panel .integrity-list { margin: 8px 0 0; padding-left: 18px; color: var(--muted); }
 
 /* Panels: framed content blocks (the Create form, dialogs' bodies). The vaults
    list is frameless so the cards read as the page's primary content. */
