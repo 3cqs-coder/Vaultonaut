@@ -64,12 +64,23 @@ ProcRegistry.installShutdownHandlers(); // clean up in-flight engine calls if in
 	const cmd = positionals.shift();
 	// Show a meaningful name in the OS process list instead of "node" (macOS/Linux; console title on Windows).
 	try { process.title = cmd === '_guard' ? Brand.slug + '-guardian' : Brand.slug; } catch (_) {}
+	// --json: print exactly ONE JSON object on stdout instead of human text. Route human console.log to stderr so
+	// stdout stays clean for the single object; keep it easy to debug (the human lines are still visible on stderr).
+	const jsonMode = !!flags.json;
+	const origLog = console.log;
+	if (jsonMode) console.log = (...a) => console.error(...a);
 	try {
 		const { keepAlive } = await Commands.dispatch(cmd, positionals, flags);
+		if (jsonMode) { console.log = origLog; process.stdout.write(JSON.stringify({ ok: true, data: Commands.takeJsonData() ?? null }) + '\n'); }
 		// Exit one-shot commands explicitly so a stat pending on a wedged mount cannot keep the process
 		// alive after the work is done. Long-running commands set keepAlive and run until interrupted.
 		if (!keepAlive) process.exit(process.exitCode || 0);
 	} catch (e) {
+		if (jsonMode) {
+			console.log = origLog;
+			try { process.stdout.write(JSON.stringify({ ok: false, error: { code: Commands.jsonErrorCode(e), message: String((e && e.message) || e) } }) + '\n'); } catch (_) {}
+			process.exit(1);
+		}
 		console.error('\nError: ' + e.message);
 		if (e.install) console.error('\n' + e.install);
 		process.exit(1);
