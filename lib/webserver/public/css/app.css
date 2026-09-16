@@ -353,21 +353,19 @@ img.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; } /* the b
 	background: var(--panel);
 	border: 1px solid var(--border);
 	border-radius: var(--radius-lg);
-	box-shadow: var(--shadow-soft);
+	box-shadow: var(--bevel), var(--shadow-soft);
 	padding: var(--sp-7);
 	transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
 }
-@media (hover: hover) { .card:hover { border-color: var(--accent-quiet); box-shadow: var(--shadow-lift); } }
+@media (hover: hover) { .card:hover { border-color: var(--accent-quiet); box-shadow: var(--bevel), var(--shadow-lift); } }
 .card .info { min-width: 0; flex: 1 1 auto; }
 
 /* Leading identity icon — a rounded tile that says at a glance where a vault's ciphertext lives: a lock for a
-   local vault, a cloud for a cloud vault. Tinted from the accent tokens so it themes for free; local and cloud
-   take slightly different tints so the two read apart even before the glyph registers. Fixed size, never shrinks. */
+   local vault, a cloud for a cloud vault. Both use the SAME accent-blue tint — the lock vs cloud GLYPH (and the
+   location text) is what tells them apart, not colour, so the palette stays on one accent. Never shrinks. */
 .vault-icon { flex: 0 0 auto; align-self: flex-start; width: 40px; height: 40px; border-radius: var(--radius-sm);
-	display: grid; place-items: center; color: var(--accent-ink); }
+	display: grid; place-items: center; color: var(--accent-ink); background: var(--accent-soft); }
 .vault-icon svg { width: 20px; height: 20px; }
-.vault-icon.local { background: var(--accent-soft); }
-.vault-icon.cloud { background: var(--accent-quiet); }
 .card .name { font-weight: 650; display: flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap; overflow-wrap: anywhere; } /* a very long, unbroken vault name breaks/wraps instead of widening the card (worst on the ~375px column) */
 .card .path { color: var(--muted); font-size: 12.5px; font-family: var(--mono); word-break: break-all; margin-top: 2px; }
 .card .actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
