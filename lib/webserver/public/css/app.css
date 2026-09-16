@@ -259,6 +259,18 @@ img.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; } /* the b
 .panel.vaults-panel { background: none; border: 0; box-shadow: none; padding: 0; margin-bottom: 22px; }
 .panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .panel-head h2 { font-size: 17px; margin: 0; letter-spacing: -.01em; }
+
+/* Collapsible create/add panel. The whole "Create a vault" section is a <details> so it can start open on first
+   run (onboarding) and collapse once the user has vaults, keeping the list the focus. The <summary> reuses the
+   .panel-head look; drop the native disclosure marker (a right-side chevron replaces it) and make the whole bar a
+   pointer target. When collapsed the summary carries no trailing margin, so the closed panel is a tidy single row. */
+.create-summary { cursor: pointer; list-style: none; user-select: none; gap: var(--sp-6); }
+.create-summary::-webkit-details-marker { display: none; }
+.create-summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: var(--radius-sm); }
+.create-chevron { flex: 0 0 auto; color: var(--muted); transition: transform var(--dur) var(--ease); }
+.create-panel[open] .create-chevron { transform: rotate(180deg); }
+.create-panel:not([open]) .create-summary { margin-bottom: 0; }
+@media (hover: hover) { .create-summary:hover .create-chevron { color: var(--text); } }
 .muted { color: var(--muted); }
 .fine { color: var(--muted); font-size: 13px; } /* fine print (e.g. the notes password-health explainer); mirrors the mobile stylesheet so the two never drift */
 .fine.bad-text { color: var(--danger); } /* fine print flagged as an error (e.g. a scheduled-unlock date that is in the past) */
