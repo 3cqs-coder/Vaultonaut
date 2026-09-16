@@ -27,6 +27,7 @@ A vault is a self-contained folder. Copy that folder to another computer, an ext
 - [Commands](#commands)
 - [Running a project from a vault](#running-a-project-from-a-vault)
 - [For developers and power users](#for-developers-and-power-users)
+- [Local API](#local-api)
 - [Security](#security)
   - [What a vault protects, and what it cannot](#what-a-vault-protects-and-what-it-cannot)
   - [An open format, not home-grown cryptography](#an-open-format-not-home-grown-cryptography)
@@ -525,7 +526,38 @@ Vaultonaut stays simple on the surface and deep underneath. Everything the web i
 
 **Built to automate.** Every command returns a standard exit code, zero on success and non-zero on failure, so a script can branch on the result. Add `--json` to any command to get machine-readable output — one JSON object on standard output, `{ "ok": true, "data": … }` or `{ "ok": false, "error": { "code", "message" } }`, with human messages moved to standard error — so another program can parse a result or an error code without scraping text. Pass `--data-dir <folder>` to point a run at its own isolated data directory, which keeps an automated or test setup fully separate from your everyday vaults. Long operations, such as a key rotation or a large backup, print progress as they run and can be safely interrupted and resumed.
 
-**A local interface underneath.** When the web interface is running, the browser talks to a small JSON service on your own machine. That service is currently the internal contract for the bundled interface, so it can change between releases. A documented, versioned public API for building your own front-ends and integrations is planned; until it lands, the command line is the stable surface to build on.
+**A local interface underneath.** When the web interface is running, the browser talks to a small JSON service on your own machine. The unversioned `/api/*` endpoints are the internal contract for the bundled interface and can change between releases, but a stable, versioned subset is published under `/api/v1` for building your own front-ends and integrations — see [Local API](#local-api) below.
+
+## Local API
+
+The web interface runs a small HTTP service on your own machine. Its stable, versioned surface, under `/api/v1`, is what a third-party front-end, script, or integration should build on. The unversioned `/api/*` endpoints are the internal contract for the bundled interface and may change between releases. If you only need to script the command line, `vdisk --json <command>` gives the same kind of machine-readable output without running the service (see the developer section above).
+
+**Base and transport.** The service listens on `http://127.0.0.1:7420`, loopback only. It is reachable from the network only if you deliberately expose it with `vdisk ui --bind <address>`, which then requires a web password and is served over HTTPS. Every request must send the header `X-Vdisk: 1`; a cross-origin web page cannot set a custom header without a preflight the service never grants, so this blocks cross-site request forgery. When a web password is set (always, when the interface is exposed), requests also carry the session cookie from signing in; on the loopback default, no password is required.
+
+**Response envelope.** Every endpoint returns JSON. On success the body is `{ "ok": true, … }` with the endpoint's own fields; on failure the HTTP status is 4xx or 5xx and the body is `{ "ok": false, "error": "<message>" }`. A `{ "login": true }` body means the session expired — sign in again.
+
+**Versioning.** `GET /api/version` returns `{ "ok": true, "name", "version", "apiVersions": ["v1"], "endpoints": [...] }`, so a client can check what this build supports first. Within `v1`, changes are additive only — new endpoints and new response fields may appear, but an existing endpoint's shape is never changed or removed. A breaking change would ship as `/api/v2`, with `v1` kept during a deprecation window.
+
+**Endpoints.** All are `POST` with a JSON body unless noted. `path` is a vault name or a full path.
+
+- `GET /api/version` — capability discovery (above).
+- `GET /api/v1/state` — the whole interface state (vaults, mounts, settings) in one read, for rendering a dashboard.
+- `POST /api/v1/create` — create a vault. Body: `{ "path", "password", … }`.
+- `POST /api/v1/mount` — mount a vault. Body: `{ "path", "password" }` (a password is required when the interface is exposed).
+- `POST /api/v1/unmount` — unmount a vault. Body: `{ "path" }`.
+- `POST /api/v1/notes-list` — list secure-note items in an open vault (titles only). Body: `{ "path" }`.
+- `POST /api/v1/note-get` — read one item. Body: `{ "path", "id" }`.
+- `POST /api/v1/note-save` — create or update an item (omit `id` to create). Body: `{ "path", "id"?, "title", "type", "fields", "note" }`.
+- `POST /api/v1/note-delete` — delete an item. Body: `{ "path", "id" }`.
+- `POST /api/v1/notes-import` — import logins and notes from a `.csv`, a Bitwarden `.json`, or a 1Password `.1pux` export into an open vault. This endpoint takes the file as the raw request body (`Content-Type: application/octet-stream`) with options in the query string: `?path=<vault>&format=<csv|bitwarden|1pux|auto>&dry=<0|1>&dedupe=<0|1>`.
+
+**Example.**
+
+```
+curl -sS http://127.0.0.1:7420/api/version -H 'X-Vdisk: 1'
+curl -sS http://127.0.0.1:7420/api/v1/notes-list -H 'X-Vdisk: 1' \
+  -H 'Content-Type: application/json' -d '{"path":"Personal"}'
+```
 
 ## Security
 
