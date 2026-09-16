@@ -363,6 +363,7 @@ The everyday commands are `create`, `mount`, `unmount`, and `open` — everythin
 ```
 vdisk create   <name|path>       Create a new encrypted vault
 vdisk import   <folder> [path]   Create a new vault from an existing folder (copies files in)
+vdisk notes-import <file> <vault> Import logins and notes from a .csv or a Bitwarden .json export into an open vault (--dry-run, --skip-duplicates, --format csv|bitwarden|auto)
 vdisk cloud    <list|connect|add|remove|test>   Manage cloud storage (then create a cloud vault with: create <name|path> --cloud <id> --remote-path <folder>)
 vdisk passwd   <name|path>       Change a vault's password (instant; no re-encryption)
 vdisk keys     <name|path>       List a vault's keys (no password needed)

@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.0.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-15T19:00:13.579Z",
+  "generatedAt": "2026-09-16T14:15:34.306Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -17,8 +17,8 @@
     },
     {
       "path": "docs/README.md",
-      "sha256": "75867b8463673fd0f088cc5fba42290876fb2d2c163afabb0f933d893df98625",
-      "size": 188355
+      "sha256": "866299cd6045857ae3a5788bebbc6017e0ee5a9b9f4892386ddc3c08ae085ce3",
+      "size": 188532
     },
     {
       "path": "docs/banner.png",
@@ -52,8 +52,8 @@
     },
     {
       "path": "lib/Commands.js",
-      "sha256": "da34cca5da1ded04dde7128b5c70127ba82d3a2ec8e4d1ff176a07f0980307f9",
-      "size": 182063
+      "sha256": "92bc41653279306b01124e2860fd32d09f072dc2a844764b02487cdc32e10041",
+      "size": 183697
     },
     {
       "path": "lib/Common.js",
@@ -159,6 +159,11 @@
       "path": "lib/Net.js",
       "sha256": "02eb194fae4bf03400ad5c4d3154c31112a1190537a27f2990511ac5ada92021",
       "size": 28713
+    },
+    {
+      "path": "lib/NotesImport.js",
+      "sha256": "c6449c18ae96f7803ec0cb942b22ca780f9c8f28213e3c11b118da821e9b74ba",
+      "size": 11861
     },
     {
       "path": "lib/OwnerClient.js",
@@ -307,8 +312,8 @@
     },
     {
       "path": "lib/Vault.js",
-      "sha256": "61ab34a00d44ded0f194c406efe7d136f48bcf54c6a2109bb3a44067a4e3f974",
-      "size": 827290
+      "sha256": "06f91ae2bfc877dfad04aa93832221d4f9aa6d4e240c057e38c4f0f7e3585848",
+      "size": 829488
     },
     {
       "path": "lib/Watchdog.js",
@@ -337,8 +342,8 @@
     },
     {
       "path": "lib/index.js",
-      "sha256": "b21fc448904e4bfc5e659133d8179332494265bf9153537e01c425a04cf3abf4",
-      "size": 12962
+      "sha256": "a36eed836ad52f5eaea2ab86d006ea231d7d81b538e7ed6bd940fe525f63efaf",
+      "size": 13083
     },
     {
       "path": "lib/passwordStrength.js",
@@ -362,8 +367,8 @@
     },
     {
       "path": "lib/templates/help.txt",
-      "sha256": "2832d529e74d53b6989cbf74dbc8dc94c1042950dff25cd26f4d07d8ba252a1b",
-      "size": 17648
+      "sha256": "1836bdf307f311ecb179fdb365ab997e4d8c791043d9e15332edaeb7793997d1",
+      "size": 17796
     },
     {
       "path": "lib/templates/notices.txt",
