@@ -51,6 +51,13 @@
 	--dur-slow: .22s;
 	--ease: ease;
 
+	/* Metallic accents (theme-independent gloss). The primary button reads glossy via a bright sheen over its TOP
+	   HALF (a wet-paint look, not a light-to-dark wash). --sheen-top derives from the THEMED --workspace, so the
+	   faint "dashboard" sheen behind the floating content recolors per theme on its own. The machined-edge --bevel
+	   is themed (it lives in each theme block, since a light and a dark surface need a different highlight). */
+	--metal-sheen: linear-gradient(180deg, rgba(255, 255, 255, .24) 0%, rgba(255, 255, 255, .03) 100%);
+	--sheen-top: color-mix(in oklab, var(--workspace) 90%, #ffffff);
+
 	--mono: "DM Mono", ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
 	/* LIGHT (default) */
@@ -80,6 +87,15 @@
 	--shadow: 0 1px 3px rgba(16, 24, 40, .08), 0 1px 2px rgba(16, 24, 40, .06);
 	--shadow-soft: 0 1px 2px rgba(16, 24, 40, .06);
 	--shadow-lift: 0 2px 6px rgba(16, 24, 40, .07), 0 16px 36px -16px rgba(16, 24, 40, .22);
+	/* Redesign foundation (additive — consumed by the shell/button/card slices): the "cockpit" workspace tone that
+	   floating panels sit on, the extended accent set (button-gradient bottom, focus ring, glow, active-nav wash),
+	   and the machined top-edge bevel. --accent-strong stays as dark as --accent-ink so white text keeps 4.5:1. */
+	--workspace: #e9edf6;
+	--accent-strong: #1e56d6;
+	--accent-focus: rgba(47, 107, 255, .20);
+	--accent-glow: 0 6px 20px -6px rgba(47, 107, 255, .5);
+	--accent-wash: linear-gradient(90deg, rgba(47, 107, 255, .16) 0%, rgba(47, 107, 255, .02) 100%);
+	--bevel: inset 0 1px 0 rgba(255, 255, 255, .7);
 }
 
 /* DARK — shared by an explicit choice and by "auto" under a dark system preference. Kept a soft, calm dark
@@ -95,6 +111,7 @@
 		--star: #e0a400;   /* the same warm gold; redefined here so every theme sets the full token set */
 		--shadow: none; --shadow-soft: none;
 		--shadow-lift: 0 2px 8px rgba(0, 0, 0, .5), 0 20px 44px -20px rgba(0, 0, 0, .7);
+		--workspace: #0a0d13; --accent-strong: #2f66ea; --accent-focus: rgba(77, 130, 255, .22); --accent-glow: 0 6px 20px -6px rgba(77, 130, 255, .4); --accent-wash: linear-gradient(90deg, rgba(77, 130, 255, .18) 0%, rgba(77, 130, 255, .02) 100%); --bevel: inset 0 1px 0 rgba(255, 255, 255, .06);
 	}
 }
 :root[data-theme="dark"] {
@@ -107,6 +124,7 @@
 	--star: #e0a400;   /* the same warm gold; redefined here so every theme sets the full token set */
 	--shadow: none; --shadow-soft: none;
 	--shadow-lift: 0 2px 8px rgba(0, 0, 0, .5), 0 20px 44px -20px rgba(0, 0, 0, .7);
+	--workspace: #0a0d13; --accent-strong: #2f66ea; --accent-focus: rgba(77, 130, 255, .22); --accent-glow: 0 6px 20px -6px rgba(77, 130, 255, .4); --accent-wash: linear-gradient(90deg, rgba(77, 130, 255, .18) 0%, rgba(77, 130, 255, .02) 100%); --bevel: inset 0 1px 0 rgba(255, 255, 255, .06);
 }
 /* SEPIA — a warm, low-contrast "calming" theme (paper cream + soft brown accent) for long, relaxed use. */
 :root[data-theme="sepia"] {
@@ -120,6 +138,7 @@
 	--shadow: 0 1px 3px rgba(90, 70, 40, .08), 0 1px 2px rgba(90, 70, 40, .06);
 	--shadow-soft: 0 1px 2px rgba(90, 70, 40, .06);
 	--shadow-lift: 0 2px 6px rgba(90, 70, 40, .09), 0 16px 36px -16px rgba(90, 70, 40, .26);
+	--workspace: #ece2d2; --accent-strong: #8a5418; --accent-focus: rgba(164, 100, 31, .20); --accent-glow: 0 6px 20px -6px rgba(164, 100, 31, .4); --accent-wash: linear-gradient(90deg, rgba(164, 100, 31, .16) 0%, rgba(164, 100, 31, .02) 100%); --bevel: inset 0 1px 0 rgba(255, 255, 255, .55);
 }
 
 /* Respect a reduced-motion preference GLOBALLY. Two layers, both cheap and cross-browser:
@@ -413,7 +432,12 @@ button { font: inherit; }
 /* Interactive feedback is tokenized and reduced-motion-safe (the global net zeroes these durations). Every button
    eases its hover change and dips 1px on press, so a click feels physical instead of instant; link buttons ease
    their colour and underline on hover. */
-.primary-btn { background: var(--accent-btn); color: var(--accent-text); border: none; border-radius: 8px; padding: 9px 16px; cursor: pointer; font-weight: 600; transition: filter var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease); }
+/* Glossy "wet paint" primary button. The fill stays a saturated accent (a subtle darken toward --accent-strong for
+   depth, both dark enough that white text keeps 4.5:1), and the shine is a bright sheen over the TOP HALF via a
+   pseudo-element — not a light-to-dark wash, which reads faded. The label/icon paint above ::before, so contrast is
+   unaffected; the machined --bevel highlight + accent glow finish the metallic look. */
+.primary-btn { position: relative; overflow: hidden; background: linear-gradient(180deg, var(--accent-btn) 0%, var(--accent-strong) 100%); color: var(--accent-text); border: none; border-radius: 8px; padding: 9px 16px; cursor: pointer; font-weight: 600; box-shadow: var(--bevel), var(--accent-glow); transition: filter var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease); }
+.primary-btn::before { content: ""; position: absolute; inset: 0 0 48% 0; background: var(--metal-sheen); pointer-events: none; }
 @media (hover: hover) { .primary-btn:hover { filter: brightness(1.05); } }
 .ghost-btn { background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; cursor: pointer; transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease); }
 @media (hover: hover) { .ghost-btn:hover { border-color: var(--accent); background: var(--hover); } }
@@ -444,7 +468,7 @@ button { font: inherit; }
 .more-menu .link-btn.disabled { color: var(--muted); cursor: not-allowed; opacity: .6; }
 @media (hover: hover) { .more-menu .link-btn.disabled:hover { background: none; } }
 .more-menu .link-btn.disabled.danger { color: var(--muted); }
-.primary-btn.danger { background: var(--danger-fill); color: #fff; }
+.primary-btn.danger { background: var(--danger-fill); color: #fff; box-shadow: var(--bevel); } /* solid danger fill, no blue accent glow */
 .dropzone { outline: 2px dashed transparent; outline-offset: 3px; border-radius: 10px; transition: outline-color .12s; }
 .dropzone.dragging { outline-color: var(--accent); }
 
