@@ -257,6 +257,23 @@ img.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; } /* the b
 	margin-bottom: 18px;
 }
 .panel.vaults-panel { background: none; border: 0; box-shadow: none; padding: 0; margin-bottom: 22px; }
+
+/* First-run welcome / empty state (shown only when there are no vaults). A calm, centred card that reassures a new
+   user and hands off to the create panel below. Reuses panel tokens; the check-list uses the semantic good colour. */
+.empty-state {
+	background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg);
+	box-shadow: var(--shadow); padding: var(--sp-10) var(--sp-9);
+	display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--sp-5);
+}
+.empty-icon { width: 56px; height: 56px; border-radius: var(--radius); background: var(--accent-soft);
+	color: var(--accent-ink); display: grid; place-items: center; }
+.empty-icon svg { width: 30px; height: 30px; }
+.empty-state h2 { margin: 0; font-size: 19px; letter-spacing: -.02em; text-wrap: balance; }
+.empty-state > p { margin: 0; color: var(--muted); font-size: 14px; max-width: 46ch; line-height: 1.5; }
+.empty-points { list-style: none; margin: var(--sp-2) 0 var(--sp-3); padding: 0;
+	display: flex; flex-direction: column; gap: var(--sp-4); text-align: left; }
+.empty-points li { display: flex; align-items: flex-start; gap: var(--sp-5); font-size: 13px; color: var(--text); }
+.empty-points li svg { width: 16px; height: 16px; flex: 0 0 auto; color: var(--good); margin-top: 1px; }
 .panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .panel-head h2 { font-size: 17px; margin: 0; letter-spacing: -.01em; }
 
