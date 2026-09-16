@@ -533,7 +533,11 @@ button { font: inherit; }
 .divider span { padding: 0 12px; font-size: 12px; }
 
 /* Dialog */
-.dialog { border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; background: var(--panel); color: var(--text); max-width: 92vw; width: 360px; max-height: 90vh; max-height: 90dvh; overflow-y: auto; } /* scroll a tall dialog on a short/phone screen so its action row is never clipped; vh fallback for engines without dvh */
+/* Modernized dialog: roomier and TOP-ANCHORED (7vh from the top, not vertically centred) so a form that grows
+   opens at a predictable spot and extends downward instead of jumping; a machined edge + lift shadow float it over
+   the backdrop; overscroll-behavior keeps a scroll inside it from moving the page behind. The sticky action row
+   below stays reachable no matter how tall the form gets. A phone turns it into a bottom sheet (see the 620px block). */
+.dialog { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; background: var(--panel); color: var(--text); width: min(440px, 92vw); max-width: 92vw; max-height: 86vh; max-height: 86dvh; margin: 7vh auto auto; overflow-y: auto; overscroll-behavior: contain; box-shadow: var(--bevel), var(--shadow-lift); } /* vh fallback precedes dvh for engines without it */
 /* A disabled control must look inert, not clickable — the base .primary-btn stays fully saturated otherwise. */
 button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled { opacity: .5; cursor: not-allowed; }
 /* A visible keyboard-focus ring on the custom buttons (inputs already have one), for keyboard users. */
@@ -554,7 +558,7 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
    without scrolling to the very end. It spans the dialog's 20px padding to sit flush at the bottom edge, with a
    panel background and a hairline so the scrolling body reads cleanly beneath it. On a short dialog that does not
    scroll, sticky behaves as static, so it simply sits at the end as before (with a subtle top divider). */
-.dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 10px; position: sticky; bottom: -20px; margin: 16px -20px -20px; padding: 12px 20px; background: var(--panel); border-top: 1px solid var(--border); }
+.dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 10px; position: sticky; bottom: -22px; margin: 18px -22px -22px; padding: 12px 22px; background: var(--panel); border-top: 1px solid var(--border); }
 
 /* Grouped action grid for busy dialogs (Keys) — even, left-aligned columns that wrap responsively, so a long
    list of actions reads as tidy sections instead of a jagged right-aligned pile. */
@@ -694,6 +698,12 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 @media (max-width: 620px) {
 	.row { grid-template-columns: 1fr; }
 	.form.inline { grid-template-columns: 1fr; }
+	/* Dialogs become bottom sheets on a phone: full-width, anchored to the bottom edge (thumb-reachable), with a
+	   rounded top. Same <dialog> element and markup — only the position changes, so nothing is duplicated. The
+	   sticky action row still pins to the bottom, and a fixed inner-height cap lets a long form scroll within. */
+	.dialog { width: 100%; max-width: none; margin: auto 0 0; border-radius: 18px 18px 0 0; border-bottom: 0;
+		max-height: 92vh; max-height: 92dvh; padding-bottom: max(22px, env(safe-area-inset-bottom)); }
+	.dialog.browse, .dialog.kit-dialog { width: 100%; }
 	/* Keep the identity icon beside the name on a narrow screen (icon + info share the top row), and let the
 	   actions wrap to their own full-width row below rather than stacking the icon alone above everything. */
 	.card { flex-wrap: wrap; align-items: center; }
