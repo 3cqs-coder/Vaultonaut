@@ -205,6 +205,10 @@ body {
 .brand { display: flex; align-items: center; gap: 11px; padding: 4px 8px 18px; }
 .logo { font-size: 20px; }
 img.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; } /* the brand mark carries its own rounded-square ground */
+/* The inline glossy brand mark: same footprint, plus a subtle float shadow so the metallic helmet reads as a
+   premium object rather than a flat sticker. Its own rounded ground is matched by the element radius so the shadow
+   follows the corners. */
+svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-radius: 7px; box-shadow: 0 2px 6px -1px rgba(8, 12, 24, .4); }
 .brand-text { display: flex; flex-direction: column; line-height: 1.12; min-width: 0; }
 .brand-name { font-weight: 700; font-size: 16px; margin: 0; letter-spacing: -.01em; } /* product name in the rail; the login page reuses it as its <h1>, so keep the heading-margin reset */
 .version { color: var(--muted); font-size: 11px; } /* --muted is AA-tuned; the version string is informational, so it must clear contrast in every theme (--faint is decorative and dips below AA on the dark rail) */
