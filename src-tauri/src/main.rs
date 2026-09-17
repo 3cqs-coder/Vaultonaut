@@ -427,6 +427,14 @@ fn tune_linux_webview() {
         // content paint everywhere; the cost is only rendering speed, which is irrelevant for this simple interface.
         // A default an advanced user can still override to keep hardware acceleration on a machine that renders fine.
         ("LIBGL_ALWAYS_SOFTWARE", "1"),
+        // Wayland fallback for the remaining machines where the render-path forcing above still leaves a black window:
+        // some Wayland compositor + WebKitGTK combinations never present the WebView surface at all, and there is no
+        // rendering flag that fixes it. Asking GDK to use its X11 backend routes the app through XWayland, a mature and
+        // widely compatible path that presents reliably where the native Wayland surface does not. XWayland ships with
+        // effectively every desktop Linux install, so this is safe as a default; its only cost is slightly softer output
+        // under fractional scaling. It remains a default an advanced user can override (set GDK_BACKEND=wayland) to keep
+        // the native Wayland surface on a machine that already renders correctly.
+        ("GDK_BACKEND", "x11"),
         ("__NV_DISABLE_EXPLICIT_SYNC", "1"),
     ] {
         if std::env::var_os(key).is_none() {
