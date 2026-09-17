@@ -36,12 +36,20 @@ on:
   workflow_dispatch:    # or start a build by hand at any time
     inputs:
       release_tag:
-        # REQUIRED so a manual run can never finish with the release step silently skipped (which wasted a full
-        # build once). GitHub will not let you start the run until this is filled in. Enter the release tag to build
-        # and attach the installers to, for example 1.0.0. The build always uploads the installers as downloadable
-        # artifacts too, so you still get the files regardless.
-        description: "Release tag to build and attach the installers to (e.g. 1.0.0) — required."
-        required: true
+        # The tag to build and attach the installers to (for example 1.0.0). Leave this BLANK for a build-only run:
+        # every platform's installers are still uploaded as downloadable run artifacts, but no release is created or
+        # changed. Enter an EXISTING release's tag only when you intend to replace that release's assets, since a
+        # re-run clobbers them — to avoid touching a published release such as 1.0.0, use a new, unused tag instead.
+        description: "Release tag to publish to (e.g. 1.0.0). Leave blank to build installers only, with no release."
+        required: false
+        default: ""
+      build_only:
+        # An explicit, unmistakable build-only switch. When checked, the release job is skipped no matter what the
+        # tag says, so a run can never publish or overwrite a release by accident. The installers are still built on
+        # all three platforms and uploaded as run artifacts. This overrides release_tag.
+        description: "Build the installers only — never create or update any release (overrides the tag)."
+        type: boolean
+        default: false
 
 # Least privilege: the build jobs only need to read the repository, so the workflow's token is read-only by
 # default. The release job below re-grants itself the contents: write it needs to create the release, so write
@@ -185,9 +193,12 @@ jobs:
   release:
     needs: build
     # Runs for a version tag push (any tag that triggered this workflow is a release tag, with or without a "v"
-    # prefix), or for a manual run that supplied a release tag. A plain manual run (blank tag) skips this job — you
-    # still get the installers as build artifacts, with no release and no version bump.
-    if: startsWith(github.ref, 'refs/tags/') || github.event.inputs.release_tag != ''
+    # prefix), or for a manual run that supplied a release tag. A manual run skips this job — building installers
+    # only — when the "build_only" box is checked OR the release tag is left blank; either way you still get the
+    # installers as build artifacts, with no release, no publish, and no version bump. The first clause is written so
+    # "build_only" applies only to a manual run (a tag push has no inputs), and it wins over the tag, so a build-only
+    # run can never publish or overwrite a release even if a tag was typed in.
+    if: (github.event_name != 'workflow_dispatch' || github.event.inputs.build_only != 'true') && (startsWith(github.ref, 'refs/tags/') || github.event.inputs.release_tag != '')
     runs-on: ubuntu-latest
     permissions:
       contents: write   # allow the run's token to create the release
