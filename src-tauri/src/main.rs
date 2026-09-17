@@ -232,9 +232,17 @@ fn wait_for_server(port: u16, timeout: Duration, token: &str, child: &SharedChil
     Startup::Failed
 }
 
-// On the main thread, either point the window at the running interface or show the error state. The initial
-// state (`data-state="starting"`) is set on the root <html> element, so the error flag must be set there too —
-// setting it on <body> would leave both states active and render a blank panel.
+// On the main thread, either point the window at the running interface or show the error state, THEN reveal the
+// window. The window is created hidden (visible:false) and shown only here, so the user never sees the pre-navigation
+// surface. On Linux that surface is exactly the problem: WebKitGTK does not paint a window's FIRST webview surface
+// until a navigation occurs, so a visible-at-launch window showed a black rectangle for the whole startup wait and only
+// rendered once it navigated to the running interface. Keeping the window hidden until after that navigation means the
+// first thing on screen is the already-rendered interface — no black window on any platform. During the startup wait
+// the OS shows the app launching; the interface then appears with its own "setting up the engine" state on first run,
+// so a slow first launch still has feedback. The error path shows the window too, so a startup failure is never a
+// window that never appears.
+// The initial state (`data-state="starting"`) is set on the root <html> element, so the error flag must be set there
+// too — setting it on <body> would leave both states active and render a blank panel.
 fn show_outcome<R: tauri::Runtime>(handle: &tauri::AppHandle<R>, ready: bool) {
     let h = handle.clone();
     let _ = handle.run_on_main_thread(move || {
@@ -249,6 +257,9 @@ fn show_outcome<R: tauri::Runtime>(handle: &tauri::AppHandle<R>, ready: bool) {
             } else {
                 let _ = window.eval("document.documentElement.setAttribute('data-state','error')");
             }
+            // Reveal the window now that it shows real (navigated) content, not the unpainted first surface.
+            let _ = window.show();
+            let _ = window.set_focus();
         }
     });
 }
