@@ -66,6 +66,10 @@ static ATTACHED: AtomicBool = AtomicBool::new(false);
 static QUIT_TOKEN: std::sync::OnceLock<String> = std::sync::OnceLock::new();
 // The ephemeral loopback port that serves the splash over HTTP on Linux (see start_splash_server). 0 until bound.
 static SPLASH_PORT: AtomicU16 = AtomicU16::new(0);
+// Linux only: set once the startup outcome is decided (the interface is shown, or the error state). It stops the
+// splash re-paint loop (nudge_repaint) so a late navigation can never land on top of what the window should now show.
+// Unread on macOS and Windows, where the loop never runs.
+static SPLASH_DONE: AtomicBool = AtomicBool::new(false);
 
 // Serve the splash page over plain loopback HTTP. WHY: on Linux, WebKitGTK reliably PAINTS an http navigation, but on
 // many GPU / driver / VM (virtio_gpu) combinations it never paints the window's initial CUSTOM-PROTOCOL (tauri://)
@@ -275,6 +279,11 @@ fn wait_for_server(port: u16, timeout: Duration, token: &str, child: &SharedChil
 fn show_outcome<R: tauri::Runtime>(handle: &tauri::AppHandle<R>, ready: bool) {
     let h = handle.clone();
     let _ = handle.run_on_main_thread(move || {
+        // Stop the Linux splash re-paint loop BEFORE changing what the window shows, so a late splash navigation
+        // cannot land on top of the interface or the error state. Set here — on the main thread, ahead of the
+        // navigate/eval below — so it is ordered against the loop's own main-thread navigations and no clobber can
+        // race in. A no-op on macOS and Windows, where the loop never runs.
+        SPLASH_DONE.store(true, Ordering::SeqCst);
         if let Some(window) = h.get_webview_window("main") {
             if ready {
                 if let Ok(url) = format!("http://127.0.0.1:{}", UI_PORT).parse() {
@@ -311,15 +320,24 @@ fn nudge_repaint<R: tauri::Runtime>(handle: &tauri::AppHandle<R>) {
     }
     let h = handle.clone();
     std::thread::spawn(move || {
-        // Navigate the window to the HTTP-served splash a few times across the first couple of seconds — an http
-        // navigation is the mechanism WebKitGTK actually paints here, and a few attempts cover a slow surface map on a
-        // VM. Each stops once the readiness thread has already navigated to the real interface.
-        for delay in [300u64, 900, 2000] {
+        // Re-navigate the window to the HTTP-served splash until the readiness thread decides the outcome — the
+        // interface, or the error state (either sets SPLASH_DONE). An http navigation is the mechanism WebKitGTK
+        // actually paints here, so repeating it until the app takes over covers ANY surface-map delay on any machine,
+        // including a slow first launch that downloads the runtime, rather than racing a fixed timeout that a slower
+        // box (or an emulated one) simply outruns. Back off from a tight initial cadence to a slow heartbeat so the
+        // number of reloads stays small, and stop the instant the outcome is set so a late navigation can never land
+        // on top of the interface. A 180s cap bounds the loop if the outcome is somehow never decided.
+        let start = Instant::now();
+        let mut delay = 300u64;
+        loop {
             std::thread::sleep(Duration::from_millis(delay));
+            if SPLASH_DONE.load(Ordering::SeqCst) || start.elapsed() > Duration::from_secs(180) {
+                break;
+            }
             let h2 = h.clone();
             let _ = h.run_on_main_thread(move || {
-                if UI_READY.load(Ordering::SeqCst) {
-                    return;
+                if SPLASH_DONE.load(Ordering::SeqCst) {
+                    return; // the interface (or error state) is already up — do not navigate over it
                 }
                 if let Some(win) = h2.get_webview_window("main") {
                     if let Ok(url) = format!("http://127.0.0.1:{}/", port).parse() {
@@ -327,6 +345,7 @@ fn nudge_repaint<R: tauri::Runtime>(handle: &tauri::AppHandle<R>) {
                     }
                 }
             });
+            delay = (delay * 2).min(2500); // 0.3s, 0.9s, 2.1s, 4.5s, then a ~2.5s heartbeat for a long first launch
         }
     });
 }
