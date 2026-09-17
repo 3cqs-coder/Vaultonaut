@@ -253,13 +253,16 @@ fn show_outcome<R: tauri::Runtime>(handle: &tauri::AppHandle<R>, ready: bool) {
     });
 }
 
-// LINUX-ONLY repaint nudge. On WebKit2GTK 2.40+ the webview surface does not repaint until something forces it — an
-// interaction, a navigation, or a RESIZE — so on affected setups the window shows a black rectangle at launch until it
-// navigates to the interface seconds later (the content is loaded the whole time; it is simply not painted). Force the
-// paint by nudging the window one pixel wider and back, a few times across the first couple of seconds, so the static
-// splash actually appears during the wait. A one-pixel round-trip is imperceptible, and each resize is what makes
-// WebKitGTK flush a fresh frame. This is gated to Linux and compiles to nothing on macOS and Windows, so it cannot
-// affect their (working) rendering. See Tauri issues #7021 and #13157 and the Tauri Linux graphics guide.
+// LINUX-ONLY first-paint fix. On WebKit2GTK (seen on virtio_gpu VMs and other setups) the webview MISSES the first
+// paint of content loaded at window creation — before the Wayland surface is mapped — so the splash shows as a black
+// rectangle until the app later navigates to the interface, a navigation that DOES paint (which is exactly why the
+// window appears once the backend comes up, several seconds in). We use that same, proven mechanism early: a moment
+// after the window is created and its surface is mapped, RE-NAVIGATE the visible window to the splash it is already
+// showing (with a throwaway query so it is a real navigation, not a no-op). That navigation forces the first paint, so
+// the splash appears during the wait instead of black. A couple of attempts cover a slow surface map; each stops once
+// the real interface has been shown. This is gated to Linux and compiles to nothing on macOS/Windows, so it cannot
+// affect their (working) rendering. A resize does NOT trigger a paint on the affected setups, but a navigation does.
+// See Tauri issues #7021 and #13157 and the Tauri Linux graphics guide.
 fn nudge_repaint<R: tauri::Runtime>(handle: &tauri::AppHandle<R>) {
     // The bug is WebKitGTK-specific, so this only runs on Linux — but the body stays compiled on every platform
     // (a runtime `cfg!` guard, not `#[cfg]`) so the cross-platform build always type-checks this code, rather than
@@ -269,15 +272,21 @@ fn nudge_repaint<R: tauri::Runtime>(handle: &tauri::AppHandle<R>) {
     }
     let h = handle.clone();
     std::thread::spawn(move || {
-        for delay in [120u64, 350, 800, 1500] {
-            std::thread::sleep(Duration::from_millis(delay));
+        for (i, delay) in [700u64, 1800].iter().enumerate() {
+            std::thread::sleep(Duration::from_millis(*delay));
+            let n = i;
             let h2 = h.clone();
             let _ = h.run_on_main_thread(move || {
+                // Once the readiness thread has navigated to the real interface, there is nothing left to force.
+                if UI_READY.load(Ordering::SeqCst) {
+                    return;
+                }
                 if let Some(win) = h2.get_webview_window("main") {
-                    if let Ok(sz) = win.inner_size() {
-                        // Resize +1px then back: two distinct resize events, each forcing WebKitGTK to present a frame.
-                        let _ = win.set_size(tauri::PhysicalSize::new(sz.width + 1, sz.height));
-                        let _ = win.set_size(sz);
+                    if let Ok(mut u) = win.url() {
+                        // Re-navigate to the current splash URL with a unique throwaway query, so WebKitGTK treats it as
+                        // a real navigation and flushes the first frame. The asset handler ignores the query.
+                        u.set_query(Some(&format!("_p={}", n)));
+                        let _ = win.navigate(u);
                     }
                 }
             });
