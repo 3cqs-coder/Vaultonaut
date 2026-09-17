@@ -5,13 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Vaultonaut</title>
     <style>
-      /* A DELIBERATELY STATIC splash — no animation, transition, or transform anywhere. On Linux, WebKitGTK's
-         accelerated-compositing path is unreliable across many GPU / driver / compositor combinations, and a CSS
-         animation (the spinner this replaced) forces the window's very first surface onto exactly that path, so the
-         whole splash stayed black until the app navigated to the running interface several seconds later. Static
-         content paints through the basic software path, which works everywhere. The window's own backgroundColor
-         matches this body, so even the first frame is the brand dark rather than a black void. Keep this page static:
-         do not add a spinner, a fade, or any @keyframes. */
+      /* The startup splash. The real Linux black-window fix is in the shell (it re-navigates the webview once, after
+         the surface is mapped, to force WebKitGTK's missed first paint) — NOT the removal of animation, so a spinner is
+         fine here. The window's own backgroundColor matches this body, so the first frame is the brand dark, never a
+         black void. Reduced motion is honored. */
       :root { color-scheme: light dark; }
       html, body { height: 100%; margin: 0; }
       body {
@@ -20,17 +17,47 @@
         background: #0f1115; color: #e8eaed;
       }
       @media (prefers-color-scheme: light) { body { background: #f5f6f8; color: #1a1c20; } }
-      .panel { text-align: center; max-width: 30rem; padding: 2rem; }
-      .mark { width: 3rem; height: 3rem; margin: 0 auto 1.1rem; display: block; color: #6f9bff; }
+      .panel { text-align: center; max-width: 30rem; padding: 2rem; animation: vd-fade .45s ease both; }
+      .loader { position: relative; width: 4rem; height: 4rem; margin: 0 auto 1.2rem; }
+      .ring { position: absolute; inset: 0; border: 3px solid rgba(111, 155, 255, .22); border-top-color: #6f9bff;
+        border-radius: 50%; animation: vd-spin .9s linear infinite; }
+      .mark { position: absolute; inset: 0; margin: auto; width: 2.5rem; height: 2.5rem; border-radius: 12px;
+        box-shadow: 0 2px 8px -2px rgba(8, 12, 24, .5); }
       h1 { font-size: 1.15rem; font-weight: 600; margin: 0 0 .35rem; }
       p { margin: 0; opacity: .72; }
-      [data-state="error"] .mark { color: #e06c66; }
+      [data-state="error"] .ring { animation: none; border-top-color: rgba(224, 108, 102, .9); }
       [data-state="starting"] .err, [data-state="error"] .starting { display: none; }
+      @keyframes vd-spin { to { transform: rotate(360deg); } }
+      @keyframes vd-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+      @media (prefers-reduced-motion: reduce) { .ring { animation: none; } .panel { animation: none; } }
     </style>
   </head>
   <body>
     <div class="panel">
-      <svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      <div class="loader" aria-hidden="true">
+        <div class="ring"></div>
+        <svg class="mark" viewBox="0 0 512 512" role="img" aria-label="Vaultonaut">
+          <defs>
+            <linearGradient id="vnGround" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#152238"/><stop offset="1" stop-color="#080d18"/></linearGradient>
+            <linearGradient id="vnShell" x1=".28" y1="0" x2=".72" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#e7edf7"/><stop offset="1" stop-color="#bcc7db"/></linearGradient>
+            <radialGradient id="vnSpec" cx=".37" cy=".3" r=".42"><stop offset="0" stop-color="#ffffff" stop-opacity=".95"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
+            <linearGradient id="vnVisor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#274063"/><stop offset=".5" stop-color="#0d1730"/><stop offset="1" stop-color="#091124"/></linearGradient>
+            <linearGradient id="vnKey" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8ab4ff"/><stop offset="1" stop-color="#3f7cf0"/></linearGradient>
+          </defs>
+          <rect width="512" height="512" rx="112" fill="url(#vnGround)"/>
+          <rect x="60" y="206" width="46" height="96" rx="20" fill="url(#vnShell)"/>
+          <rect x="406" y="206" width="46" height="96" rx="20" fill="url(#vnShell)"/>
+          <circle cx="256" cy="252" r="182" fill="url(#vnShell)"/>
+          <circle cx="256" cy="252" r="182" fill="url(#vnSpec)"/>
+          <path d="M132 228 Q132 150 210 150 H302 Q380 150 380 228 V284 Q380 374 256 374 Q132 374 132 284 Z" fill="url(#vnVisor)"/>
+          <ellipse cx="205" cy="203" rx="60" ry="26" fill="#ffffff" opacity=".14" transform="rotate(-22 205 203)"/>
+          <circle cx="256" cy="248" r="42" fill="url(#vnKey)"/>
+          <circle cx="256" cy="248" r="42" fill="#ffffff" opacity=".16"/>
+          <circle cx="256" cy="248" r="42" fill="url(#vnKey)"/>
+          <path d="M236 280 L276 280 L290 350 Q256 364 222 350 Z" fill="url(#vnKey)"/>
+          <ellipse cx="244" cy="236" rx="16" ry="10" fill="#ffffff" opacity=".3" transform="rotate(-20 244 236)"/>
+        </svg>
+      </div>
       <div class="starting">
         <h1>Starting Vaultonaut&hellip;</h1>
         <p>Getting the encryption engine ready. The first launch can take a little longer while it downloads.</p>

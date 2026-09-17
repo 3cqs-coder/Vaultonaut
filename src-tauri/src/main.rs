@@ -527,6 +527,10 @@ fn main() {
                 cmd.creation_flags(0x08000000); // CREATE_NO_WINDOW
             }
 
+            // Force the WebKitGTK first paint (Linux only) as soon as the window exists — BEFORE and independent of the
+            // backend spawn below, so the splash paints during the startup wait even if the backend is slow to come up.
+            nudge_repaint(app.handle());
+
             let handle = app.handle().clone();
             match cmd.spawn() {
                 Ok(child) => {
@@ -555,10 +559,6 @@ fn main() {
                             }
                         });
                     }
-
-                    // Linux WebKitGTK repaint fix: nudge the window so the static splash actually paints during the
-                    // startup wait instead of showing a black rectangle. No-op on macOS and Windows.
-                    nudge_repaint(app.handle());
 
                     // Wait for the server off the main thread (so the window and its "starting" splash stay
                     // responsive), then, back on the main thread, show the interface or the error state.
