@@ -189,7 +189,13 @@ body {
 .topbar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 16px; flex: 0 0 auto;
 	padding: 11px 24px; padding-top: max(11px, env(safe-area-inset-top));
 	background: var(--rail); border-bottom: 1px solid var(--border); box-shadow: var(--shadow-soft); }
-.topbar .brand { padding: 0; flex: 0 0 auto; }
+.topbar .brand { padding: 0; flex: 0 0 auto; gap: 12px; }
+/* The brand mark anchors the identity, so in the top bar it is clearly LARGER than the utility buttons on the right
+   (40px buttons, 19px glyphs) instead of the same weight — otherwise it reads as one more control and loses its brand
+   presence. Scoped to the top bar; the sidebar and login card keep their own sizes. The wordmark grows a touch to match. */
+.topbar .brand img.logo, .topbar .brand svg.logo { width: 42px; height: 42px; }
+.topbar .brand svg.logo { border-radius: 10px; box-shadow: 0 3px 10px -2px rgba(8, 12, 24, .5); }
+.topbar .brand-name { font-size: 17px; }
 .topbar-actions { margin-left: auto; display: flex; align-items: center; gap: var(--sp-4); flex-wrap: wrap; justify-content: flex-end; }
 /* Skip-to-content link: a keyboard user tabs past the whole nav rail to reach the main content in one press. It is
    off-screen until focused, then appears at the top-left so it is visible when it matters. */
