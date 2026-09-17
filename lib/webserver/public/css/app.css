@@ -173,10 +173,9 @@ body {
 }
 
 /* ---------------------------------------------------------------------------
-   App shell: a calm, light left rail beside a roomy main column. The rail
-   carries identity, primary navigation, a plain-language reassurance chip, and
-   the global actions; the main column holds the page's real content. On narrow
-   screens the rail collapses to a slide-in drawer (see the responsive block).
+   App shell: a top bar carrying identity and the global actions, above a roomy
+   floating content panel that holds the page's real content. On narrow screens
+   the bar tightens and the panel goes full-bleed (see the responsive block).
    Every color is a token, so all four themes and both platforms follow along.
 --------------------------------------------------------------------------- */
 /* The "cockpit": a top bar over a deeper workspace tone (with a faint top sheen, like light on a dashboard) behind
@@ -203,19 +202,7 @@ body {
 .skip-link:focus { top: 8px; }
 #main:focus { outline: none; } /* the skip target takes focus programmatically; do not draw a focus ring on the whole panel */
 
-/* Left rail */
-.rail {
-	background: var(--rail);
-	border-right: 1px solid var(--border);
-	padding: 18px 14px 16px;
-	display: flex;
-	flex-direction: column;
-	gap: 2px;
-	position: sticky;
-	top: 0;
-	height: 100vh; height: 100dvh; /* vh fallback first, then dvh — uniform with the mobile drawer and dialogs */
-	overflow-y: auto;
-}
+/* Brand mark — shown in the top bar and reused on the login card. */
 .brand { display: flex; align-items: center; gap: 11px; padding: 4px 8px 18px; }
 .logo { font-size: 20px; }
 img.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; } /* the brand mark carries its own rounded-square ground */
@@ -224,61 +211,8 @@ img.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; } /* the b
    follows the corners. */
 svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-radius: 7px; box-shadow: 0 2px 6px -1px rgba(8, 12, 24, .4); }
 .brand-text { display: flex; flex-direction: column; line-height: 1.12; min-width: 0; }
-.brand-name { font-weight: 700; font-size: 16px; margin: 0; letter-spacing: -.01em; } /* product name in the rail; the login page reuses it as its <h1>, so keep the heading-margin reset */
-.version { color: var(--muted); font-size: 11px; } /* --muted is AA-tuned; the version string is informational, so it must clear contrast in every theme (--faint is decorative and dips below AA on the dark rail) */
-
-.rail-nav { display: flex; flex-direction: column; gap: 2px; }
-/* A rail entry is a button or link that reads as a quiet nav item until hovered
-   or active. Icons and labels align on a shared baseline; counts/toggfrags sit
-   at the far end. Used for both the nav group and the foot actions. */
-.rail-item {
-	position: relative;
-	display: flex; align-items: center; gap: 11px;
-	width: 100%; text-align: left;
-	padding: 9px 12px;
-	border: 0; background: none;
-	border-radius: var(--radius-sm);
-	color: var(--muted); cursor: pointer;
-	font: inherit; font-size: 13.5px; font-weight: 550;
-	transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
-}
-.rail-item .ic { width: 18px; height: 18px; flex: 0 0 auto; }
-@media (hover: hover) { .rail-item:hover { background: var(--hover); color: var(--text); } }
-.rail-item.active { background: var(--accent-wash); color: var(--accent-ink); font-weight: 650; cursor: default; } /* the current view is a passive label, not a button — don't imply it is clickable */
-.rail-item.active::before {
-	content: ""; position: absolute; left: -14px; top: 8px; bottom: 8px;
-	width: 3px; border-radius: 0 3px 3px 0; background: var(--accent);
-}
-.rail-count { margin-left: auto; font: 650 11px/1 var(--mono); color: var(--muted); } /* --muted (not --faint): the count carries real information, so it must clear WCAG AA */
-.rail-item.active .rail-count { color: var(--accent-ink); }
-
-/* Plain-language reassurance: "you're protected" — the emotional counterweight
-   to a security tool that could otherwise feel intimidating. */
-.rail-safe {
-	margin: 14px 4px 8px; padding: 11px 12px;
-	background: var(--good-bg); border: 1px solid var(--border);
-	border-radius: 12px;
-	display: flex; gap: 10px; align-items: flex-start;
-}
-.rail-safe svg { width: 18px; height: 18px; color: var(--good); flex: 0 0 auto; margin-top: 1px; }
-.rail-safe b { display: block; color: var(--good); font-weight: 650; font-size: 12.5px; margin-bottom: 1px; }
-.rail-safe span { display: block; font-size: 11.5px; color: var(--muted); line-height: 1.4; }
-
-.rail-spacer { flex: 1 1 auto; min-height: 12px; }
-.rail-foot { border-top: 1px solid var(--border); padding-top: 8px; margin-top: 4px; display: flex; flex-direction: column; gap: 2px; }
-
-/* Mobile-only rail controls; hidden on desktop, revealed in the responsive block. */
-.rail-toggle {
-	display: none;
-	/* max() keeps the 12px inset on ordinary screens and clears a notch / rounded corner where one exists (env is 0 otherwise). */
-	position: fixed; top: max(12px, env(safe-area-inset-top)); left: max(12px, env(safe-area-inset-left)); z-index: 40;
-	width: 42px; height: 42px; align-items: center; justify-content: center;
-	background: var(--panel); color: var(--text);
-	border: 1px solid var(--border); border-radius: 10px;
-	box-shadow: var(--shadow-soft); cursor: pointer;
-}
-.rail-toggle svg { width: 20px; height: 20px; }
-.rail-scrim { display: none; }
+.brand-name { font-weight: 700; font-size: 16px; margin: 0; letter-spacing: -.01em; } /* the login page reuses it as its <h1>, so keep the heading-margin reset */
+.version { color: var(--muted); font-size: 11px; } /* --muted is AA-tuned; the version string is informational, so it must clear contrast in every theme (--faint is decorative and dips below AA on a dark surface) */
 
 /* Main column */
 .main { max-width: 1120px; width: calc(100% - 48px); margin-inline: auto; margin-block: 22px; min-width: 0;
@@ -589,7 +523,7 @@ button { font: inherit; }
 /* A disabled control must look inert, not clickable — the base .primary-btn stays fully saturated otherwise. */
 button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled { opacity: .5; cursor: not-allowed; }
 /* A visible keyboard-focus ring on the custom buttons (inputs already have one), for keyboard users. */
-.ghost-btn:focus-visible, .primary-btn:focus-visible, .link-btn:focus-visible, .copy-btn:focus-visible, .rail-item:focus-visible, .browse-item:focus-visible, .help-nav-btn:focus-visible, .help-chip:focus-visible, .note-item:focus-visible, .mini-select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ghost-btn:focus-visible, .primary-btn:focus-visible, .link-btn:focus-visible, .copy-btn:focus-visible, .icon-btn:focus-visible, .browse-item:focus-visible, .help-nav-btn:focus-visible, .help-chip:focus-visible, .note-item:focus-visible, .mini-select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .dialog::backdrop { background: rgba(6, 10, 18, .45); animation: vd-backdrop-in var(--dur) var(--ease); }
 /* A tasteful entrance: the dialog fades and rises a touch when opened, its backdrop fades in with it. Runs on the
    [open] attribute native <dialog> sets via showModal(), so it fires each time a dialog is shown. Reduced motion is
@@ -640,7 +574,7 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 .key-actions-close { display: flex; justify-content: flex-end; margin-top: 18px; }
 
 /* Folder browser */
-.dialog.browse { width: 520px; }
+.dialog.browse { width: min(520px, 94vw); }
 
 /* Recovery Kit viewer, shown natively in the app so it renders reliably in every WebView and keeps the app's feel.
    The values (identity, fingerprint, and — for a full kit — the recovery key) are laid out with the app's own tokens;
@@ -736,10 +670,7 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
    readable, left-aligned card that wraps cleanly. */
 .toast.sticky { border-radius: 12px; max-width: min(560px, 90vw); text-align: left; line-height: 1.45; padding: 14px 18px; }
 
-/* Tablet / narrow: the rail folds into a slide-in drawer so the content column
-   gets the full width. A hamburger reveals it; a scrim behind it dismisses it.
-   State is a single `.open` class on the rail plus the scrim's [hidden] flag,
-   both toggled in app.js — no layout duplication, works on touch and mouse. */
+/* Tablet / narrow: the top bar tightens and the content panel goes full-bleed so the page gets the full width. */
 @media (max-width: 860px) {
 	.topbar { padding: 10px 16px; padding-top: max(10px, env(safe-area-inset-top)); gap: 10px; }
 	/* On a phone the content goes full-bleed (no floating panel): the workspace tone would only waste space. */
@@ -952,7 +883,7 @@ input.switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2
    and card styling, centered and mobile-friendly. */
 .login-body { display: flex; align-items: center; justify-content: center; min-height: 100vh; min-height: 100dvh; padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left)); } /* honor a notch/home indicator, matching the app shell */
 .login-box { width: 100%; max-width: 360px; background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 28px 24px; box-shadow: 0 10px 30px rgba(0,0,0,.12); }
-.login-brand { justify-content: center; font-size: 18px; padding: 0; margin-bottom: 10px; } /* the rail's .brand padding is for the sidebar; center it cleanly on the login card instead */
+.login-brand { justify-content: center; font-size: 18px; padding: 0; margin-bottom: 10px; } /* drop the top-bar .brand padding and center the mark cleanly on the login card instead */
 .login-brand .logo { font-size: 22px; }
 .login-brand img.logo { width: 40px; height: 40px; }
 .login-sub { color: var(--muted); font-size: 13px; text-align: center; margin: 0 0 18px; }
