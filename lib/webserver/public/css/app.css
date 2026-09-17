@@ -356,6 +356,18 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 .vault-icon svg { width: 20px; height: 20px; }
 .card .name { font-weight: 650; display: flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap; overflow-wrap: anywhere; } /* a very long, unbroken vault name breaks/wraps instead of widening the card (worst on the ~375px column) */
 .card .path { color: var(--muted); font-size: 12.5px; font-family: var(--mono); word-break: break-all; margin-top: 2px; }
+/* Path line: the path text plus its inline tools (copy, and the privacy-screen reveal toggle). The tools sit at the
+   start, aligned to the first line of a path that wraps, and never blur — only the path text does. */
+.path-line { display: flex; align-items: flex-start; gap: 6px; margin-top: 2px; }
+.path-line .path { margin-top: 0; flex: 1 1 auto; min-width: 0; }
+.path-tools { display: inline-flex; gap: 2px; flex: 0 0 auto; }
+.path-tool { display: inline-grid; place-items: center; width: 26px; height: 22px; padding: 0; border: 0; border-radius: 6px;
+	background: none; color: var(--muted); cursor: pointer; transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
+@media (hover: hover) { .path-tool:hover { background: var(--hover); color: var(--text); } }
+/* Privacy screen: blur a name or path until revealed. pointer-events:none so a bystander cannot select the text to read
+   it, and the smudge is heavy enough that the characters are not legible at a glance. It never hides layout, so cards
+   keep their size whether hidden or shown. */
+.blurred { filter: blur(7px); -webkit-filter: blur(7px); user-select: none; -webkit-user-select: none; pointer-events: none; transition: filter var(--dur-fast) var(--ease); }
 .card .actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
 
 /* Base chip look, so a badge with no modifier (a member role, a version origin, the tamper-proof/WORM chip) still
