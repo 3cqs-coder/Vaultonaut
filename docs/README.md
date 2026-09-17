@@ -47,7 +47,7 @@ A vault is a self-contained folder. Copy that folder to another computer, an ext
 - [Backing up off-site](#backing-up-off-site)
   - [Version history](#version-history)
 - [Mirroring across places](#mirroring-across-places)
-  - [Reaching a vault on another machine](#reaching-a-vault-on-another-machine)
+  - [Connecting your devices directly (peer-to-peer)](#connecting-your-devices-directly-peer-to-peer)
 - [Splitting a vault across places](#splitting-a-vault-across-places)
 - [Emergency and inheritance access](#emergency-and-inheritance-access)
   - [A dead-man's switch](#a-dead-mans-switch)
@@ -77,6 +77,7 @@ Most people juggle a separate tool for each of these jobs. Vaultonaut does them 
 - **Unlock your way.** A password, a recovery key, a keyfile, Touch ID, Windows Hello, or a hardware security key — any of them opens the vault.
 - **Share without a middleman.** Grant read-only access, seal a share to one specific person, or send a single item by link. Only encrypted data ever leaves your computer, so sharing stays zero-knowledge.
 - **Team vaults.** Give each member their own sealed key slot and role, and rotate keys with one command to truly re-encrypt and revoke access.
+- **Sync straight between your own devices.** Mirror a vault directly from one computer to another over an encrypted, peer-to-peer connection — no cloud, no account, nothing in between. On the same network your devices find each other automatically with nothing to set up; across the internet they connect directly when your router allows, or through a small relay you host when it does not. Only encrypted data ever crosses.
 - **Guard against loss.** Off-site backups, mirrors across places, self-healing parity, version history, and splitting a vault across locations all protect against losing data or access.
 - **Prove it was not touched.** Built-in tamper detection, a strict seal, rollback protection, trusted timestamps, and an offline-verifiable proof bundle.
 - **Emergency and inheritance access.** An optional dead-man's switch hands access to a trusted contact if you no longer can.
@@ -523,6 +524,8 @@ Vaultonaut stays simple on the surface and deep underneath. Everything the web i
 
 **Headless by design.** None of this needs a screen. A server with no display can create vaults, run scheduled backups and mirrors, serve a vault as a node for another machine, and check integrity, entirely from the command line. Start the web interface only if you want it; the background service and the CLI do the work without it.
 
+**Your own private transport, no third party.** The peer-to-peer layer is yours end to end. A `vdisk serve` node exposes only the encrypted store over TLS with a self-signed certificate the other side pins, so every hop — direct or relayed — carries nothing but ciphertext and reaches only the exact node you paired with. On a local network, nodes announce and discover each other automatically (a small broadcast that reveals only an address and a certificate fingerprint, never anything about a vault). Reaching across the internet, a node asks the router to open a port for itself with the standard NAT-PMP and PCP protocols and advertises that public address as a direct route; when a router will not cooperate, you run your own `vdisk relay` hub on any public host — a token-gated, TCP-only bridge with per-node identity binding, brute-force throttling, and registration caps — so nothing about your network ever depends on someone else's server. It is all Node built-ins: no external daemon, no third-party service, identical on every platform.
+
 **The same on every platform.** The command line behaves identically on macOS, Windows, and Linux — same commands, same flags, same output — so a script written on one runs on the others.
 
 **Built to automate.** Every command returns a standard exit code, zero on success and non-zero on failure, so a script can branch on the result. Add `--json` to any command to get machine-readable output — one JSON object on standard output, `{ "ok": true, "data": … }` or `{ "ok": false, "error": { "code", "message" } }`, with human messages moved to standard error — so another program can parse a result or an error code without scraping text. Pass `--data-dir <folder>` to point a run at its own isolated data directory, which keeps an automated or test setup fully separate from your everyday vaults. Long operations, such as a key rotation or a large backup, print progress as they run and can be safely interrupted and resumed.
@@ -937,9 +940,19 @@ When you mount such a vault for writing, it records a marker at the shared place
 
 The lease is released automatically when you unmount, and an abandoned one (a machine that crashed without unmounting) is treated as expired after a while so a vault can never stay locked. It is a courtesy, not a hard lock: if the destination is unreachable the mount simply proceeds. The encryption and the keep-both-versions conflict handling are what actually protect your data; the lease just spares you the cleanup.
 
-### Reaching a vault on another machine
+### Connecting your devices directly (peer-to-peer)
 
-A mirror needs somewhere to sync *to*. A folder or an SFTP server is enough when you have one, but you can also mirror directly to another computer running Vaultonaut — no shared drive, no SFTP server, no port forwarding. On that machine, run:
+A mirror needs somewhere to sync *to* — and the simplest place is another computer you already own. A folder or an SFTP server works when you have one, but Vaultonaut can also connect two machines **directly**, peer-to-peer, over an encrypted connection: no shared drive, no SFTP server, no cloud account, and no port forwarding. Only the encrypted files ever cross between them, so your password and your contents never leave your machine.
+
+**At a glance — three ways to reach the other machine, easiest first:**
+
+- **On the same network** — the two devices discover each other automatically. Nothing to configure.
+- **Across the internet** — Vaultonaut asks your router to open a port for itself; when it can, the machines connect directly from anywhere.
+- **Through a relay you host** — for when a router will not cooperate, a tiny hub on any public machine bridges the two, still only ever handling scrambled data.
+
+Whichever you use, setup is a single paste of a **connect code**, and from then on the vault mirrors between the machines like any other destination. The rest of this section covers each way in turn, then the one-time pairing step.
+
+On the machine that holds the vault, run:
 
 ```
 vdisk serve <vault>
