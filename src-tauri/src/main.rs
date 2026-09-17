@@ -421,7 +421,7 @@ fn tune_linux_webview() {
         // loss of acceleration does not matter for this simple interface. Still a default an advanced user can override.
         ("WEBKIT_DISABLE_COMPOSITING_MODE", "1"),
         // Final escalation for the machines where even disabling compositing leaves the WebView black — the window
-        // background paints but the page content (the splash spinner and text, then the interface) never appears. This
+        // background paints but the page content (the static splash, then the interface) never appears. This
         // forces the whole GL stack to Mesa's software rasterizer, so WebKitGTK draws its content through a path that
         // does not depend on the GPU driver or the Wayland/X compositor at all. It is the most reliable way to make the
         // content paint everywhere; the cost is only rendering speed, which is irrelevant for this simple interface.

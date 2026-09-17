@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Vaultonaut</title>
     <style>
+      /* A DELIBERATELY STATIC splash — no animation, transition, or transform anywhere. On Linux, WebKitGTK's
+         accelerated-compositing path is unreliable across many GPU / driver / compositor combinations, and a CSS
+         animation (the spinner this replaced) forces the window's very first surface onto exactly that path, so the
+         whole splash stayed black until the app navigated to the running interface several seconds later. Static
+         content paints through the basic software path, which works everywhere. The window's own backgroundColor
+         matches this body, so even the first frame is the brand dark rather than a black void. Keep this page static:
+         do not add a spinner, a fade, or any @keyframes. */
       :root { color-scheme: light dark; }
       html, body { height: 100%; margin: 0; }
       body {
@@ -14,25 +21,19 @@
       }
       @media (prefers-color-scheme: light) { body { background: #f5f6f8; color: #1a1c20; } }
       .panel { text-align: center; max-width: 30rem; padding: 2rem; }
-      .spinner {
-        width: 2.25rem; height: 2.25rem; margin: 0 auto 1.25rem;
-        border: 3px solid currentColor; border-top-color: transparent;
-        border-radius: 50%; opacity: .65; animation: spin 0.9s linear infinite;
-      }
-      @keyframes spin { to { transform: rotate(360deg); } }
-      @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+      .mark { width: 3rem; height: 3rem; margin: 0 auto 1.1rem; display: block; color: #6f9bff; }
       h1 { font-size: 1.15rem; font-weight: 600; margin: 0 0 .35rem; }
-      p { margin: 0; opacity: .7; }
-      [data-state="error"] .spinner { display: none; }
+      p { margin: 0; opacity: .72; }
+      [data-state="error"] .mark { color: #e06c66; }
       [data-state="starting"] .err, [data-state="error"] .starting { display: none; }
     </style>
   </head>
   <body>
     <div class="panel">
-      <div class="spinner" aria-hidden="true"></div>
+      <svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
       <div class="starting">
         <h1>Starting Vaultonaut&hellip;</h1>
-        <p>Getting the encrypted-vault engine ready.</p>
+        <p>Getting the encryption engine ready. The first launch can take a little longer while it downloads.</p>
       </div>
       <div class="err">
         <h1>Vaultonaut could not start</h1>
