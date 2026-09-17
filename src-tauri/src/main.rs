@@ -415,6 +415,11 @@ fn request_quit_confirmation<R: tauri::Runtime>(handle: tauri::AppHandle<R>, sha
 fn tune_linux_webview() {
     for (key, value) in [
         ("WEBKIT_DISABLE_DMABUF_RENDERER", "1"),
+        // Escalation for the machines where disabling only the DMABUF renderer is NOT enough: turn off WebKitGTK's
+        // GPU compositing entirely so the WebView renders in software. Software rendering paints on any GPU / driver /
+        // compositor combination, which is what makes the black-window-on-relaunch case reliably go away; the small
+        // loss of acceleration does not matter for this simple interface. Still a default an advanced user can override.
+        ("WEBKIT_DISABLE_COMPOSITING_MODE", "1"),
         ("__NV_DISABLE_EXPLICIT_SYNC", "1"),
     ] {
         if std::env::var_os(key).is_none() {
