@@ -27,6 +27,13 @@ A vault is a self-contained folder. Copy that folder to another computer, an ext
 - [Commands](#commands)
 - [Running a project from a vault](#running-a-project-from-a-vault)
 - [For developers and power users](#for-developers-and-power-users)
+  - [Everything is a command](#everything-is-a-command)
+  - [Headless by design](#headless-by-design)
+  - [Many vaults, run as a fleet](#many-vaults-run-as-a-fleet)
+  - [Your own private transport, no third party](#your-own-private-transport-no-third-party)
+  - [The same on every platform](#the-same-on-every-platform)
+  - [Built to automate](#built-to-automate)
+  - [A local interface underneath](#a-local-interface-underneath)
 - [Local API](#local-api)
 - [Security](#security)
   - [What a vault protects, and what it cannot](#what-a-vault-protects-and-what-it-cannot)
@@ -521,17 +528,33 @@ The right approach is a simple rule. Put in the vault what is sensitive — your
 
 Vaultonaut stays simple on the surface and deep underneath. Everything the web interface and the desktop app can do is also a plain command, so a vault fits into scripts, scheduled jobs, and headless servers as naturally as into a window. Nothing is hidden behind the graphical interface.
 
-**Everything is a command.** The `vdisk` command (its full name is `vaultonaut`, or `node vaultonaut.js` without installing) covers the entire feature set — create, mount, share, back up, mirror, rotate keys, attest, split, and the rest are all in the [Commands](#commands) list above. There is no capability that only the graphical interface can reach.
+### Everything is a command
 
-**Headless by design.** None of this needs a screen. A server with no display can create vaults, run scheduled backups and mirrors, serve a vault as a node for another machine, and check integrity, entirely from the command line. Start the web interface only if you want it; the background service and the CLI do the work without it.
+The `vdisk` command (its full name is `vaultonaut`, or `node vaultonaut.js` without installing) covers the entire feature set — create, mount, share, back up, mirror, rotate keys, attest, split, and the rest are all in the [Commands](#commands) list above. There is no capability that only the graphical interface can reach.
 
-**Your own private transport, no third party.** The peer-to-peer layer is yours end to end. A `vdisk serve` node exposes only the encrypted store over TLS with a self-signed certificate the other side pins, so every hop — direct or relayed — carries nothing but ciphertext and reaches only the exact node you paired with. On a local network, nodes announce and discover each other automatically (a small broadcast that reveals only an address and a certificate fingerprint, never anything about a vault). Reaching across the internet, a node asks the router to open a port for itself using the standard NAT-PMP and PCP protocols, then advertises that public address as a direct route. When a router will not cooperate, you run your own `vdisk relay` hub on any public host. The hub is a token-gated, TCP-only bridge with per-node identity binding, brute-force throttling, and registration caps, so nothing about your network depends on someone else's server. When only a relay is reachable, the two peers still try to upgrade to a direct connection by hole-punching. That upgrade is coordinated over an authenticated signaling channel on the same hub, scoped by a per-node credential that can never register or impersonate a node. On success the hub drops out of the data path, and the direct hop carries the identical pinned-TLS stream, so the upgrade changes only the route. A per-machine preference (`vdisk peer-mode`: Automatic, Relay only, or Direct only) governs all of this. It is built from Node's own libraries: no external daemon, no third-party service, and identical behavior on every platform.
+### Headless by design
 
-**The same on every platform.** The command line behaves identically on macOS, Windows, and Linux — same commands, same flags, same output — so a script written on one runs on the others.
+None of this needs a screen. A server with no display can create vaults, run scheduled backups and mirrors, serve a vault as a node for another machine, and check integrity, entirely from the command line. Start the web interface only if you want it; the background service and the CLI do the work without it.
 
-**Built to automate.** Every command returns a standard exit code, zero on success and non-zero on failure, so a script can branch on the result. Add `--json` to any command to get machine-readable output — one JSON object on standard output, `{ "ok": true, "data": … }` or `{ "ok": false, "error": { "code", "message" } }`, with human messages moved to standard error — so another program can parse a result or an error code without scraping text. Pass `--data-dir <folder>` to point a run at its own isolated data directory, which keeps an automated or test setup fully separate from your everyday vaults. Long operations, such as a key rotation or a large backup, print progress as they run and can be safely interrupted and resumed.
+### Many vaults, run as a fleet
 
-**A local interface underneath.** When the web interface is running, the browser talks to a small JSON service on your own machine. The unversioned `/api/*` endpoints are the internal contract for the bundled interface and can change between releases, but a stable, versioned subset is published under `/api/v1` for building your own front-ends and integrations — see [Local API](#local-api) below.
+Nothing limits you to a handful of vaults opened by hand. Every action is a command that returns a clear exit code, with optional `--json` output, so one machine can create, mount, serve, back up, and mirror dozens of vaults on a schedule. Each is driven by a script or a scheduled job. `--data-dir <folder>` gives a run its own isolated set of vaults and settings, so separate groups — one per client, project, or environment — never touch each other on the same host. A headless server can hold a whole set of vaults this way and keep every one backed up, mirrored, and served to the machines that need it, without a window ever open.
+
+### Your own private transport, no third party
+
+The peer-to-peer layer is yours end to end. A `vdisk serve` node exposes only the encrypted store over TLS with a self-signed certificate the other side pins, so every hop — direct or relayed — carries nothing but ciphertext and reaches only the exact node you paired with. On a local network, nodes announce and discover each other automatically (a small broadcast that reveals only an address and a certificate fingerprint, never anything about a vault). Reaching across the internet, a node asks the router to open a port for itself using the standard NAT-PMP and PCP protocols, then advertises that public address as a direct route. When a router will not cooperate, you run your own `vdisk relay` hub on any public host. The hub is a token-gated, TCP-only bridge with per-node identity binding, brute-force throttling, and registration caps, so nothing about your network depends on someone else's server. When only a relay is reachable, the two peers still try to upgrade to a direct connection by hole-punching. That upgrade is coordinated over an authenticated signaling channel on the same hub, scoped by a per-node credential that can never register or impersonate a node. On success the hub drops out of the data path, and the direct hop carries the identical pinned-TLS stream, so the upgrade changes only the route. A per-machine preference (`vdisk peer-mode`: Automatic, Relay only, or Direct only) governs all of this. It is built from Node's own libraries: no external daemon, no third-party service, and identical behavior on every platform.
+
+### The same on every platform
+
+The command line behaves identically on macOS, Windows, and Linux — same commands, same flags, same output — so a script written on one runs on the others.
+
+### Built to automate
+
+Every command returns a standard exit code, zero on success and non-zero on failure, so a script can branch on the result. Add `--json` to any command to get machine-readable output — one JSON object on standard output, `{ "ok": true, "data": … }` or `{ "ok": false, "error": { "code", "message" } }`, with human messages moved to standard error — so another program can parse a result or an error code without scraping text. Pass `--data-dir <folder>` to point a run at its own isolated data directory, which keeps an automated or test setup fully separate from your everyday vaults. Long operations, such as a key rotation or a large backup, print progress as they run and can be safely interrupted and resumed.
+
+### A local interface underneath
+
+When the web interface is running, the browser talks to a small JSON service on your own machine. The unversioned `/api/*` endpoints are the internal contract for the bundled interface and can change between releases, but a stable, versioned subset is published under `/api/v1` for building your own front-ends and integrations — see [Local API](#local-api) below.
 
 ## Local API
 
@@ -1201,6 +1224,7 @@ Short answers to the questions that come up most, each pointing to the section w
 - **Is any decrypted data written to my disk?** No. Files are decrypted in memory as you use them, and the small in-place write buffer lives in a RAM disk — nothing decrypted touches the persistent disk. See [How it works](#how-it-works) and [Keeping vaults intact](#keeping-vaults-intact).
 - **I unmounted the vault, but an app still shows a file I had open — is that a leak?** No. The app is redrawing its own in-memory copy; the file on disk is still encrypted and the drive is gone (the "problem connecting to the server" error you may see first is the proof). Quit the app to clear it. The operating system can also cache previews of files you viewed — full-disk encryption covers that. See [Keeping vaults intact](#keeping-vaults-intact).
 - **Do I have to trust a company or a server?** No. Everything runs on your own machine, and the optional web interface listens only on your computer unless you deliberately expose it. See [The web interface](#the-web-interface).
+- **Do I even need the desktop app, or a browser?** No. The desktop app and the web interface are only windows onto the same local service, and everything they do is also a plain command. You can run and manage everything from the command line, including many vaults at once on a headless server with no screen. See [For developers and power users](#for-developers-and-power-users).
 - **What happens to a mounted vault if the app crashes or the computer sleeps?** A small guardian process locks the vaults if the service dies, and optional lock-on-sleep and auto-lock can lock them for you. See [Locking](#locking).
 - **Can I keep a vault in Dropbox, Google Drive, or S3?** Yes, two ways: keep a vault folder inside a synced folder, or put its encrypted store directly on cloud storage. Either way the provider only ever sees ciphertext. See [Vaults that live in the cloud](#vaults-that-live-in-the-cloud).
 - **How do I make sure I never lose my data?** Keep an off-site backup or a mirror. Self-heal guards against corruption but is not a backup. See [Backing up off-site](#backing-up-off-site).
