@@ -329,6 +329,12 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 
 /* Cards — the vault list is the page's primary content, so each vault reads as
    a clean, slightly raised surface rather than an inset row. */
+/* Bulk "remove all unreachable" bar — shown only when two or more vaults can't be read. A quiet danger-tinted strip
+   above the list, so clearing stale entries is one click without hunting card to card. Tokens only, so it themes. */
+.unreachable-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+	margin-bottom: 12px; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+	background: var(--warn-bg); }
+.unreachable-msg { color: var(--muted); font-size: 13px; }
 .cards { display: grid; gap: 12px; }
 .card {
 	display: flex; align-items: center; gap: var(--sp-6);
