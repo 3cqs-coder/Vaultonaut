@@ -407,6 +407,7 @@ vdisk autolock <minutes>         Auto-lock idle vaults after N minutes (0 = off)
 vdisk lock-on-sleep [on|off]     Lock mounted vaults when the computer sleeps (show state if omitted)
 vdisk auto-timestamp [on|off]    Record a trusted timestamp automatically after changes (show state if omitted)
 vdisk bandwidth [limit]          Cap sync speed for off-site backups and mirrors (e.g. 1M, or "off")
+vdisk peer-mode [auto|relay|direct]  How a peer node is reached: auto (direct when possible, relay fallback), relay only, or direct only
 vdisk status                     Show mounted vaults
 vdisk list     <name|path>       List the files in a vault without mounting it
 vdisk search   <name|path> <text>  Find files by name (open vault: no password; closed: prompts)
