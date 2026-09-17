@@ -253,6 +253,38 @@ fn show_outcome<R: tauri::Runtime>(handle: &tauri::AppHandle<R>, ready: bool) {
     });
 }
 
+// LINUX-ONLY repaint nudge. On WebKit2GTK 2.40+ the webview surface does not repaint until something forces it — an
+// interaction, a navigation, or a RESIZE — so on affected setups the window shows a black rectangle at launch until it
+// navigates to the interface seconds later (the content is loaded the whole time; it is simply not painted). Force the
+// paint by nudging the window one pixel wider and back, a few times across the first couple of seconds, so the static
+// splash actually appears during the wait. A one-pixel round-trip is imperceptible, and each resize is what makes
+// WebKitGTK flush a fresh frame. This is gated to Linux and compiles to nothing on macOS and Windows, so it cannot
+// affect their (working) rendering. See Tauri issues #7021 and #13157 and the Tauri Linux graphics guide.
+fn nudge_repaint<R: tauri::Runtime>(handle: &tauri::AppHandle<R>) {
+    // The bug is WebKitGTK-specific, so this only runs on Linux — but the body stays compiled on every platform
+    // (a runtime `cfg!` guard, not `#[cfg]`) so the cross-platform build always type-checks this code, rather than
+    // it silently only ever being verified on a Linux CI leg.
+    if !cfg!(target_os = "linux") {
+        return;
+    }
+    let h = handle.clone();
+    std::thread::spawn(move || {
+        for delay in [120u64, 350, 800, 1500] {
+            std::thread::sleep(Duration::from_millis(delay));
+            let h2 = h.clone();
+            let _ = h.run_on_main_thread(move || {
+                if let Some(win) = h2.get_webview_window("main") {
+                    if let Ok(sz) = win.inner_size() {
+                        // Resize +1px then back: two distinct resize events, each forcing WebKitGTK to present a frame.
+                        let _ = win.set_size(tauri::PhysicalSize::new(sz.width + 1, sz.height));
+                        let _ = win.set_size(sz);
+                    }
+                }
+            });
+        }
+    });
+}
+
 // Ask the backend to stop cleanly (it drains writes and locks each vault on the way out), wait up to `grace` for it to
 // exit, then force it down if it has not. The clean-stop request is cross-platform: on Unix, SIGTERM (its handler runs
 // the graceful shutdown); on Windows, which has no such signal for a windowless child, a "quit" line on the backend's
@@ -514,6 +546,10 @@ fn main() {
                             }
                         });
                     }
+
+                    // Linux WebKitGTK repaint fix: nudge the window so the static splash actually paints during the
+                    // startup wait instead of showing a black rectangle. No-op on macOS and Windows.
+                    nudge_repaint(app.handle());
 
                     // Wait for the server off the main thread (so the window and its "starting" splash stay
                     // responsive), then, back on the main thread, show the interface or the error state.
