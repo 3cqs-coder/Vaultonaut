@@ -11,11 +11,12 @@
 # ---- builder: install production dependencies only ----
 FROM node:24.11.1-bookworm-slim AS builder
 WORKDIR /app
-# Copy only the manifests first so the dependency layer stays cached when only source changes.
-COPY package.json package-lock.json ./
-# A reproducible, production-only install. --ignore-scripts blocks any dependency lifecycle script from running at
-# build time (all of this project's runtime dependencies are plain JavaScript or WebAssembly, so none is needed).
-RUN npm ci --omit=dev --ignore-scripts
+# Copy only the manifest first so the dependency layer stays cached when only source changes. This project does not
+# commit a lockfile (dependency versions resolve from the ranges in package.json), so install from package.json alone.
+COPY package.json ./
+# A production-only install. --ignore-scripts blocks any dependency lifecycle script from running at build time (all
+# of this project's runtime dependencies are plain JavaScript or WebAssembly, so none is needed).
+RUN npm install --omit=dev --ignore-scripts
 
 # ---- runtime: minimal and non-root ----
 # Pinned to the exact Node the project ships and tests with (engines.node is >=24.7.0; the desktop bundle and CI pin
