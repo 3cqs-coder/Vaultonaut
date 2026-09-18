@@ -7,15 +7,17 @@
 #            enter the container. It joins the relay outbound, so it needs no inbound ports of its own.
 #
 # Before `docker compose up`:
-#   1. Put a shared secret token in ./secrets/relay_token (one line, keep it private). Both services read it as a file
-#      — it never appears in the process list or the environment. Generate one with, e.g.:  openssl rand -hex 32
+#   1. Put a shared secret token in ./secrets/relay_token (one line). Both services read it as a file, so it never
+#      appears in the process list or the environment. Generate one with, e.g.:  openssl rand -hex 32
+#      Keep it private, and make sure it is readable by the container user (uid 1000). On native Linux, `chmod 644`
+#      the file if a stricter owner-only mode owned by another user would keep the container from reading it.
 #   2. Set RELAY_PUBLIC_HOST to the hub's public hostname or IP (a .env file beside this one works:
 #      RELAY_PUBLIC_HOST=relay.example.com). Nodes and clients reach the hub at this address.
 #   3. Point the node's vault mount (below) at the encrypted vault folder you want to serve.
 #
 # Hardening applied to every service: a read-only root filesystem, all Linux capabilities dropped, no privilege
-# escalation, and a non-root user (baked into the image). Writable state is confined to the named data volume and an
-# in-memory /tmp.
+# escalation, a non-root user (baked into the image), a small init as PID 1 to reap children, and a stop grace period
+# that lets the backend shut down cleanly. Writable state is confined to the named data volume and an in-memory /tmp.
 
 secrets:
   relay_token:
@@ -33,6 +35,8 @@ services:
     #   context: ..
     #   dockerfile: docker/Dockerfile
     restart: unless-stopped
+    init: true                 # a tiny init as PID 1 reaps any orphaned child, so no zombie process lingers
+    stop_grace_period: 30s     # give the backend room to stop cleanly before Docker force-kills it
     # Control port (nodes and clients connect here) plus the public data-port range the hub hands out. Narrow the
     # range with `--ports` below if you do not need this many concurrent connections, and open the same ports in the
     # host firewall.
@@ -41,7 +45,7 @@ services:
       - --token-file
       - /run/secrets/relay_token
       - --host
-      - ${RELAY_PUBLIC_HOST}:7443
+      - ${RELAY_PUBLIC_HOST:?set RELAY_PUBLIC_HOST in .env to the hub public host or IP}:7443
       - --port
       - "7443"
       - --ports
@@ -70,15 +74,19 @@ services:
     #   context: ..
     #   dockerfile: docker/Dockerfile
     restart: unless-stopped
+    init: true                 # reap orphaned children (for example the engine process), so none becomes a zombie
+    stop_grace_period: 30s     # room to flush before Docker force-kills; matters most for a writable node (see below)
     depends_on:
-      - relay
+      relay:
+        condition: service_healthy   # start the node only once the hub's control port is accepting connections
     # Serve one vault through the relay, read-only. The vault's encrypted store is mounted read-only at the path named
-    # here. `--read-only` means the node never writes to the vault; drop it to allow writes from authorized clients.
+    # here. `--read-only` means the node never writes to the vault; drop it to allow writes from authorized clients — if
+    # you do, keep stop_grace_period generous so an in-flight write-back can finish before the container stops.
     command:
       - serve
       - /data/vaults/example.vault
       - --relay
-      - ${RELAY_PUBLIC_HOST}:7443
+      - ${RELAY_PUBLIC_HOST:?set RELAY_PUBLIC_HOST in .env to the hub public host or IP}:7443
       - --token-file
       - /run/secrets/relay_token
       - --read-only
@@ -110,9 +118,15 @@ services:
   #   node-direct:
   #     image: ${VAULTONAUT_IMAGE:-ghcr.io/3cqs-coder/vaultonaut}:${VAULTONAUT_VERSION:-latest}
   #     restart: unless-stopped
+  #     init: true
+  #     stop_grace_period: 30s
   #     command: [serve, /data/vaults/example.vault, --bind, 0.0.0.0, --port, "8443", --read-only]
   #     ports: ["8443:8443"]
   #     environment: { HEALTHCHECK_PORT: "8443" }
+  #     # A node's FIRST serve downloads the engine once (a checksum-verified fetch that needs outbound HTTPS). Give
+  #     # the health check a generous start_period so a slow first download does not trip a restart mid-fetch; later
+  #     # starts are immediate because the engine is cached on the data volume.
+  #     healthcheck: { start_period: 180s }
   #     volumes:
   #       - node_data:/data
   #       - ./vaults/example.vault:/data/vaults/example.vault:ro

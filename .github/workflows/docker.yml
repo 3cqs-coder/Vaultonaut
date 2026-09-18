@@ -76,10 +76,14 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ steps.name.outputs.image }}
+          # latest=auto moves the `latest` tag only for a STABLE release (the highest non-pre-release semver). A
+          # pre-release tag like 1.1.0-beta therefore never becomes `latest`, so operators who default to `latest`
+          # (the compose default) are never silently upgraded onto a pre-release. The major.minor tag is likewise
+          # only emitted for a stable release, so a pre-release cannot claim the 1.1 line either.
+          flavor: latest=auto
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/') }}
             type=sha
 
       # Build the image. On a publish it is pushed with an SBOM and maximum-detail SLSA provenance attached as OCI

@@ -17,7 +17,9 @@
 const { spawnSync, spawn } = require('child_process');
 const path = require('path');
 
-const CLI = path.join(__dirname, '..', 'vaultonaut.js');
+// The real CLI by default; VAULTONAUT_CLI overrides it only so a test can point the entrypoint at a controllable
+// stand-in child (to exercise signal forwarding and exit-code propagation). Production never sets it.
+const CLI = process.env.VAULTONAUT_CLI || path.join(__dirname, '..', 'vaultonaut.js');
 const args = process.argv.slice(2);
 
 if (process.env.VAULTONAUT_SKIP_VERIFY !== '1') {

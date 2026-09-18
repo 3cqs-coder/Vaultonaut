@@ -555,7 +555,7 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
    only when there is no other break opportunity, so ordinary prose still wraps at spaces. */
 .dialog p, .dialog li { overflow-wrap: anywhere; }
 /* Pin the action row to the bottom of a scrolling dialog, so on a tall dialog the buttons are always reachable
-   without scrolling to the very end. It spans the dialog's 20px padding to sit flush at the bottom edge, with a
+   without scrolling to the very end. It spans the dialog's 22px padding to sit flush at the bottom edge, with a
    panel background and a hairline so the scrolling body reads cleanly beneath it. On a short dialog that does not
    scroll, sticky behaves as static, so it simply sits at the end as before (with a subtle top divider). */
 .dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 10px; position: sticky; bottom: calc(-1 * max(22px, env(safe-area-inset-bottom))); margin: 18px -22px calc(-1 * max(22px, env(safe-area-inset-bottom))); padding: 12px 22px; background: var(--panel); border-top: 1px solid var(--border); }

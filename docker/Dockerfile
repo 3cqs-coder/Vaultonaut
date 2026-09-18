@@ -34,20 +34,22 @@ ENV NODE_ENV=production \
     XDG_DATA_HOME=/data
 WORKDIR /app
 
-# The production dependency tree from the builder stage.
-COPY --from=builder /app/node_modules ./node_modules
+# The production dependency tree from the builder stage. --chown assigns ownership as the files are copied, so there
+# is no later `chown -R` that would rewrite every file into a second, duplicate image layer.
+COPY --chown=node:node --from=builder /app/node_modules ./node_modules
 # The application plus the signed release manifest and the two documentation files the self-check verifies. Copying an
 # explicit set (not the whole tree) keeps the image small and guarantees the signed set is present and unmodified, so
 # `verify-self` verifies on every start.
-COPY package.json vaultonaut.js verify.js CONTRIBUTING.md LICENSE ./
-COPY lib ./lib
-COPY release-manifest.json release-manifest.sig release-manifest.sig.pq ./
-COPY docs/README.md docs/banner.png ./docs/
-COPY docker/entrypoint.js docker/healthcheck.js ./docker/
+COPY --chown=node:node package.json vaultonaut.js verify.js CONTRIBUTING.md LICENSE ./
+COPY --chown=node:node lib ./lib
+COPY --chown=node:node release-manifest.json release-manifest.sig release-manifest.sig.pq ./
+COPY --chown=node:node docs/README.md docs/banner.png ./docs/
+COPY --chown=node:node docker/entrypoint.js docker/healthcheck.js ./docker/
 
 # A writable, persistent data directory owned by the non-root user, so a freshly mounted volume is writable. The
-# `node` user (uid 1000) already exists in the official base image.
-RUN mkdir -p /data && chown -R node:node /data /app
+# `node` user (uid 1000) already exists in the official base image. Only /data needs chowning; the app files were
+# copied with the right ownership above.
+RUN mkdir -p /data && chown node:node /data
 USER node
 
 # Report healthy only once the node's port is accepting connections. Each role sets HEALTHCHECK_PORT in the compose
