@@ -56,7 +56,11 @@
 	   faint "dashboard" sheen behind the floating content recolors per theme on its own. The machined-edge --bevel
 	   is themed (it lives in each theme block, since a light and a dark surface need a different highlight). */
 	--metal-sheen: linear-gradient(180deg, rgba(255, 255, 255, .24) 0%, rgba(255, 255, 255, .03) 100%);
-	--sheen-top: color-mix(in oklab, var(--workspace) 90%, #ffffff);
+	/* Fallback FIRST: a custom property is parsed permissively, so a color-mix() value here would be accepted even
+	   where color-mix is unsupported and would then poison the .app background at its use site. So default --sheen-top
+	   to the flat workspace tone (no sheen, but a valid background), and upgrade it to the mixed sheen only inside an
+	   @supports block below that actually tests for color-mix. */
+	--sheen-top: var(--workspace);
 
 	--mono: "DM Mono", ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 
@@ -83,6 +87,7 @@
 	--warn-soft: #fdf3dc;
 	--danger: #c0362c;
 	--danger-fill: #c0362c;
+	--danger-soft: #fbe3e1;   /* soft danger tint; a plain-token fallback for a color-mix danger wash on engines without color-mix */
 	--star: #e0a400;   /* favorite-star fill; a token so a warm theme can darken it for contrast */
 	--shadow: 0 1px 3px rgba(16, 24, 40, .08), 0 1px 2px rgba(16, 24, 40, .06);
 	--shadow-soft: 0 1px 2px rgba(16, 24, 40, .06);
@@ -97,6 +102,12 @@
 	--accent-wash: linear-gradient(90deg, rgba(47, 107, 255, .16) 0%, rgba(47, 107, 255, .02) 100%);
 	--bevel: inset 0 1px 0 rgba(255, 255, 255, .7);
 }
+/* Upgrade the workspace sheen to the mixed tone only where color-mix is actually supported. Because --sheen-top
+   derives from the themed --workspace, this single override covers every theme; engines without color-mix keep the
+   flat-tone fallback set in :root above and still render a valid .app background. */
+@supports (background: color-mix(in oklab, red 50%, blue)) {
+	:root { --sheen-top: color-mix(in oklab, var(--workspace) 90%, #ffffff); }
+}
 
 /* DARK — shared by an explicit choice and by "auto" under a dark system preference. Kept a soft, calm dark
    (deep slate, not near-black) so a security app reads as reassuring rather than a technical terminal. */
@@ -107,7 +118,7 @@
 		--text: #e6ebf5; --muted: #9aa4b6; --faint: #6b7488; --border: #262e3d;
 		--accent: #4d82ff; --accent-text: #ffffff; --accent-btn: #2f66ea; --accent-ink: #7aa2ff; --accent-soft: #182642; --accent-quiet: #2b3a5c;
 		--good: #34d399; --good-bg: #10281f; --warn: #fbbf24; --warn-bg: #2a2211; --warn-soft: #2a2211;
-		--danger: #f87171; --danger-fill: #b91c1c;
+		--danger: #f87171; --danger-fill: #b91c1c; --danger-soft: #2a1414;
 		--star: #e0a400;   /* the same warm gold; redefined here so every theme sets the full token set */
 		--shadow: none; --shadow-soft: none;
 		--shadow-lift: 0 2px 8px rgba(0, 0, 0, .5), 0 20px 44px -20px rgba(0, 0, 0, .7);
@@ -120,7 +131,7 @@
 	--text: #e6ebf5; --muted: #9aa4b6; --faint: #6b7488; --border: #262e3d;
 	--accent: #4d82ff; --accent-text: #ffffff; --accent-btn: #2f66ea; --accent-ink: #7aa2ff; --accent-soft: #182642; --accent-quiet: #2b3a5c;
 	--good: #34d399; --good-bg: #10281f; --warn: #fbbf24; --warn-bg: #2a2211; --warn-soft: #2a2211;
-	--danger: #f87171; --danger-fill: #b91c1c;
+	--danger: #f87171; --danger-fill: #b91c1c; --danger-soft: #2a1414;
 	--star: #e0a400;   /* the same warm gold; redefined here so every theme sets the full token set */
 	--shadow: none; --shadow-soft: none;
 	--shadow-lift: 0 2px 8px rgba(0, 0, 0, .5), 0 20px 44px -20px rgba(0, 0, 0, .7);
@@ -133,7 +144,7 @@
 	--text: #3a2f22; --muted: #715f45; --faint: #9c8c74; --border: #e2d4b8;
 	--accent: #a4641f; --accent-text: #ffffff; --accent-btn: #a4641f; --accent-ink: #94571a; --accent-soft: #f3e4cf; --accent-quiet: #e6d2b3;
 	--good: #276b43; --good-bg: #e4efdb; --warn: #955f10; --warn-bg: #f7ecd2; --warn-soft: #f7ecd2;
-	--danger: #a8231c; --danger-fill: #a8231c;
+	--danger: #a8231c; --danger-fill: #a8231c; --danger-soft: #f2ddd6;
 	--star: #b5791f;   /* a deeper gold that holds contrast on the cream sepia panel */
 	--shadow: 0 1px 3px rgba(90, 70, 40, .08), 0 1px 2px rgba(90, 70, 40, .06);
 	--shadow-soft: 0 1px 2px rgba(90, 70, 40, .06);
@@ -226,7 +237,6 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 
 /* Top controls — the notification bell plus the global actions (refresh / theme / lock / logout) that used to live
    in the rail foot, all icon-only. */
-.main-actions { display: flex; align-items: center; gap: var(--sp-4); flex: 0 0 auto; }
 .icon-btn { width: 40px; height: 40px; flex: 0 0 auto; border-radius: var(--radius-sm); border: 1px solid var(--border);
 	background: var(--panel); color: var(--text); display: grid; place-items: center; cursor: pointer;
 	box-shadow: var(--bevel); transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease); }
@@ -578,7 +588,7 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 .arow-t b { display: block; font-size: 13px; font-weight: 700; letter-spacing: -.01em; }
 .arow-d { display: block; font-size: 11.5px; color: var(--muted); margin-top: 1px; }
 .arow .chev { width: 16px; height: 16px; flex: 0 0 auto; color: var(--faint); }
-.arow.danger .ai { background: color-mix(in oklab, var(--danger) 15%, transparent); color: var(--danger); }
+.arow.danger .ai { background: var(--danger-soft); background: color-mix(in oklab, var(--danger) 15%, transparent); color: var(--danger); } /* plain-token fallback first so an engine without color-mix keeps a red (not the inherited blue) tile */
 .arow.disabled { opacity: .5; cursor: not-allowed; }
 @media (hover: hover) { .arow.disabled:hover { transform: none; box-shadow: var(--bevel); border-color: var(--border); } }
 
@@ -757,6 +767,11 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 	   density is not worth the zoom jump, so lift every text-entry control to 16px. Pointer devices (a normal
 	   desktop) keep the denser sizing, since this rule lives only in the touch block. */
 	input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea { font-size: 16px; }
+	/* A bare `textarea` selector loses on specificity to the sized textarea rules (.field textarea, textarea.sf-input,
+	   #noteBody), so those would stay under 16px and still trigger the iOS focus-zoom. Repeat them here at matching or
+	   higher specificity — later in the cascade — so every textarea, including the secure-note body editor, is 16px on
+	   a touch device. */
+	.field textarea, textarea.sf-input, #noteBody { font-size: 16px; }
 }
 
 /* Tamper-check results */

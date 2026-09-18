@@ -21,6 +21,7 @@ on:
       - '[0-9]+.[0-9]+.[0-9]+'       # 1.0.0
       - '[0-9]+.[0-9]+.[0-9]+-*'     # 1.0.0-beta, 1.0.0-rc.1
       - 'v[0-9]+.[0-9]+.[0-9]+'      # v1.0.0
+      - 'v[0-9]+.[0-9]+.[0-9]+-*'    # v1.0.0-beta — must match the desktop release workflow's tag set exactly
   workflow_dispatch:                 # a manual run — build-only by default, or check the box to publish
     inputs:
       publish:
@@ -118,7 +119,9 @@ jobs:
       # A published image's own boot-time self-check already verifies the application bundle; sign the image digest as
       # well, keylessly, so the image itself is verifiable before it runs. cosign uses the runner's OIDC identity, so
       # no signing key is stored anywhere. Keyless signing writes a permanent, PUBLIC record to a transparency log, so
-      # this runs only for a real release tag — a manual test publish stays fully private, with no public trace.
+      # it runs only for a real release tag, never a manual test publish. Note this gates only the transparency-log
+      # record: a manual publish still PUSHES the image to the registry (as a `sha-...` tag that never moves `latest`),
+      # and a container package can be public, so delete a test image from the registry when you are done with it.
       - name: Install cosign
         if: startsWith(github.ref, 'refs/tags/')
         uses: sigstore/cosign-installer@v3

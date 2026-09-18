@@ -59,6 +59,11 @@ COPY --chown=node:node --from=builder /app/node_modules ./node_modules
 # `verify-self` verifies on every start.
 COPY --chown=node:node package.json vaultonaut.js verify.js CONTRIBUTING.md LICENSE ./
 COPY --chown=node:node lib ./lib
+# Hard guarantee that the self-check sees only the signed set: prune the two directories that are not part of the
+# signed release manifest and are never loaded at runtime. The root .dockerignore normally keeps them out of the build
+# context entirely, so this is usually a no-op — but running it here means a build under the legacy builder (or any
+# context that bypasses the ignore file) still cannot ship them and trip the boot-time verify-self into TAMPERED.
+RUN rm -rf ./lib/test ./lib/scripts
 COPY --chown=node:node release-manifest.json release-manifest.sig release-manifest.sig.pq ./
 COPY --chown=node:node docs/README.md docs/banner.png ./docs/
 COPY --chown=node:node docker/entrypoint.js docker/healthcheck.js ./docker/

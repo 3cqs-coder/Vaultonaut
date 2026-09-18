@@ -8,6 +8,8 @@ A vault holds more than files. The same vault is also a built-in password manage
 
 A vault is a self-contained folder. Copy that folder to another computer, an external drive, or a cloud-sync folder and it opens anywhere with its password — on macOS, Windows, or Linux.
 
+Vaultonaut fits one person on one computer, and it scales out from there. The same program a single user runs on a laptop also runs headless on a server. So a home office or a small team can stand up its own fleet: relay hubs and serving nodes that share vaults across machines and locations, self-hosted, with no account, no subscription, and no third-party infrastructure. The commands and the encryption stay the same whether you keep a single vault or run a private fleet, so the security model does not change as you grow.
+
 ## Table of Contents
 
 - [Why Vaultonaut](#why-vaultonaut)
@@ -572,7 +574,13 @@ Compose recreates each container in place. Every vault, key, and setting lives i
 
 ### Your own private transport, no third party
 
-The peer-to-peer layer is yours end to end. A `vdisk serve` node exposes only the encrypted store over TLS with a self-signed certificate the other side pins, so every hop — direct or relayed — carries nothing but ciphertext and reaches only the exact node you paired with. On a local network, nodes announce and discover each other automatically (a small broadcast that reveals only an address and a certificate fingerprint, never anything about a vault). Reaching across the internet, a node asks the router to open a port for itself using the standard NAT-PMP and PCP protocols, then advertises that public address as a direct route. When a router will not cooperate, you run your own `vdisk relay` hub on any public host. The hub is a token-gated, TCP-only bridge with per-node identity binding, brute-force throttling, and registration caps, so nothing about your network depends on someone else's server. When only a relay is reachable, the two peers still try to upgrade to a direct connection by hole-punching. That upgrade is coordinated over an authenticated signaling channel on the same hub, scoped by a per-node credential that can never register or impersonate a node. On success the hub drops out of the data path, and the direct hop carries the identical pinned-TLS stream, so the upgrade changes only the route. A per-machine preference (`vdisk peer-mode`: Automatic, Relay only, or Direct only) governs all of this. It is built from Node's own libraries: no external daemon, no third-party service, and identical behavior on every platform.
+The peer-to-peer layer is yours end to end. A `vdisk serve` node exposes only the encrypted store over TLS with a self-signed certificate the other side pins, so every hop — direct or relayed — carries nothing but ciphertext and reaches only the exact node you paired with.
+
+On a local network, nodes announce and discover each other automatically. That announcement is a small broadcast that reveals only an address and a certificate fingerprint, never anything about a vault. To reach across the internet, a node asks the router to open a port for itself using the standard NAT-PMP and PCP protocols, then advertises that public address as a direct route.
+
+When a router will not cooperate, you run your own `vdisk relay` hub on any public host. The hub is a token-gated, TCP-only bridge with per-node identity binding, brute-force throttling, and registration caps, so nothing about your network depends on someone else's server. When only a relay is reachable, the two peers still try to upgrade to a direct connection by hole-punching. That upgrade is coordinated over an authenticated signaling channel on the same hub, scoped by a per-node credential that can never register or impersonate a node. On success the hub drops out of the data path, and the direct hop carries the identical pinned-TLS stream, so the upgrade changes only the route.
+
+A per-machine preference (`vdisk peer-mode`: Automatic, Relay only, or Direct only) governs all of this. It is built from Node's own libraries: no external daemon, no third-party service, and identical behavior on every platform.
 
 ### The same on every platform
 
@@ -580,7 +588,7 @@ The command line behaves identically on macOS, Windows, and Linux — same comma
 
 ### Built to automate
 
-Every command returns a standard exit code, zero on success and non-zero on failure, so a script can branch on the result. Add `--json` to any command to get machine-readable output — one JSON object on standard output, `{ "ok": true, "data": … }` or `{ "ok": false, "error": { "code", "message" } }`, with human messages moved to standard error — so another program can parse a result or an error code without scraping text. Pass `--data-dir <folder>` to point a run at its own isolated data directory, which keeps an automated or test setup fully separate from your everyday vaults. Long operations, such as a key rotation or a large backup, print progress as they run and can be safely interrupted and resumed.
+Every command returns a standard exit code, zero on success and non-zero on failure, so a script can branch on the result. Add `--json` to any command to get machine-readable output. It prints one JSON object on standard output, either `{ "ok": true, "data": … }` or `{ "ok": false, "error": { "code", "message" } }`, and moves human messages to standard error, so another program can parse a result or an error code without scraping text. Pass `--data-dir <folder>` to point a run at its own isolated data directory, which keeps an automated or test setup fully separate from your everyday vaults. Long operations, such as a key rotation or a large backup, print progress as they run and can be safely interrupted and resumed.
 
 ### A local interface underneath
 
@@ -842,7 +850,7 @@ The one exception is specific to macOS. Because FUSE-T presents a drive as a loc
 
 By default a vault works like a normal drive *and* keeps decrypted data off the persistent disk. As you open, read, or play files they are decrypted in memory on the fly — nothing is cached, and it works for files of any size. One thing needs a scratch buffer: letting an application rewrite a file *in place*. Editors need this, and so do the small companion files an operating system writes when it opens media. That buffer is kept in a RAM disk, never on the persistent disk. So playing videos, editing files, saving new versions, and running apps all just work, on any computer, whether or not its system disk is encrypted, and no decrypted copy of your data is ever written to persistent storage.
 
-On macOS the system encrypts memory paged to swap by default, so that path is covered too; on Linux, enabling encrypted swap (or full-disk encryption) closes the equivalent gap. On Windows the in-memory buffer needs a RAM-disk driver; where one is not present the vault falls back to streaming (below), which also writes nothing to disk.
+On macOS the system encrypts memory paged to swap by default, so that path is covered too. On Linux, enabling encrypted swap (or full-disk encryption) closes the equivalent gap. On Windows the in-memory buffer needs a RAM-disk driver. Where one is not present, the vault falls back to streaming (below), which also writes nothing to disk.
 
 This guarantee covers the vault's *own* reads and writes. The programs you open files with are a separate matter, and they can leave two kinds of trace once the vault is closed.
 
