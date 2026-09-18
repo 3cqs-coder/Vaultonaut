@@ -1,9 +1,9 @@
 {
   "schema": "vaultonaut-release-1",
   "product": "Vaultonaut",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-18T12:55:03.683Z",
+  "generatedAt": "2026-09-18T13:19:24.218Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -637,7 +637,7 @@
     },
     {
       "path": "package.json",
-      "sha256": "3f40036a2d231b7c926d980e5ca916725e6cfbb2da24497e8fa59f0b1cd26bb3",
+      "sha256": "84cfd5357752ed4276a1a079c6991a0ec5c33b12b224eda46674790a91787563",
       "size": 1627
     },
     {

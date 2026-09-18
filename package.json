@@ -1,6 +1,6 @@
 {
   "name": "vaultonaut",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Simple, cross-platform, real-time encrypted virtual disks. Create a portable encrypted vault and mount it as an ordinary drive; files are encrypted and decrypted on the fly.",
   "main": "lib/index.js",
   "author": "3CQS",
