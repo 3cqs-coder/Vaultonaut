@@ -30,6 +30,7 @@ A vault is a self-contained folder. Copy that folder to another computer, an ext
   - [Everything is a command](#everything-is-a-command)
   - [Headless by design](#headless-by-design)
   - [Many vaults, run as a fleet](#many-vaults-run-as-a-fleet)
+  - [Run a fleet with Docker](#run-a-fleet-with-docker)
   - [Your own private transport, no third party](#your-own-private-transport-no-third-party)
   - [The same on every platform](#the-same-on-every-platform)
   - [Built to automate](#built-to-automate)
@@ -539,6 +540,33 @@ None of this needs a screen. A server with no display can create vaults, run sch
 ### Many vaults, run as a fleet
 
 Nothing limits you to a handful of vaults opened by hand. Every action is a command that returns a clear exit code, with optional `--json` output, so one machine can create, mount, serve, back up, and mirror dozens of vaults on a schedule. Each is driven by a script or a scheduled job. `--data-dir <folder>` gives a run its own isolated set of vaults and settings, so separate groups — one per client, project, or environment — never touch each other on the same host. A headless server can hold a whole set of vaults this way and keep every one backed up, mirrored, and served to the machines that need it, without a window ever open.
+
+### Run a fleet with Docker
+
+The headless roles run in containers, which suits a server or a fleet. A relay hub and any number of serving nodes come up from one Compose file, and each node serves only the encrypted store, so the vault password and the file contents never enter a container. A relay carries no vault data at all, so even a fully compromised container leaks no plaintext and no master key. Mounting a vault as a drive is deliberately not a container role, because a mount needs kernel support that a container cannot provide cleanly and that a Mac or Windows host cannot see; the desktop app remains the way to mount.
+
+Each container verifies its own code against the signed release on startup and refuses to run if anything was altered, so a node proves its integrity every time it starts. The Compose file also ships every service hardened, with a read-only root filesystem, all extra privileges dropped, a non-root user, and the shared token kept in a file rather than the environment, so you inherit safe defaults instead of assembling them yourself. The files that build and run all of this live in the `docker/` folder.
+
+**Getting started.** Put a shared token, which the hub and its nodes use to recognize each other, in `docker/secrets/relay_token` (for example, `openssl rand -hex 32 > docker/secrets/relay_token`). The services read it as a file, so it never appears in the process list or the environment. Create `docker/.env` with `RELAY_PUBLIC_HOST` set to the hub's public hostname or IP and `VAULTONAUT_VERSION` set to the release to run. Put the encrypted vault folder you want to serve at `docker/vaults/example.vault`, or edit the mount path in the Compose file. Then start the fleet:
+
+```bash
+docker compose -f docker/docker-compose.yml up -d
+```
+
+Open the hub's control port (7443 by default) and its public data-port range (20000-20099 by default) in the host firewall.
+
+**One-paste onboarding.** The hub prints a single invite code that carries both its address and its token, so a node joins with one value instead of two. Read it from the hub's logs (`docker compose -f docker/docker-compose.yml logs relay`), then a node joins with `serve <vault> --relay-code <code>` in place of the separate address and token. Share the code privately, since it carries the token.
+
+**Upgrading.** Set `VAULTONAUT_VERSION` in `docker/.env` to the new release, then pull and bring the fleet back up:
+
+```bash
+docker compose -f docker/docker-compose.yml pull
+docker compose -f docker/docker-compose.yml up -d
+```
+
+Compose recreates each container in place. Every vault, key, and setting lives in the named data volumes, so nothing is lost, and the new image verifies its own signed bundle before it serves. To roll back, set the previous release and run the same two commands.
+
+**Building from source.** To build the image locally instead of pulling the published one, uncomment the `build` blocks in the Compose file and add `--build` to the `up` command. Building on its own is `docker build -f docker/Dockerfile -t vaultonaut:latest .` from the repository root.
 
 ### Your own private transport, no third party
 

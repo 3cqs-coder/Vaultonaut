@@ -1,0 +1,15 @@
+# Keeps the build context small and free of local state. The Dockerfile copies an explicit set of files, so anything
+# excluded here is simply never sent to the build. lib/test is left out on purpose: it is not part of the signed
+# release manifest and the runtime never loads it.
+.git
+.github
+node_modules
+**/node_modules
+src-tauri
+lib/test
+docs/BACKLOG.md
+docs/TEAM-VAULTS-DESIGN.md
+**/*.log
+**/.DS_Store
+.env
+.env.*

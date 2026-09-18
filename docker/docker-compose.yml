@@ -1,0 +1,127 @@
+# Vaultonaut headless fleet — a relay hub plus one serving node, hardened by default.
+#
+# What this runs:
+#   relay  — a public rendezvous hub. It carries NO vault data and needs no keys; nodes and clients meet through it so
+#            a vault is reachable from anywhere without opening a port on the vault's own machine.
+#   node   — a serving node. It serves ONLY the encrypted files of one vault; the vault password and contents never
+#            enter the container. It joins the relay outbound, so it needs no inbound ports of its own.
+#
+# Before `docker compose up`:
+#   1. Put a shared secret token in ./secrets/relay_token (one line, keep it private). Both services read it as a file
+#      — it never appears in the process list or the environment. Generate one with, e.g.:  openssl rand -hex 32
+#   2. Set RELAY_PUBLIC_HOST to the hub's public hostname or IP (a .env file beside this one works:
+#      RELAY_PUBLIC_HOST=relay.example.com). Nodes and clients reach the hub at this address.
+#   3. Point the node's vault mount (below) at the encrypted vault folder you want to serve.
+#
+# Hardening applied to every service: a read-only root filesystem, all Linux capabilities dropped, no privilege
+# escalation, and a non-root user (baked into the image). Writable state is confined to the named data volume and an
+# in-memory /tmp.
+
+secrets:
+  relay_token:
+    file: ./secrets/relay_token
+
+services:
+  relay:
+    # Upgrading is a one-liner: the image is the published, version-pinned release. Set VAULTONAUT_VERSION in .env to a
+    # release (for example 1.0.1), then `docker compose pull && docker compose up -d` — the named data volumes below
+    # carry every vault, key, and setting across the upgrade, and the new image verifies its own bundle on boot. Pin an
+    # exact version for reproducibility; leave it at `latest` to always pull the newest. To build from source instead
+    # of pulling, uncomment the `build` block and run `docker compose up -d --build`.
+    image: ${VAULTONAUT_IMAGE:-ghcr.io/3cqs-coder/vaultonaut}:${VAULTONAUT_VERSION:-latest}
+    # build:
+    #   context: ..
+    #   dockerfile: docker/Dockerfile
+    restart: unless-stopped
+    # Control port (nodes and clients connect here) plus the public data-port range the hub hands out. Narrow the
+    # range with `--ports` below if you do not need this many concurrent connections, and open the same ports in the
+    # host firewall.
+    command:
+      - relay
+      - --token-file
+      - /run/secrets/relay_token
+      - --host
+      - ${RELAY_PUBLIC_HOST}:7443
+      - --port
+      - "7443"
+      - --ports
+      - 20000-20099
+    ports:
+      - "7443:7443"
+      - "20000-20099:20000-20099"
+    environment:
+      HEALTHCHECK_PORT: "7443"   # the control port; healthy once it accepts connections
+    secrets:
+      - relay_token
+    volumes:
+      - relay_data:/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+  node:
+    # Same published, version-pinned image as the relay, so the whole fleet upgrades together with one pull.
+    image: ${VAULTONAUT_IMAGE:-ghcr.io/3cqs-coder/vaultonaut}:${VAULTONAUT_VERSION:-latest}
+    # build:
+    #   context: ..
+    #   dockerfile: docker/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - relay
+    # Serve one vault through the relay, read-only. The vault's encrypted store is mounted read-only at the path named
+    # here. `--read-only` means the node never writes to the vault; drop it to allow writes from authorized clients.
+    command:
+      - serve
+      - /data/vaults/example.vault
+      - --relay
+      - ${RELAY_PUBLIC_HOST}:7443
+      - --token-file
+      - /run/secrets/relay_token
+      - --read-only
+    secrets:
+      - relay_token
+    volumes:
+      - node_data:/data
+      # Mount the encrypted vault folder to serve. Read-only: the node only needs to read ciphertext. Replace the host
+      # path with your own vault store.
+      - ./vaults/example.vault:/data/vaults/example.vault:ro
+    # A relay-joined node makes an OUTBOUND connection to the hub and listens on no local port, so there is nothing to
+    # TCP-probe; the restart policy recovers a crash and the node re-establishes the relay link on its own. A direct
+    # serving node (see the commented block below) does listen locally and would set HEALTHCHECK_PORT instead.
+    healthcheck:
+      disable: true
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+  # ----------------------------------------------------------------------------------------------------------------
+  # Alternative: a DIRECT serving node that listens on its own port (for a LAN, or behind a reverse proxy) instead of
+  # joining the relay. It is reachable at this host's address on the published port, and it is health-checkable. Copy
+  # this into `services:` and remove the relay-joined `node` above if you prefer direct serving.
+  #
+  #   node-direct:
+  #     image: ${VAULTONAUT_IMAGE:-ghcr.io/3cqs-coder/vaultonaut}:${VAULTONAUT_VERSION:-latest}
+  #     restart: unless-stopped
+  #     command: [serve, /data/vaults/example.vault, --bind, 0.0.0.0, --port, "8443", --read-only]
+  #     ports: ["8443:8443"]
+  #     environment: { HEALTHCHECK_PORT: "8443" }
+  #     volumes:
+  #       - node_data:/data
+  #       - ./vaults/example.vault:/data/vaults/example.vault:ro
+  #     read_only: true
+  #     tmpfs: [/tmp]
+  #     cap_drop: [ALL]
+  #     security_opt: ["no-new-privileges:true"]
+  # ----------------------------------------------------------------------------------------------------------------
+
+volumes:
+  relay_data:
+  node_data:

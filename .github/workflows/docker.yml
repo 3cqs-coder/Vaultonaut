@@ -1,0 +1,115 @@
+# Build, attest, and sign the Vaultonaut headless container image.
+#
+# This is standard GitHub-Actions syntax and runs on GitHub's hosted runners (free for a public repository). Like the
+# desktop workflow, a push to a BRANCH only BUILDS the image (to confirm it builds) and publishes nothing; the publish,
+# attest, and sign steps are gated to release tags and manual runs, so a branch push can never push an image.
+#
+# What a tagged run produces, on top of the image's own boot-time self-check of the signed application bundle:
+#   - an SBOM (a Software Bill of Materials — the exact packages and versions inside the image),
+#   - SLSA build provenance (a signed record of which workflow, commit, and runner built this exact image),
+#   - a cosign signature over the image digest (proof the image came from this pipeline, not an attacker).
+# The SBOM and provenance are attached to the image as in-toto attestations by BuildKit; cosign adds a detached
+# signature. Together they let anyone verify the image before running it.
+
+name: Build container image
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'       # 1.0.0
+      - '[0-9]+.[0-9]+.[0-9]+-*'     # 1.0.0-beta, 1.0.0-rc.1
+      - 'v[0-9]+.[0-9]+.[0-9]+'      # v1.0.0
+  workflow_dispatch:                 # a manual build-and-publish from the current commit
+
+env:
+  # The image name is lower-cased from the repository owner, so it works whatever the owner's letter case is.
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/vaultonaut
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read            # read the repository
+      packages: write           # push to the GitHub Container Registry (ghcr.io)
+      id-token: write           # keyless cosign signing and provenance, via the runner's OIDC identity
+      attestations: write       # store the build-provenance attestation
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      # A publish happens only for a tag or a manual run — never for a plain branch push.
+      - name: Decide whether to publish
+        id: publish
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "${{ startsWith(github.ref, 'refs/tags/') }}" = "true" ]; then
+            echo "push=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "push=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Lower-case the image name
+        id: name
+        run: echo "image=$(echo '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+
+      - name: Sign in to the container registry
+        if: steps.publish.outputs.push == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Derive image tags and labels
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.name.outputs.image }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/') }}
+            type=sha
+
+      # Build the image. On a publish it is pushed with an SBOM and maximum-detail SLSA provenance attached as OCI
+      # attestations; on a branch push it is only built (load into the runner) to confirm it still builds.
+      - name: Build and push the image
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile
+          push: ${{ steps.publish.outputs.push == 'true' }}
+          load: ${{ steps.publish.outputs.push != 'true' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          sbom: true
+          provenance: mode=max
+
+      # A published image's own boot-time self-check already verifies the application bundle; sign the image digest as
+      # well, keylessly, so the image itself is verifiable before it runs. cosign uses the runner's OIDC identity, so
+      # no signing key is stored anywhere.
+      - name: Install cosign
+        if: steps.publish.outputs.push == 'true'
+        uses: sigstore/cosign-installer@v3
+
+      - name: Sign the image digest with cosign
+        if: steps.publish.outputs.push == 'true'
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+          IMAGE: ${{ steps.name.outputs.image }}
+        run: cosign sign --yes "${IMAGE}@${DIGEST}"
+
+      # A second, GitHub-native provenance attestation, verifiable later with `gh attestation verify`.
+      - name: Attest build provenance
+        if: steps.publish.outputs.push == 'true'
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ steps.name.outputs.image }}
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: true
