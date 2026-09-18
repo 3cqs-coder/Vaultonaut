@@ -102,21 +102,23 @@ jobs:
 
       # A published image's own boot-time self-check already verifies the application bundle; sign the image digest as
       # well, keylessly, so the image itself is verifiable before it runs. cosign uses the runner's OIDC identity, so
-      # no signing key is stored anywhere.
+      # no signing key is stored anywhere. Keyless signing writes a permanent, PUBLIC record to a transparency log, so
+      # this runs only for a real release tag — a manual test publish stays fully private, with no public trace.
       - name: Install cosign
-        if: steps.publish.outputs.push == 'true'
+        if: startsWith(github.ref, 'refs/tags/')
         uses: sigstore/cosign-installer@v3
 
       - name: Sign the image digest with cosign
-        if: steps.publish.outputs.push == 'true'
+        if: startsWith(github.ref, 'refs/tags/')
         env:
           DIGEST: ${{ steps.build.outputs.digest }}
           IMAGE: ${{ steps.name.outputs.image }}
         run: cosign sign --yes "${IMAGE}@${DIGEST}"
 
-      # A second, GitHub-native provenance attestation, verifiable later with `gh attestation verify`.
+      # A second, GitHub-native provenance attestation, verifiable later with `gh attestation verify`. It also records
+      # to a public transparency log, so like cosign it is gated to a real release tag, never a manual test publish.
       - name: Attest build provenance
-        if: steps.publish.outputs.push == 'true'
+        if: startsWith(github.ref, 'refs/tags/')
         uses: actions/attest-build-provenance@v2
         with:
           subject-name: ${{ steps.name.outputs.image }}
