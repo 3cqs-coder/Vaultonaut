@@ -180,7 +180,7 @@ body {
 --------------------------------------------------------------------------- */
 /* The "cockpit": a top bar over a deeper workspace tone (with a faint top sheen, like light on a dashboard) behind
    a floating content panel. A single-view app earns a top bar, not a near-empty sidebar. */
-.app { display: flex; flex-direction: column; min-height: 100vh;
+.app { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh;
 	background: radial-gradient(135% 90% at 50% -20%, var(--sheen-top) 0%, transparent 55%), var(--workspace); }
 
 /* Top bar: brand on the left, all the global controls (Settings, Help, notifications, refresh, theme, lock) on the
@@ -558,7 +558,7 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
    without scrolling to the very end. It spans the dialog's 20px padding to sit flush at the bottom edge, with a
    panel background and a hairline so the scrolling body reads cleanly beneath it. On a short dialog that does not
    scroll, sticky behaves as static, so it simply sits at the end as before (with a subtle top divider). */
-.dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 10px; position: sticky; bottom: -22px; margin: 18px -22px -22px; padding: 12px 22px; background: var(--panel); border-top: 1px solid var(--border); }
+.dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 10px; position: sticky; bottom: calc(-1 * max(22px, env(safe-area-inset-bottom))); margin: 18px -22px calc(-1 * max(22px, env(safe-area-inset-bottom))); padding: 12px 22px; background: var(--panel); border-top: 1px solid var(--border); }
 
 /* Manage surface — the grouped, described action rows that replace the old "More" dropdown, in a wider dialog. */
 .dialog.manage-dialog { width: min(520px, 94vw); }

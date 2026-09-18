@@ -115,7 +115,7 @@ A mount driver appropriate to your system. This is the one component that cannot
 
 The encryption engine itself downloads automatically the first time you use Vaultonaut. Each release pins a specific, tested engine version. Before that engine is used, the download is checked against a SHA-256 checksum shipped inside Vaultonaut, so a corrupted or tampered binary is never run. In the web interface this first download runs in the background. The page shows a brief "Setting up the encryption engine…" note and refreshes itself the moment the engine is ready. When you update Vaultonaut, it updates the bundled engine to the version tested with that release. There is nothing else to install by hand.
 
-**Windows, one optional extra.** A vault opens and works on Windows with WinFsp alone — you can create, mount, copy files in and out, and read them. What WinFsp alone does not give you is *in-place* writing — a database or a disk-image file that an app rewrites while it is open, and smooth media scrubbing. That needs a small in-memory work area, and Windows has no built-in RAM disk. To enable it, install the ImDisk virtual-disk driver, which puts an `imdisk` command on your PATH; Vaultonaut then uses it automatically on the next mount.
+**Windows, one optional extra.** A vault opens and works on Windows with WinFsp alone — you can create, mount, copy files in and out, and read them. What WinFsp alone does not give you is two things: *in-place* writing — a database or a disk-image file that an app rewrites while it is open — and smooth media scrubbing. That needs a small in-memory work area, and Windows has no built-in RAM disk. To enable it, install the ImDisk virtual-disk driver, which puts an `imdisk` command on your PATH; Vaultonaut then uses it automatically on the next mount.
 
 ImDisk is a third-party kernel driver, so its installer needs administrator rights. On a locked-down machine — or a virtual machine with Secure Boot or driver-signature enforcement — it may refuse to load. The vault then simply keeps working in streaming mode, and Vaultonaut says so plainly when it falls back. macOS and Linux need none of this: the in-memory work area is built in there.
 
@@ -372,7 +372,7 @@ The everyday commands are `create`, `mount`, `unmount`, and `open` — everythin
 ```
 vdisk create   <name|path>       Create a new encrypted vault
 vdisk import   <folder> [path]   Create a new vault from an existing folder (copies files in)
-vdisk notes-import <file> <vault> Import logins and notes from a .csv, a Bitwarden .json, or a 1Password .1pux export into an open vault (--dry-run, --skip-duplicates, --format csv|bitwarden|1pux|auto)
+vdisk notes-import <file> <vault> Import logins and notes from a .csv or a password-manager export (.json or .1pux) into an open vault (--dry-run, --skip-duplicates, --format csv|bitwarden|1pux|auto)
 vdisk cloud    <list|connect|add|remove|test>   Manage cloud storage (then create a cloud vault with: create <name|path> --cloud <id> --remote-path <folder>)
 vdisk passwd   <name|path>       Change a vault's password (instant; no re-encryption)
 vdisk keys     <name|path>       List a vault's keys (no password needed)
@@ -577,7 +577,7 @@ The web interface runs a small HTTP service on your own machine. Its stable, ver
 - `POST /api/v1/note-get` — read one item. Body: `{ "path", "id" }`.
 - `POST /api/v1/note-save` — create or update an item (omit `id` to create). Body: `{ "path", "id"?, "title", "type", "fields", "note" }`.
 - `POST /api/v1/note-delete` — delete an item. Body: `{ "path", "id" }`.
-- `POST /api/v1/notes-import` — import logins and notes from a `.csv`, a Bitwarden `.json`, or a 1Password `.1pux` export into an open vault. This endpoint takes the file as the raw request body (`Content-Type: application/octet-stream`) with options in the query string: `?path=<vault>&format=<csv|bitwarden|1pux|auto>&dry=<0|1>&dedupe=<0|1>`.
+- `POST /api/v1/notes-import` — import logins and notes from a `.csv` or a password-manager export (`.json` or `.1pux`) into an open vault. This endpoint takes the file as the raw request body (`Content-Type: application/octet-stream`) with options in the query string: `?path=<vault>&format=<csv|bitwarden|1pux|auto>&dry=<0|1>&dedupe=<0|1>`.
 
 **Example.**
 
@@ -650,7 +650,7 @@ Store the kit somewhere safe and separate from the vault, such as a locked drawe
 
 An encrypted vault is invisible to your computer's own search, so Vaultonaut gives you a **Search** on each open vault (or `vdisk search <vault> <text>`) that finds files and folders by name. It reads only names, never file contents, so it is fast even on a large vault. When the vault is open, the search needs no password. When it is closed, the command asks for the password and decrypts just the names to search them — nothing is written to disk.
 
-You can also search inside your files. In the Search window, switch to "Inside files"; on the command line, add `--in`. This searches the words in your text files — notes, code, data files, and similar — and inside common documents: PDFs, Word (`.docx`), Excel (`.xlsx` and `.xlsm`), and saved web pages. A scanned PDF or an image has no text to read, so it is simply skipped.
+You can also search inside your files. In the Search window, switch to "Inside files"; on the command line, add `--in`. This searches the words in your text files — notes, code, data files, and similar — and inside common documents: PDFs, word-processor documents (`.docx`), spreadsheets (`.xlsx` and `.xlsm`), and saved web pages. A scanned PDF or an image has no text to read, so it is simply skipped.
 
 It works from a small search index that lives inside the vault. Build or refresh it with **Update index** in the Search window, or `vdisk reindex <vault>` on the command line. The vault must be open, because the index is built by reading your files as you can read them and is written back into the vault encrypted, so the words never touch your disk in the clear. Indexing is incremental: after the first build, only files you have changed are read again. Because the index is a file inside the vault, it is protected and checked for tampering like everything else — so after you update it, take a fresh tamper snapshot. The index reveals nothing that opening the vault would not: anyone who could read it could already read your files.
 
@@ -785,7 +785,7 @@ Be clear about what this does and does not do. It hides the vaults from this app
 Treat the honest limits as the point, not the fine print:
 
 - Travel mode hides a pointer. The data is still on your disk, and a forensic examination will find that encrypted data exists.
-- Backups (Time Machine, File History, cloud) keep your vaults and even the earlier state that showed how many you have. Travel mode cannot reach them.
+- Backups (your operating system's built-in backup, or a cloud backup) keep your vaults and even the earlier state that showed how many you have. Travel mode cannot reach them.
 - In many places — including at borders — you can be legally compelled to disclose passwords, and concealing or wiping data during an inspection can itself be a separate offense. Deniability here is a technical property, not a legal defense.
 - The only strong protection when a device may be inspected is to not carry the data at all. Leave the vault at home and fetch it over the network afterward — this tool can back up, mirror, or serve a vault so you can do exactly that.
 - Turn travel mode on calmly before you travel, never as a reaction at a checkpoint.
@@ -808,7 +808,7 @@ Very rarely on macOS, a drive's file server stops responding while its process i
 
 The web interface also watches each mounted drive's responsiveness continuously. A healthy drive answers instantly; if one stops responding — because its engine crashed, or a heavy operation wedged it — its card is marked **not responding** and offers a single **Force unmount** that recovers it on the spot. A drive whose engine has actually died is released automatically, with no action from you. In almost every case a stuck drive is recovered from inside the app without a restart.
 
-The one exception is specific to macOS. Because FUSE-T presents a drive as a local network mount, an engine that has *fully* hung — not merely crashed — can occasionally be cleared only by a reboot. That is a limitation of the mount type, not of the tool. Crucially, Vaultonaut never makes that worse: it will not force-kill a hung engine while its drive is still mounted (which is what would turn a recoverable hang into a reboot), so its own teardown can never be the cause. The check is careful to distinguish a wedged drive from a merely busy one, so a drive doing real work is never disturbed, and it never tears a drive down on its own — that stays a deliberate click. On the command line, `vdisk status` shows the same information, listing a wedged drive as `stuck` with the exact command to recover it.
+The one exception is specific to macOS. Because FUSE-T presents a drive as a local network mount, an engine that has *fully* hung — not merely crashed — can occasionally be cleared only by a reboot. That is a limitation of the mount type, not of the tool. Crucially, Vaultonaut never makes that worse: it will not force-kill a hung engine while its drive is still mounted (which is what would turn a recoverable hang into a reboot), so its own teardown can never be the cause. The check is careful to distinguish a wedged drive from a merely busy one, so a drive doing real work is never disturbed. It also never tears a drive down on its own; that stays a deliberate click. On the command line, `vdisk status` shows the same information, listing a wedged drive as `stuck` with the exact command to recover it.
 
 By default a vault works like a normal drive *and* keeps decrypted data off the persistent disk. As you open, read, or play files they are decrypted in memory on the fly — nothing is cached, and it works for files of any size. One thing needs a scratch buffer: letting an application rewrite a file *in place*. Editors need this, and so do the small companion files an operating system writes when it opens media. That buffer is kept in a RAM disk, never on the persistent disk. So playing videos, editing files, saving new versions, and running apps all just work, on any computer, whether or not its system disk is encrypted, and no decrypted copy of your data is ever written to persistent storage.
 
