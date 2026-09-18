@@ -123,10 +123,9 @@ services:
   #     command: [serve, /data/vaults/example.vault, --bind, 0.0.0.0, --port, "8443", --read-only]
   #     ports: ["8443:8443"]
   #     environment: { HEALTHCHECK_PORT: "8443" }
-  #     # A node's FIRST serve downloads the engine once (a checksum-verified fetch that needs outbound HTTPS). Give
-  #     # the health check a generous start_period so a slow first download does not trip a restart mid-fetch; later
-  #     # starts are immediate because the engine is cached on the data volume.
-  #     healthcheck: { start_period: 180s }
+  #     # The engine is bundled in the image, so the first serve does no download — but it still does a little one-time
+  #     # setup (for example generating a self-signed certificate), so give the health check some start_period.
+  #     healthcheck: { start_period: 60s }
   #     volumes:
   #       - node_data:/data
   #       - ./vaults/example.vault:/data/vaults/example.vault:ro

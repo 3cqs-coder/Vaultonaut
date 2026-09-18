@@ -18,6 +18,15 @@ COPY package.json ./
 # of this project's runtime dependencies are plain JavaScript or WebAssembly, so none is needed).
 RUN npm install --omit=dev --ignore-scripts
 
+# Bake the storage engine at build time, so a serving node has it already present and NEVER downloads anything on its
+# first serve — an air-gapped or egress-restricted node works, and there is no runtime network dependency. The bake
+# reuses the app's own RcloneSetup, which is the single source of the pinned engine version and its committed
+# checksums, so nothing here names a version and there is no drift; the engine and its license land in /engine, which
+# the runtime stage copies in. A fetch or checksum failure fails the build, so a bad engine can never ship.
+COPY lib ./lib
+COPY docker/bake-engine.js ./docker/bake-engine.js
+RUN VAULTONAUT_ENGINE_DIR=/engine node docker/bake-engine.js
+
 # ---- runtime: minimal and non-root ----
 # Pinned to the exact Node the project ships and tests with (engines.node is >=24.7.0; the desktop bundle and CI pin
 # 24.11.1). The self-check's post-quantum signature verification needs Node 24.7 or newer, so the runtime must match.
@@ -28,10 +37,13 @@ LABEL org.opencontainers.image.title="Vaultonaut" \
       org.opencontainers.image.description="Headless relay and serving nodes for encrypted vaults" \
       org.opencontainers.image.licenses="AGPL-3.0"
 
-# XDG_DATA_HOME puts the persistent data directory (vault stores, the checksum-verified engine cache, and node state)
-# at a fixed path a volume can cover. NODE_ENV=production is the standard production signal.
+# XDG_DATA_HOME puts the persistent data directory (vault stores and node state) at a fixed path a volume can cover.
+# VAULTONAUT_ENGINE_DIR points the app at the engine baked into the image at /engine (outside the data volume, so a
+# fresh volume never shadows it), so a serving node uses the already-verified engine and needs no download. NODE_ENV
+# is the standard production signal.
 ENV NODE_ENV=production \
-    XDG_DATA_HOME=/data
+    XDG_DATA_HOME=/data \
+    VAULTONAUT_ENGINE_DIR=/engine
 WORKDIR /app
 
 # The production dependency tree from the builder stage. --chown assigns ownership as the files are copied, so there
@@ -45,6 +57,10 @@ COPY --chown=node:node lib ./lib
 COPY --chown=node:node release-manifest.json release-manifest.sig release-manifest.sig.pq ./
 COPY --chown=node:node docs/README.md docs/banner.png ./docs/
 COPY --chown=node:node docker/entrypoint.js docker/healthcheck.js ./docker/
+# The engine baked and checksum-verified in the builder stage, plus its license, owned by the runtime user. It lives
+# outside /data so a mounted data volume never hides it, and the read-only root filesystem is fine because the app
+# only reads and runs it (never re-downloads it, since it is already the pinned, verified build).
+COPY --chown=node:node --from=builder /engine /engine
 
 # A writable, persistent data directory owned by the non-root user, so a freshly mounted volume is writable. The
 # `node` user (uid 1000) already exists in the official base image. Only /data needs chowning; the app files were

@@ -555,7 +555,7 @@ docker compose -f docker/docker-compose.yml up -d
 
 Open the hub's control port (7443 by default) and its public data-port range (20000-20099 by default) in the host firewall.
 
-A serving node fetches a small, checksum-verified copy of the storage engine the first time it serves a vault, so a node needs outbound HTTPS on that first run. The engine is then cached on the node's data volume and reused, so later starts need no network for it, and a relay never needs it at all.
+The image bundles a pinned, checksum-verified copy of the storage engine, so a serving node runs with no download at first serve, even on an air-gapped or egress-restricted host. A relay does not use the engine at all.
 
 **One-paste onboarding.** The hub prints a single invite code that carries both its address and its token, so a node joins with one value instead of two. Read it from the hub's logs (`docker compose -f docker/docker-compose.yml logs relay`), then a node joins with `serve <vault> --relay-code <code>` in place of the separate address and token. Share the code privately, since it carries the token.
 
