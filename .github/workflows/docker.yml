@@ -56,6 +56,12 @@ jobs:
             echo "push=false" >> "$GITHUB_OUTPUT"
           fi
 
+      # Emulation so the arm64 image (Raspberry Pi, ARM VPS — the engine pins arm64 checksums, so ARM is a supported
+      # target) can be built on an amd64 runner. It is only needed on the multi-arch publish path; running it always is
+      # harmless and cheap.
+      - name: Set up QEMU for cross-architecture builds
+        uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -96,6 +102,11 @@ jobs:
           file: docker/Dockerfile
           push: ${{ steps.publish.outputs.push == 'true' }}
           load: ${{ steps.publish.outputs.push != 'true' }}
+          # A published image is multi-arch (amd64 + arm64) so ARM hosts get a native image; the build-time engine bake
+          # runs per-architecture under QEMU and fetches the matching pinned engine, so each arch ships its own verified
+          # binary. The build-only test path stays single-arch (the runner's amd64): a multi-arch build produces a
+          # manifest list, which cannot be loaded into the local daemon for the build-only confirmation.
+          platforms: ${{ steps.publish.outputs.push == 'true' && 'linux/amd64,linux/arm64' || '' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           # The SBOM and provenance attestations make BuildKit emit a manifest list, which only a registry can hold;

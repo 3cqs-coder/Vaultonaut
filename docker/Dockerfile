@@ -22,7 +22,10 @@ RUN npm install --omit=dev --ignore-scripts --no-audit --no-fund
 # first serve — an air-gapped or egress-restricted node works, and there is no runtime network dependency. The bake
 # reuses the app's own RcloneSetup, which is the single source of the pinned engine version and its committed
 # checksums, so nothing here names a version and there is no drift; the engine and its license land in /engine, which
-# the runtime stage copies in. A fetch or checksum failure fails the build, so a bad engine can never ship.
+# the runtime stage copies in. A fetch or checksum failure fails the build, so a bad engine can never ship. Note this
+# is the one step that needs network access, and only at BUILD time (to fetch the pinned engine); the resulting image
+# has no runtime network dependency for the engine. To build fully offline, pre-place the pinned engine and license in
+# /engine and this bake becomes a no-op — see docker/bake-engine.js.
 COPY lib ./lib
 COPY docker/bake-engine.js ./docker/bake-engine.js
 RUN VAULTONAUT_ENGINE_DIR=/engine node docker/bake-engine.js

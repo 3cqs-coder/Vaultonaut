@@ -9,8 +9,10 @@
 # Before `docker compose up`:
 #   1. Put a shared secret token in ./secrets/relay_token (one line). Both services read it as a file, so it never
 #      appears in the process list or the environment. Generate one with, e.g.:  openssl rand -hex 32
-#      Keep it private, and make sure it is readable by the container user (uid 1000). On native Linux, `chmod 644`
-#      the file if a stricter owner-only mode owned by another user would keep the container from reading it.
+#      This token is stored in clear text in that file and grants any holder access to the relay, so treat the file as
+#      a credential: keep it out of version control and off shared storage, and rotate it if it may have leaked.
+#      Make sure it is readable by the container user (uid 1000). On native Linux, `chmod 644` the file if a stricter
+#      owner-only mode owned by another user would keep the container from reading it.
 #   2. Set RELAY_PUBLIC_HOST to the hub's public hostname or IP (a .env file beside this one works:
 #      RELAY_PUBLIC_HOST=relay.example.com). Nodes and clients reach the hub at this address.
 #   3. Point the node's vault mount (below) at the encrypted vault folder you want to serve.
@@ -26,7 +28,7 @@ secrets:
 services:
   relay:
     # Upgrading is a one-liner: the image is the published, version-pinned release. Set VAULTONAUT_VERSION in .env to a
-    # release (for example 1.0.1), then `docker compose pull && docker compose up -d` — the named data volumes below
+    # release (for example 1.1.0), then `docker compose pull && docker compose up -d` — the named data volumes below
     # carry every vault, key, and setting across the upgrade, and the new image verifies its own bundle on boot. Pin an
     # exact version for reproducibility; leave it at `latest` to always pull the newest. To build from source instead
     # of pulling, uncomment the `build` block and run `docker compose up -d --build`.

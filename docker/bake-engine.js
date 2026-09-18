@@ -26,13 +26,23 @@ fs.mkdirSync(dir, { recursive: true });
 	if (!r.ok) { console.error('[bake-engine] engine fetch or checksum verification failed'); process.exit(1); }
 
 	// The engine is MIT-licensed. Baking the binary into the image REDISTRIBUTES it, so its copyright and license text
-	// must travel with it. Fetch the engine's own license at the SAME pinned tag (the single source) and place it beside
-	// the binary; a build that cannot obtain the license fails rather than shipping the binary without its notice.
+	// must travel with it. A build that cannot obtain the license fails rather than shipping the binary without its
+	// notice. If a valid license is already present (a fully offline build that pre-placed the engine and its license),
+	// keep it and do NOT fetch — that is what lets an air-gapped build be a true no-op. Otherwise fetch it at the SAME
+	// pinned tag (the single source) and place it beside the binary.
+	const licensePath = path.join(dir, 'rclone-LICENSE.txt');
+	const looksLikeLicense = (t) => !!t && t.length >= 400 && /MIT|Permission is hereby granted/i.test(t);
+	let existing = '';
+	try { existing = fs.readFileSync(licensePath, 'utf8'); } catch (_) {}
+	if (looksLikeLicense(existing)) {
+		console.log('[bake-engine] engine ' + RcloneSetup.PINNED_TAG + ' present with a valid license already in ' + dir + ' (offline; nothing fetched)');
+		return;
+	}
 	const url = 'https://raw.githubusercontent.com/rclone/rclone/' + RcloneSetup.PINNED_TAG + '/COPYING';
 	let text = '';
 	try { text = await Net.getText(url); } catch (e) { console.error('[bake-engine] could not fetch the engine license: ' + (e && e.message)); process.exit(1); }
-	if (!text || text.length < 400 || !/MIT|Permission is hereby granted/i.test(text)) { console.error('[bake-engine] the fetched engine license did not look like the expected MIT text'); process.exit(1); }
-	fs.writeFileSync(path.join(dir, 'rclone-LICENSE.txt'), text);
+	if (!looksLikeLicense(text)) { console.error('[bake-engine] the fetched engine license did not look like the expected MIT text'); process.exit(1); }
+	fs.writeFileSync(licensePath, text);
 
 	console.log('[bake-engine] engine ' + RcloneSetup.PINNED_TAG + ' baked and license saved into ' + dir);
 })().catch((e) => { console.error('[bake-engine] failed: ' + (e && e.message)); process.exit(1); });

@@ -738,6 +738,11 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 	   avoid mis-taps between adjacent controls. The visual text size is unchanged; only the tap target grows. */
 	.link-btn, .ghost-btn, .primary-btn { min-height: 40px; }
 	.more-menu .link-btn, .more > summary { min-height: 40px; display: flex; align-items: center; }
+	/* The inline path tools (copy, and the privacy-screen reveal toggle) sit right next to each other on a path line, so
+	   a phone user needs a comfortable, well-separated hit area to avoid tapping the wrong one; grow the target without
+	   changing the icon size. The banner's expand/collapse toggle is likewise a tap target, so give it the same minimum. */
+	.path-tool { min-width: 40px; min-height: 40px; }
+	.banner-toggle { min-height: 40px; }
 	/* The collapsible create panel's header is a tap target (it opens/closes the section); give it the same
 	   comfortable minimum. It already lays out as a flex row (.panel-head), so the height just grows the hit area. */
 	.create-summary { min-height: 44px; }

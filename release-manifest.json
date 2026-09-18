@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.1.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-18T17:07:08.453Z",
+  "generatedAt": "2026-09-18T17:44:59.515Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -17,7 +17,7 @@
     },
     {
       "path": "docs/README.md",
-      "sha256": "6e5bcede9b40e02074e78713d67a51fb350552d052a0a6a3cd20b298187b3895",
+      "sha256": "20e0264a2879988472b0771fdf806792f8d7eeb1fb748480aac451ee79726ab9",
       "size": 205857
     },
     {
@@ -57,8 +57,8 @@
     },
     {
       "path": "lib/Common.js",
-      "sha256": "948599eab46ae894483bacf457ed3759d7e1d1658098210721b367c6a1f258f8",
-      "size": 65260
+      "sha256": "125f58491874424dbfbbbf0513949272083a5181bbebcab1899a2775384140e3",
+      "size": 67607
     },
     {
       "path": "lib/Decoy.js",
@@ -217,8 +217,8 @@
     },
     {
       "path": "lib/RcloneSetup.js",
-      "sha256": "de74f6ffd696cf046971a97522145fbac2e0454eb10e482a8370ba4278fd4ab7",
-      "size": 28581
+      "sha256": "d91ef066545f3b33f7cf3ca87357b618f350ef25d032997b44c83e419b0e4aa2",
+      "size": 28863
     },
     {
       "path": "lib/Recovery.js",
@@ -432,8 +432,8 @@
     },
     {
       "path": "lib/webserver/public/css/app.css",
-      "sha256": "beaed1fc08b974f05f7cc4c8347f7c2934e873ce7c40ee2a569a6db893e7c6e4",
-      "size": 79658
+      "sha256": "cdc403e325fe2cf8874ae69853feb2c6014b9d48e13be5be486311284c3a9470",
+      "size": 80106
     },
     {
       "path": "lib/webserver/public/fonts/aFTR7PB1QTsUX8KYvrGyEY2tbZX9.woff2",
