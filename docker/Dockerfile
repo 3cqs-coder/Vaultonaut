@@ -16,7 +16,7 @@ WORKDIR /app
 COPY package.json ./
 # A production-only install. --ignore-scripts blocks any dependency lifecycle script from running at build time (all
 # of this project's runtime dependencies are plain JavaScript or WebAssembly, so none is needed).
-RUN npm install --omit=dev --ignore-scripts
+RUN npm install --omit=dev --ignore-scripts --no-audit --no-fund
 
 # Bake the storage engine at build time, so a serving node has it already present and NEVER downloads anything on its
 # first serve — an air-gapped or egress-restricted node works, and there is no runtime network dependency. The bake
@@ -39,11 +39,13 @@ LABEL org.opencontainers.image.title="Vaultonaut" \
 
 # XDG_DATA_HOME puts the persistent data directory (vault stores and node state) at a fixed path a volume can cover.
 # VAULTONAUT_ENGINE_DIR points the app at the engine baked into the image at /engine (outside the data volume, so a
-# fresh volume never shadows it), so a serving node uses the already-verified engine and needs no download. NODE_ENV
-# is the standard production signal.
+# fresh volume never shadows it), so a serving node uses the already-verified engine and needs no download. HOME
+# points at the writable data volume too, so any stray write to the home directory (by the engine or Node) lands on
+# the volume rather than failing against the read-only root filesystem. NODE_ENV is the standard production signal.
 ENV NODE_ENV=production \
     XDG_DATA_HOME=/data \
-    VAULTONAUT_ENGINE_DIR=/engine
+    VAULTONAUT_ENGINE_DIR=/engine \
+    HOME=/data
 WORKDIR /app
 
 # The production dependency tree from the builder stage. --chown assigns ownership as the files are copied, so there

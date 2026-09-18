@@ -3,10 +3,12 @@
 # release manifest and the runtime never loads it.
 .git
 .github
+.claude
 node_modules
 **/node_modules
 src-tauri
 lib/test
+.test-data
 docs/BACKLOG.md
 docs/TEAM-VAULTS-DESIGN.md
 **/*.log
