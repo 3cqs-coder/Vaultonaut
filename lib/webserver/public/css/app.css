@@ -510,8 +510,13 @@ button { font: inherit; }
 .checkfield + .checkfield,
 .field + .checkfield { margin-top: 14px; }
 /* Stacked fields inside a dialog need breathing room; the create form's side-by-side
-   fields live in a .row grid, so this is scoped to direct form children to leave them be. */
-.dialog form > .field + .field { margin-top: 14px; }
+   fields live in a .row grid, so this is scoped to direct form children to leave them be.
+   Fields nested inside a dialog's collapsible <details> (e.g. the owner-recovery set-up and
+   recover sections) are not direct form children, so give those the same rhythm too. */
+.dialog form > .field + .field,
+.dialog .advanced > .field + .field { margin-top: 14px; }
+/* The notifications "which events" list — a compact, evenly-spaced stack of event toggles. */
+.notify-events { display: grid; gap: 8px; margin-top: 4px; }
 .checkfield input[type="checkbox"] { flex: none; margin-top: 2px; }
 .checkfield > span { display: block; }
 /* Share dialog: access-level chooser and the hand-off section. */
