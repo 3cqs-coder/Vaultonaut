@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.1.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-20T02:07:05.104Z",
+  "generatedAt": "2026-09-20T14:46:09.501Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -17,8 +17,8 @@
     },
     {
       "path": "docs/README.md",
-      "sha256": "ab2a800f8c54b871e1f98d88439ac8c568eadb709a7b499f95fe89635567ff57",
-      "size": 208569
+      "sha256": "6c947f8023585164efd191a2346c35cdab46bb5d457c9c2ff68ea52ea43d3b12",
+      "size": 208698
     },
     {
       "path": "docs/banner.png",
@@ -52,8 +52,8 @@
     },
     {
       "path": "lib/Commands.js",
-      "sha256": "da51611d04430dd0a91c54b549943074277290a9cf5b8fcc629a71eff3019721",
-      "size": 192670
+      "sha256": "3408b07af61f0c7d63d72719c0147c0f2b8fe6c23e4ea330381c6ac91609a96e",
+      "size": 194173
     },
     {
       "path": "lib/Common.js",
@@ -337,8 +337,8 @@
     },
     {
       "path": "lib/Vault.js",
-      "sha256": "9b7412bff325545f9006c58fd90d86c53c327f26280c9f6ee54fc51a9d13928f",
-      "size": 862065
+      "sha256": "2089ad4ccfac66bdd55582ece28d999bcdbed99f327c87138f7ef233cfefadda",
+      "size": 867663
     },
     {
       "path": "lib/Watchdog.js",
@@ -372,8 +372,8 @@
     },
     {
       "path": "lib/index.js",
-      "sha256": "7ede7ac075620995b2e9878978396d1a5e38ca3f81585253389b1e815c17fb60",
-      "size": 13416
+      "sha256": "844306d4b5dac9b87437dd8b7c9c05e944e30a96498bf18c3c7ad2b4a024f012",
+      "size": 13736
     },
     {
       "path": "lib/passwordStrength.js",
@@ -397,8 +397,8 @@
     },
     {
       "path": "lib/templates/help.txt",
-      "sha256": "f0d9587a0e8c1b08536c6414173ae169c8308a80736b7c797b79a36057720f2f",
-      "size": 18498
+      "sha256": "2bf0ecd69610302d648782d77919056162a9bf5da299fb59ae3f57e01e15a49b",
+      "size": 18629
     },
     {
       "path": "lib/templates/notices.txt",
@@ -422,8 +422,8 @@
     },
     {
       "path": "lib/webserver/index.js",
-      "sha256": "f990921b8a3e8b9229a147811a213a1064bffecb65e60c8e592e39fba224ae9f",
-      "size": 168811
+      "sha256": "21577328477676ee9f3cc628a9237c0e1f0b6e9829de5418555f5f32d990ccbe",
+      "size": 169567
     },
     {
       "path": "lib/webserver/kitView.js",
