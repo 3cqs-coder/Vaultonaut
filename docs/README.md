@@ -638,6 +638,8 @@ The key that actually encrypts your files is a random master key, generated when
 
 A locked vault keeps your files private. The contents and the file and folder names are all encrypted, and your password is never stored. Someone who copies the vault, or a cloud service that holds it, cannot read anything in it without your password.
 
+New vaults created in the app go one step further and hide their own name. The folder on disk is named by the vault's own opaque identifier, so browsing the disk (or a cloud provider that holds it) reveals nothing about what a vault is; the name and description you give it are encrypted with the vault and readable only once you unlock it. Each device you unlock a vault on remembers its name locally so the list shows it right away, and until then, or on a device that has never opened it, the vault simply shows as locked. The folder name never changes, so renaming or describing a vault never affects where its backups or mirrors go. On the command line, `vdisk create <name> --opaque` does the same, and `vdisk name <vault>` shows or changes the encrypted name and description.
+
 There are limits worth knowing. While a vault is unlocked, its files are decrypted so you can use them. Anyone with access to your computer at that moment, or any malware running on it, can read those files and could capture your password as you type it. A strong, unique password matters, because a weak one is much easier to guess. Encryption hides your file names and contents, but not the fact that a vault exists or roughly how large it is. Vaultonaut protects the files in your vaults, not your whole computer, so turning on your operating system's own full-disk encryption is a good complement.
 
 ### An open format, not home-grown cryptography
