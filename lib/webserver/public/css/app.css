@@ -252,7 +252,7 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 .notif-panel { position: absolute; top: 48px; right: 0; width: 320px; max-width: 86vw; z-index: 30;
 	background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg);
 	box-shadow: var(--bevel), var(--shadow-lift); overflow: hidden; padding: var(--sp-1); }
-.notif-head { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); padding: 10px 10px 6px; }
+.notif-head { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: 10px 10px 6px; } /* --muted, not --faint: this is 11px readable text, so it needs AA contrast, which --faint (a decorative tint) does not meet */
 .notif-clear { display: flex; align-items: center; gap: 10px; padding: 12px 10px; color: var(--muted); font-size: 13px; }
 .notif-clear svg { width: 18px; height: 18px; color: var(--good); flex: 0 0 auto; }
 /* The integrity findings sit inside the dropdown now, so drop the full-width banner look entirely: a neutral card
@@ -582,7 +582,7 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 .dialog.manage-dialog { width: min(520px, 94vw); }
 .manage-group { margin-top: 18px; }
 .manage-group:first-child { margin-top: 6px; }
-.manage-group-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); margin: 0 0 8px; }
+.manage-group-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 8px; } /* --muted, not --faint: a readable 11px group label needs AA contrast */
 .manage-group.danger .manage-group-label { color: var(--danger); }
 .alist { display: grid; gap: 8px; }
 .arow { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 11px 12px; border: 1px solid var(--border);

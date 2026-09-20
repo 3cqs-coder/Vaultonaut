@@ -433,7 +433,7 @@ vdisk unseal   <name|path>       Remove the seal (back to automatic tracking)
 vdisk tamper-log <name|path>     Show the recorded tamper history (no password)
 vdisk fingerprint <name|path>    Show the vault's identity, version, and short fingerprint (no password)
 vdisk recovery-kit <name|path> [out]   Write a printable one-page Recovery Kit (add --no-key for an identity-only kit)
-vdisk attest   <name|path>       Timestamp the vault's state as court-recognized proof (--list to see proofs, --tsa <url> to pick an authority)
+vdisk attest   <name|path>       Timestamp the vault's state as independently verifiable (RFC 3161) proof (--list to see proofs, --tsa <url> to pick an authority)
 vdisk make-bundle <name|path> [--out <dir>]   Package a portable proof anyone can verify offline
 vdisk verify-bundle <dir>        Verify a proof bundle offline (GENUINE / TAMPERED / ROLLED-BACK / UNVERIFIED)
 vdisk prove-file <name|path> <file-in-vault> [--out <file>]   Prove one file is in the vault's signed state (a small, shareable proof)
@@ -1076,7 +1076,7 @@ A threshold key also gives you a safe way to make sure trusted people can reach 
 
 ### A dead-man's switch
 
-You can also arrange for trusted people to gain read-only access automatically if you stop checking in, or on a date you choose — for incapacitation or a planned handover. It is part app-wide and part per vault. You set up your beneficiaries and the check-in window once. Then you assign each vault to a beneficiary. Open it from a vault's own **More** menu with **Emergency access**, from **Settings → Emergency access** on the navigation rail, or with the `vdisk emergency` commands. It works the honest way:
+You can also arrange for trusted people to gain read-only access automatically if you stop checking in, or on a date you choose — for incapacitation or a planned handover. It is part app-wide and part per vault. You set up your beneficiaries and the check-in window once. Then you assign each vault to a beneficiary. Open it from a vault's own **Manage** panel under **Emergency access**, from **Settings → Emergency access** on the navigation rail, or with the `vdisk emergency` commands. It works the honest way:
 
 1. Each beneficiary makes a keypair and gives you only the public half (**Generate a keypair** in the app, or `vdisk emergency keypair`).
 2. You enroll the first one (paste the public key, or `vdisk emergency enroll --contact-key <their public key> --label <name>`), and add any others the same way (**Add beneficiary**, or `vdisk emergency add-contact --contact-key <key> --label <name>`).
@@ -1137,7 +1137,7 @@ One point if you use duress protection: erasing a vault does not adjust any deco
 
 A vault is stored as many individually encrypted files, which is what keeps it portable and friendly to cloud sync. The trade-off is that removing or replacing one of those files is easy and, on its own, invisible. Tamper detection closes that gap, and it works automatically.
 
-For everyday use, the first part below is all you really need — the check runs on its own and simply warns you if something looks off. The later parts are reference for when you want deep content-level checking, a strict tripwire, a portable fingerprint, or court-recognized timestamped proof.
+For everyday use, the first part below is all you really need — the check runs on its own and simply warns you if something looks off. The later parts are reference for when you want deep content-level checking, a strict tripwire, a portable fingerprint, or independently verifiable timestamped proof.
 
 ### The automatic check
 
@@ -1213,7 +1213,7 @@ The signature also lets a third party who cannot decrypt the vault verify a base
 
 The tamper tools above tell *you* whether a vault changed. Attestation goes one step further and lets you prove a vault's exact state to *anyone*, at a definite point in time — useful for intellectual property, contracts, evidence, or any record whose age and integrity might one day be questioned.
 
-`vdisk attest <vault>` (or **Timestamp proof** in the web interface, under Tamper check) takes a hash that binds the vault's stable identity, its content fingerprint, and its version, and asks a trusted timestamping authority to sign that hash together with the current time. What comes back is a standard RFC 3161 timestamp token: independent, court-recognized proof that this exact state existed no later than the certified moment. Only the hash is ever sent — the vault, its file names, and its contents never leave your machine, so the proof reveals nothing about what the vault holds. Take a snapshot first (so there is a state to certify), then attest.
+`vdisk attest <vault>` (or **Timestamp proof** in the web interface, under Tamper check) takes a hash that binds the vault's stable identity, its content fingerprint, and its version, and asks a trusted timestamping authority to sign that hash together with the current time. What comes back is a standard RFC 3161 timestamp token: independent, standards-based proof that this exact state existed no later than the certified moment. Only the hash is ever sent — the vault, its file names, and its contents never leave your machine, so the proof reveals nothing about what the vault holds. Take a snapshot first (so there is a state to certify), then attest.
 
 The proofs are stored in a small `attestations.json` file beside the vault, so they travel with your backups, mirrors, and shared copies. `vdisk attest <vault> --list` (or **Show timestamp proofs**) lists them and re-verifies each one, reading the certified time back out of the signed token itself and marking which proofs match the vault's current state. Verification is thorough — it confirms:
 
@@ -1237,7 +1237,7 @@ Give that folder to anyone, and they get a plain verdict — GENUINE, TAMPERED, 
 - The folder includes a small, self-contained `verify.js`, so anyone with a plain Node.js install can run `node verify.js .` with nothing else to download.
 - Or, with this tool, `vdisk verify-bundle <folder>` does the same and additionally verifies the trusted timestamps.
 
-Either way the verification is entirely offline and re-runs the math itself, so the answer does not depend on trusting the person who made the bundle. This is the honest, portable form of the vault's court-recognized integrity: a record whose authenticity a lawyer, a journalist, or an auditor can confirm for themselves.
+Either way the verification is entirely offline and re-runs the math itself, so the answer does not depend on trusting the person who made the bundle. This is the honest, portable form of the vault's independently verifiable integrity: a record whose authenticity a lawyer, a journalist, or an auditor can confirm for themselves.
 
 **Proving a single file.** When you need to prove just *one* file — that this exact document was in your vault, unchanged, as of a point in time — `vdisk prove-file <vault> <file>` writes a small proof for that one file instead of the whole vault. It is a Merkle inclusion proof: the file's fingerprint plus the short chain of hashes that ties it to the same signed baseline, so the proof stays tiny no matter how large the vault is. It carries the file's name, size, and content fingerprint — never the file's contents. Anyone can check it offline with `vdisk verify-file <proof.json>`, or with the same self-contained `node verify.js <proof.json>`, and gets the same GENUINE, TAMPERED, or UNVERIFIED verdict, with no vault and no password. As with a bundle, pass the owner's identity with `--expect` to also confirm the proof came from their vault. Take a deep snapshot first so the proof binds the file's content, not just its name and size.
 
