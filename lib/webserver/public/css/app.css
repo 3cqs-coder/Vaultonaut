@@ -501,6 +501,10 @@ button { font: inherit; }
 	padding: 10px 12px; font: inherit; width: 100%;
 }
 .field textarea { resize: vertical; font-family: var(--mono); font-size: 12.5px; }
+/* A prose textarea (a human description, not data or a path) reads in the UI font, not the monospace data stack. */
+.field textarea.prose { font-family: inherit; font-size: 13.5px; }
+/* Break an arbitrarily long unbroken string (e.g. a vault name echoed into a label) instead of forcing the dialog to scroll sideways. */
+.wrap-any { overflow-wrap: anywhere; word-break: break-word; }
 .field input:focus, .field select:focus, .field textarea:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: var(--accent); }
 .hint { color: var(--muted); font-size: 12px; }
 /* A hint that belongs to a field: placed INSIDE the .field so the grid's own gap spaces it under the input — no
@@ -724,7 +728,7 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 	   sticky action row still pins to the bottom, and a fixed inner-height cap lets a long form scroll within. */
 	.dialog { width: 100%; max-width: none; margin: auto 0 0; border-radius: 18px 18px 0 0; border-bottom: 0;
 		max-height: 92vh; max-height: 92dvh; padding-bottom: max(22px, env(safe-area-inset-bottom)); }
-	.dialog.browse, .dialog.kit-dialog { width: 100%; }
+	.dialog.browse, .dialog.kit-dialog, .dialog.manage-dialog { width: 100%; }
 	/* Keep the identity icon beside the name on a narrow screen (icon + info share the top row), and let the
 	   actions wrap to their own full-width row below rather than stacking the icon alone above everything. */
 	.card { flex-wrap: wrap; align-items: center; }
