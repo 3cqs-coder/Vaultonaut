@@ -262,6 +262,7 @@ Nearly everything the command line can do is also here. Each vault has a single 
 - **Security** — set the vault's encrypted name and description, change its password, rotate or manage its keys, manage members of a shared vault, run the tamper check, and set up self-healing recovery data.
 - **Sharing & access** — share with a group, set up emergency access, serve the vault to your other devices, mirror it, and view its files and notes without mounting.
 - **Storage & backups** — back the vault up off-site, browse and restore earlier versions, and split it across places.
+- **Danger zone** — remove the vault from the list (which only forgets it here), or delete it permanently.
 
 Global options and one-off maintenance live together in the **Settings** panel on the navigation rail: an idle auto-lock, lock-on-sleep, auto-timestamping, decoy and travel modes, emergency access, critical-event notifications, and **Run repair** among them. A **Lock all** action stays one click away on the rail.
 
@@ -1079,7 +1080,7 @@ You can also arrange for trusted people to gain read-only access automatically i
 
 1. Each beneficiary makes a keypair and gives you only the public half (**Generate a keypair** in the app, or `vdisk emergency keypair`).
 2. You enroll the first one (paste the public key, or `vdisk emergency enroll --contact-key <their public key> --label <name>`), and add any others the same way (**Add beneficiary**, or `vdisk emergency add-contact --contact-key <key> --label <name>`).
-3. You assign each vault to the beneficiary who should inherit it, and choose when it should unlock. From the vault's **More** menu, choose **Emergency access** and **Route this vault** (or use **Settings → Emergency access**), or run `vdisk emergency arm <vault> --contact <name-or-id>`. Routing seals that vault's read link to that person's public key, so only their private key can ever open it. Add `--date <when>` to unlock on a specific day instead of on inactivity.
+3. You assign each vault to the beneficiary who should inherit it, and choose when it should unlock. From the vault's **Manage** panel, choose **Emergency access** and **Route this vault** (or use **Settings → Emergency access**), or run `vdisk emergency arm <vault> --contact <name-or-id>`. Routing seals that vault's read link to that person's public key, so only their private key can ever open it. Add `--date <when>` to unlock on a specific day instead of on inactivity.
 
 The beneficiaries and the check-in window are app-wide, so one check-in keeps every routed vault locked. The assignment is per vault, so the handover is granular: different vaults can go to different people — your bank vault to your spouse, your business vault to your partner. No beneficiary can open a vault that was not routed to them. When access is released, each person gets their own set of sealed files, holding only the vaults meant for them.
 
@@ -1118,7 +1119,7 @@ To make a copy of a vault truly unrecoverable, `vdisk secure-remove <vault>` des
 
 Because this is irreversible, it takes more than knowing a vault exists. Erasing always requires the vault's own read-write password — the same one that opens it. A vault's name is on show in the list, so it is no secret; the password proves that whoever is deleting can actually open the vault, and a wrong password, or a read-only one, erases nothing. If you have lost the password, the data is already beyond reach, so there is nothing left to crypto-erase — use the everyday **Remove** to forget the vault, then delete its folder yourself.
 
-The web interface offers the same permanent delete. Open a vault's **More** menu and choose **Delete permanently**, then type the vault's name and its password to confirm. The button stays disabled until the name matches exactly and a password is entered, so a stray click can never trigger it. This is separate from the everyday **Remove**, which only forgets a vault here and leaves its encrypted files in place.
+The web interface offers the same permanent delete. Open a vault's **Manage** panel and, under **Danger zone**, choose **Delete permanently**, then type the vault's name and its password to confirm. The button stays disabled until the name matches exactly and a password is entered, so a stray click can never trigger it. This is separate from the everyday **Remove**, which only forgets a vault here and leaves its encrypted files in place.
 
 Because it cannot be undone, the command line's ordinary form makes you choose a safety net first, then type the vault's name to confirm. The safety net is `--keep <file>`, which saves a portable, still-openable copy before erasing, or `--no-keep`, which skips one. For a genuine emergency, `--panic` skips the safety-copy choice and the name confirmation. Every form, `--panic` included, still asks for the password once — it is the one check that cannot be waived.
 

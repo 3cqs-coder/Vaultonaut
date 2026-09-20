@@ -19,7 +19,7 @@ All commands:
   vdisk cloud    connect <drive|dropbox|onedrive>   Sign in to a cloud account in the browser (OAuth)
   vdisk cloud    add --type <type> [key=value …]   Add cloud storage by config (add --label <name>); use --secrets-file <path> to keep secrets off the command line
   vdisk import   <folder> [path]   Create a new vault from an existing folder (copies files in)
-  vdisk notes-import <file> <vault>  Import logins/notes from a .csv, Bitwarden .json, or 1Password .1pux export (open vault; --dry-run, --skip-duplicates, --format)
+  vdisk notes-import <file> <vault>  Import logins/notes from a .csv or a password-manager export (.json or .1pux) into an open vault (--dry-run, --skip-duplicates, --format)
   vdisk passwd   <path>            Change a vault's password (instant; no re-encryption)
   vdisk keys     <path>            List a vault's keys (no password needed)
   vdisk addkey   <path>            Add another password that opens the vault
