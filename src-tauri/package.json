@@ -12,6 +12,6 @@
     "build": "npm run prepare-sidecar && npm run sign-bundle && tauri build && npm run scan-leaks"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2.9.0"
+    "@tauri-apps/cli": "^2.11.5"
   }
 }
