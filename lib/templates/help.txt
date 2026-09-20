@@ -14,7 +14,7 @@ All commands:
   vdisk create   <path>            Create a new encrypted vault (prompts for a password)
                  [--cloud <id> --remote-path <folder>]   ...with its store on a saved cloud remote (see 'cloud')
                  [--worm --retain-days <N> [--worm-mode governance|compliance]]   ...tamper-proof (S3): lock each version for N days
-  vdisk name     <path> ["title"]  Show or set a vault's encrypted name and description (--description "text"; needs the password)
+  vdisk name     <path> ["title"]  Show or set a vault's encrypted name and description (--description "text", or --anonymize to hide the folder name; needs the password)
   vdisk cloud    <list|connect|add|remove|test>   Manage cloud storage for cloud-backed vaults
   vdisk cloud    connect <drive|dropbox|onedrive>   Sign in to a cloud account in the browser (OAuth)
   vdisk cloud    add --type <type> [key=value …]   Add cloud storage by config (add --label <name>); use --secrets-file <path> to keep secrets off the command line

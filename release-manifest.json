@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.1.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-20T16:19:43.058Z",
+  "generatedAt": "2026-09-20T16:43:15.701Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -17,8 +17,8 @@
     },
     {
       "path": "docs/README.md",
-      "sha256": "f0474cd1fe9bc684b0df44dbd27860ab9a57619cef9c1378b95bfef322c4b0e1",
-      "size": 210101
+      "sha256": "555d009a0cf10ef967d958f2e3cdcc5fc0ff9f2032ecc0ab07e8b9b1dfdf2c2f",
+      "size": 210214
     },
     {
       "path": "docs/banner.png",
@@ -52,8 +52,8 @@
     },
     {
       "path": "lib/Commands.js",
-      "sha256": "fe1924605a4769d56d3c8494b824ddfc762f5185e4911a3259036e7930f9e7f5",
-      "size": 195381
+      "sha256": "66ca838b50b734747d860555c27b3f184c2f235182dd3d0bf1ffa48eea545c09",
+      "size": 195693
     },
     {
       "path": "lib/Common.js",
@@ -337,8 +337,8 @@
     },
     {
       "path": "lib/Vault.js",
-      "sha256": "3440781a27387a7de55482604070756f6317cc224c2fa12a2a11e7bd8d341539",
-      "size": 878753
+      "sha256": "197c5b74589a3328a8c5cce600505ab95397e1fc9fa3d249cd5d38eebc0b04ca",
+      "size": 880473
     },
     {
       "path": "lib/Watchdog.js",
@@ -372,8 +372,8 @@
     },
     {
       "path": "lib/index.js",
-      "sha256": "ec92f0a88f9c38fd063310aa3c7b993d0c58f7829322441b0c3e253336b1c5c3",
-      "size": 13885
+      "sha256": "f6c484003b81e1252855f2604bd07b0eec6bb974a73fafffe5d84e95a16463dc",
+      "size": 14004
     },
     {
       "path": "lib/passwordStrength.js",
@@ -397,8 +397,8 @@
     },
     {
       "path": "lib/templates/help.txt",
-      "sha256": "2bf0ecd69610302d648782d77919056162a9bf5da299fb59ae3f57e01e15a49b",
-      "size": 18629
+      "sha256": "a263ab45ca34f6e11bd6b9815cdcf863c6f4d9d889d09c401ca8e0e54154284b",
+      "size": 18669
     },
     {
       "path": "lib/templates/notices.txt",
@@ -507,8 +507,8 @@
     },
     {
       "path": "lib/webserver/public/js/app.js",
-      "sha256": "0f83b0f8d1ddf3842389ac496d86c3dd408c6f3b2073cf78fb0ea9502850b413",
-      "size": 351063
+      "sha256": "6bb1e483055cb8ef78fe2921d9220855bebb9331afba527b291a2530951d9bf5",
+      "size": 351188
     },
     {
       "path": "lib/webserver/public/js/login.js",
