@@ -370,6 +370,9 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
    start, aligned to the first line of a path that wraps, and never blur — only the path text does. */
 .path-line { display: flex; align-items: flex-start; gap: 6px; margin-top: 2px; }
 .path-line .path { margin-top: 0; flex: 1 1 auto; min-width: 0; }
+/* The vault's optional encrypted description, shown under the path. Wraps, stays muted, and blurs with the name/path
+   under the privacy screen. overflow-wrap keeps a long unbroken string from widening the card on a narrow phone. */
+.vault-desc { margin-top: 3px; color: var(--muted); font-size: 12px; line-height: 1.35; overflow-wrap: anywhere; }
 .path-tools { display: inline-flex; gap: 2px; flex: 0 0 auto; }
 .path-tool { display: inline-grid; place-items: center; width: 26px; height: 22px; padding: 0; border: 0; border-radius: 6px;
 	background: none; color: var(--muted); cursor: pointer; transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
