@@ -779,11 +779,9 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 	   density is not worth the zoom jump, so lift every text-entry control to 16px. Pointer devices (a normal
 	   desktop) keep the denser sizing, since this rule lives only in the touch block. */
 	input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea { font-size: 16px; }
-	/* A bare `textarea` selector loses on specificity to the sized textarea rules (.field textarea, textarea.sf-input,
-	   #noteBody), so those would stay under 16px and still trigger the iOS focus-zoom. Repeat them here at matching or
-	   higher specificity — later in the cascade — so every textarea, including the secure-note body editor, is 16px on
-	   a touch device. */
-	.field textarea, textarea.sf-input, #noteBody { font-size: 16px; }
+	/* The sized textarea rules (.field textarea.prose, textarea.sf-input, #noteBody) are defined LATER in this file and
+	   win on source order, so their authoritative 16px touch override lives in a second touch block at the very end of
+	   the file (below), where it is last in the cascade. */
 }
 
 /* Tamper-check results */
@@ -1005,3 +1003,13 @@ input.switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2
 /* Emergency beneficiaries list rows */
 .em-contact { display: flex; align-items: center; gap: 8px; justify-content: space-between; width: 100%; padding: 6px 10px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; }
 .em-contact .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 13px; }
+
+/* Touch-device fixes, kept LAST so they win on source order over the earlier, more specific rules they correct.
+   1) Every text-entry control stays at 16px so iOS Safari does not zoom in on focus and then fail to zoom back out;
+      the prose description field, the secret multi-line field, and the note body are all sized smaller earlier and
+      would otherwise reintroduce that zoom. 2) The note and search rows grow to a ~40px tap target with symmetric
+      padding (not flex, which would break their single-line ellipsis). Pointer devices keep the denser sizing. */
+@media (hover: none) {
+	.field textarea, .field textarea.prose, textarea.sf-input, #noteBody { font-size: 16px; }
+	.note-item, .search-hit { min-height: 40px; padding-top: 11px; padding-bottom: 11px; }
+}

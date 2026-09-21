@@ -515,7 +515,7 @@ Copying a very large file into a mounted vault has one thing to watch. The buffe
 
 Separately, some versions of the macOS FUSE-T driver have a bug that makes a large copy fail with this same -36 error no matter how much space is free. On the worst-affected setups it can fail intermittently for *any* copy method, because the flaw is in how the driver moves the data — a driver problem, not a Vaultonaut one. Two things help:
 
-- When you mount a vault on macOS there is a **Use the SMB backend** option (under Advanced in the mount window). It mounts the drive through a different macOS transport that sidesteps the buggy path, it is remembered per vault, and it is the best fix to try if large copies keep failing.
+- When you mount a vault on macOS there is a **Use the SMB backend** option (under Advanced in the mount window). It mounts the drive through a different macOS transport that sidesteps the buggy path. This choice is remembered per vault, and it is the best fix to try if large copies keep failing.
 - The **Add files** button on a mounted vault streams files straight in and shows progress; from the Terminal, `ditto <source> <vault>` or `cp -X <source> <vault>` does the same.
 
 You can mount several vaults at once; each gets its own drive, its own settings, and its own isolated in-memory buffer, and each is tracked and locked independently.
