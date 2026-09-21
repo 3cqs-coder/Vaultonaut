@@ -10,9 +10,18 @@
 
 const net = require('net');
 
-const port = parseInt(process.env.HEALTHCHECK_PORT || '', 10);
+const raw = process.env.HEALTHCHECK_PORT;
+// No port configured means this container role has nothing to probe — for example a relay-joined node that only makes
+// outbound connections, or a direct `docker run` of an image where the operator did not set HEALTHCHECK_PORT. Report
+// HEALTHY rather than failing, so such a container is not marked unhealthy and restart-looped by a health-aware
+// orchestrator. A port that IS set but invalid is a real misconfiguration and stays a failure.
+if (raw == null || String(raw).trim() === '') {
+	console.log('[healthcheck] no HEALTHCHECK_PORT set — nothing to probe for this role; reporting healthy.');
+	process.exit(0);
+}
+const port = parseInt(raw, 10);
 if (!Number.isInteger(port) || port < 1 || port > 65535) {
-	console.error('[healthcheck] HEALTHCHECK_PORT is not set to a valid port; cannot probe.');
+	console.error('[healthcheck] HEALTHCHECK_PORT="' + raw + '" is not a valid port; cannot probe.');
 	process.exit(1);
 }
 const host = process.env.HEALTHCHECK_HOST || '127.0.0.1';

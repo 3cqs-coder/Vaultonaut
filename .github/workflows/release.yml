@@ -208,7 +208,7 @@ jobs:
         with:
           path: installers
 
-      - name: Draft or refresh the release with the installers attached
+      - name: Publish or refresh the release with the installers attached
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.event.inputs.release_tag != '' && github.event.inputs.release_tag || github.ref_name }}
@@ -216,15 +216,19 @@ jobs:
           # Collect into an array so a path with a space is still passed as one argument (this file is reused
           # across projects, and another product's name could contain spaces).
           mapfile -t FILES < <(find installers -type f)
-          # Idempotent: if a release already exists at this tag, REPLACE its installers; otherwise create one draft.
-          # Do NOT use `gh release create ... || upload`: for a DRAFT, create succeeds even when a draft already exists
-          # at the tag (GitHub lets multiple drafts share a tag), so that pattern piles up duplicate drafts on every
-          # re-run instead of replacing. Checking for an existing release first keeps it to exactly one and never
-          # un-publishes an already-published release (it just clobbers its assets).
+          # A prerelease tag (a hyphen, e.g. 1.1.0-beta) must not be marked the "Latest" release. The Docker workflow
+          # already excludes prereleases from its moving tags; this keeps the two channels consistent.
+          PRE_ARGS=()
+          case "$TAG" in *-*) PRE_ARGS=(--prerelease --latest=false);; esac
+          # Idempotent: if a release already exists at this tag, REPLACE its installers and ensure it is published;
+          # otherwise create it already PUBLISHED (never a draft). Do NOT use `gh release create ... || upload`: for a
+          # draft, create succeeds even when one already exists at the tag (GitHub lets multiple drafts share a tag),
+          # so that pattern piles up duplicate drafts on every re-run. Checking first keeps it to exactly one release
+          # and never un-publishes an already-published one (it just clobbers its assets).
           if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber "${FILES[@]}"
             # If it was still a draft from an earlier run, publish it now so downloads go live.
-            gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --draft=false
+            gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --draft=false "${PRE_ARGS[@]}"
           else
-            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --title "$TAG" --generate-notes "${FILES[@]}"
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --title "$TAG" --generate-notes "${PRE_ARGS[@]}" "${FILES[@]}"
           fi

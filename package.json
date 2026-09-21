@@ -9,6 +9,7 @@
     "verify.js",
     "release-manifest.json",
     "release-manifest.sig",
+    "release-manifest.sig.pq",
     "lib/",
     "!lib/test",
     "!lib/scripts",
