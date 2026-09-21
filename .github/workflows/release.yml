@@ -83,7 +83,7 @@ jobs:
           node-version: 24.11.1
       - name: Install app dependencies
         shell: bash
-        run: npm install --no-audit --no-fund
+        run: npm install --ignore-scripts --omit=optional --no-audit --no-fund   # --ignore-scripts: no dependency runs an install hook on the machine that builds the signed artifacts (matches the Docker build); --omit=optional: never fetch the optional native canvas peer, keeping the tree pure-JS
       # Fetch the checksum-verified encryption engine so the engine-dependent tests run instead of self-skipping. It
       # is a userspace binary download — no admin, kernel extension, or mount driver needed. Retry a few times so a
       # transient network blip does not fail the job, and fail the step (not silently pass) if it never becomes ready.
@@ -139,12 +139,12 @@ jobs:
 
       - name: Install app dependencies
         shell: bash
-        run: npm install --no-audit --no-fund
+        run: npm install --ignore-scripts --omit=optional --no-audit --no-fund   # --ignore-scripts: no dependency runs an install hook on the machine that builds the signed artifacts (matches the Docker build); --omit=optional: never fetch the optional native canvas peer, keeping the tree pure-JS
 
       - name: Install packaging dependencies
         shell: bash
         working-directory: src-tauri
-        run: npm install --no-audit --no-fund
+        run: npm install --ignore-scripts --omit=optional --no-audit --no-fund   # --ignore-scripts: no dependency runs an install hook on the machine that builds the signed artifacts (matches the Docker build); --omit=optional: never fetch the optional native canvas peer, keeping the tree pure-JS
 
       - name: Build (stage, bundle, leak-scan)
         shell: bash
