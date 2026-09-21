@@ -59,23 +59,22 @@ permissions:
 
 jobs:
   # Run the unit suite before building or releasing anything. A tagged release must never draft from a broken app,
-  # and this runs the FULL drift/regression suite that the fast smoke-only pre-commit hook skips. Linux and macOS
-  # GATE a release: each must pass, so a failure on either blocks the build and the release. Windows runs the same
-  # suite for visibility but is NON-BLOCKING (continue-on-error) until its cross-platform paths are proven stable —
-  # the relay per-IP-cap hardening test is currently flaky on the Windows runner (a loopback remoteAddress can be
-  # momentarily empty), and gating on a known flake would block real releases for no safety gain. The step below
-  # fetches the encryption engine first, so the ~90 engine-dependent tests actually run instead of self-skipping;
-  # the mount-cycle tests still self-skip without a mount driver (FUSE-T / WinFsp), which the hosted runners do not
-  # provide, but everything else is exercised on every platform. fail-fast is off so one platform's failure never
-  # cancels the others (you see all three results), and the per-test timeout in the runner keeps a hang on any
-  # platform from stalling the whole job.
+  # and this runs the FULL drift/regression suite that the fast smoke-only pre-commit hook skips. All three platforms
+  # GATE a release: each must pass, so a failure on any of them blocks the build and the release. The one previously
+  # known Windows flake — the relay per-IP throttle/cap assertions, whose loopback remoteAddress can be momentarily
+  # empty on the Windows runner and split the per-IP grouping — is now skipped on Windows at the assertion level
+  # (the code paths still run there; the outcome is fully checked on Linux/macOS), so Windows can gate without flaking.
+  # The step below fetches the encryption engine first, so the ~90 engine-dependent tests actually run instead of
+  # self-skipping; the mount-cycle tests still self-skip without a mount driver (FUSE-T / WinFsp), which the hosted
+  # runners do not provide, but everything else is exercised on every platform. fail-fast is off so one platform's
+  # failure never cancels the others (you see all three results), and the per-test timeout in the runner keeps a hang
+  # on any platform from stalling the whole job.
   test:
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-22.04, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.os == 'windows-latest' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

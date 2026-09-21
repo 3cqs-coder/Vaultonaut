@@ -1,0 +1,35 @@
+{
+  "format": 5,
+  "tool": "vaultonaut",
+  "createdAt": "2026-09-21T16:07:36.411Z",
+  "engine": "rclone",
+  "scheme": "rclone-crypt-v1",
+  "integrity": {
+    "scheme": "vdisk-integrity-1",
+    "pubkey": "89caa5f4db36501bd635ab7913009ae1cb97c647b7600f2a17a863b1a1723112"
+  },
+  "crypt": {
+    "filename_encryption": "standard",
+    "directory_name_encryption": true,
+    "salt": "9oSA2epN71diXWiLBBFC8GK0YN5aWjYKWcKo9IpyqAo0Iqbg5hDxWKfwRGWVkAPE7w9aHaGRvx1v3xsb",
+    "keySlots": [
+      {
+        "id": "9c41d13fdb9e",
+        "kind": "password",
+        "label": "Primary",
+        "createdAt": "2026-09-21T16:07:36.262Z",
+        "kdf": {
+          "algo": "argon2id",
+          "v": 1,
+          "memKiB": 65536,
+          "iterations": 3,
+          "parallelism": 4,
+          "hashLen": 32,
+          "level": "standard",
+          "salt": "thPWFbuExcrlYIiwAn/6/g=="
+        },
+        "wrappedKey": "+03LWp7MH1NquT0SM2bb4mONq2ekZjYO2XkhTdfX+KmhOLApAfIUNWGswFTSr6f/HDWFBV1zX7gD2qcPG9yx2m+z6uqd6BzVOq+t+ZhdqlieKlZA85OisWRdXq5UeZQTjBfW"
+      }
+    ]
+  }
+}
