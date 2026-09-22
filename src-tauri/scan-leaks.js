@@ -90,20 +90,32 @@ function scanFile(file, nds) {
 }
 
 function main() {
-	if (!fs.existsSync(targetDir)) { console.error('scan-leaks: nothing to scan at ' + targetDir + ' (build first).'); process.exit(1); }
+	// Scan the produced installers/bundle AND the raw compiled binary. The binary lives OUTSIDE bundle/ (at
+	// target/release/<name>[.exe]); on macOS the .app under bundle/ carries an uncompressed copy, but on Windows and
+	// Linux the installers under bundle/ are COMPRESSED, so the raw binary is the reliable place to catch a leaked
+	// build path on those platforms. The rest of target/release (its *.rlib and dep-info intermediates) is deliberately
+	// NOT scanned: it embeds the build path by design and is never shipped, so scanning it would false-positive.
+	const releaseDir = path.join(__dirname, 'target', 'release');
+	const roots = [targetDir];
+	for (const bin of ['vaultonaut', 'vaultonaut.exe']) { const p = path.join(releaseDir, bin); try { if (fs.statSync(p).isFile() && !roots.includes(p)) roots.push(p); } catch (_) {} }
+	const present = roots.filter((r) => fs.existsSync(r));
+	if (!present.length) { console.error('scan-leaks: nothing to scan at ' + targetDir + ' (build first).'); process.exit(1); }
 	const nds = needles();
 	if (!nds.length) { console.log('Leak scan: no personal identifiers to scan for on this build account.'); return; }
 	const hits = [];
-	for (const f of walk(targetDir)) { const hit = scanFile(f, nds); if (hit) hits.push({ f, hit }); }
+	for (const root of present) {
+		const files = fs.statSync(root).isDirectory() ? walk(root) : [root];
+		for (const f of files) { const hit = scanFile(f, nds); if (hit) hits.push({ f, hit }); }
+	}
 	if (hits.length) {
 		console.error('\nLEAK SCAN FAILED — build-machine identity found in the produced artifacts:');
-		for (const h of hits.slice(0, 25)) console.error('  ' + path.relative(targetDir, h.f) + '  contains  "' + h.hit + '"');
+		for (const h of hits.slice(0, 25)) console.error('  ' + path.relative(releaseDir, h.f) + '  contains  "' + h.hit + '"');
 		console.error('\nRefusing to ship this build. A build path was probably not neutralized (build at a neutral path with a');
 		console.error('neutral CARGO_HOME), or an installer field derived from the build user. (A hit is a false positive only if');
 		console.error('your username or hostname is also an ordinary word in a bundled file — rename it or adjust the scan if so.)\n');
 		process.exit(1);
 	}
-	console.log('Leak scan: no build-machine username, hostname, or home path in ' + path.relative(process.cwd(), targetDir) + '.' + (skipped ? ' (' + skipped + ' unreadable file(s) skipped)' : ''));
+	console.log('Leak scan: no build-machine username, hostname, or home path in the produced binary and bundle.' + (skipped ? ' (' + skipped + ' unreadable file(s) skipped)' : ''));
 }
 
 module.exports = { needles, currentIdentity, scanFile, walk, GENERIC_ACCOUNTS };

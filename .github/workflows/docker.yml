@@ -46,6 +46,19 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v4
 
+      # Integrity gate. release.yml and docker.yml fire independently on the same tag, so — unlike the desktop
+      # workflow, whose build is gated behind the full test job — the image could otherwise publish from a tree whose
+      # committed release manifest is STALE (a version bumped without a re-sign), producing a SIGNED image whose every
+      # container then refuses to start (the boot self-check fails closed). These two guards use only Node built-ins
+      # (no npm install needed), so run them right after checkout to block a broken or mismatched manifest before
+      # anything is built, pushed, signed, or attested.
+      - name: Set up Node for the integrity gate
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.11.1
+      - name: Verify the signed release manifest is current
+        run: node lib/test/releasesigned.js && node lib/test/dockerdrift.js
+
       # A publish happens for a release tag, or for a manual run that checked the publish box — never for a plain
       # branch push, and not for a manual build-only test run.
       - name: Decide whether to publish
