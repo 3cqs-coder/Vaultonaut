@@ -873,7 +873,8 @@ textarea.sf-input { width: 100%; flex-basis: 100%; resize: vertical; font: 13px/
 /* A read-only search hit: same chip as a note but with no pointer/hover affordance, since it does not act on click. */
 .search-hit { text-align: left; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; padding: 6px 10px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); }
 .search-hit-open { cursor: pointer; }
-.search-hit-open:hover, .search-hit-open:focus-visible { border-color: var(--accent); background: var(--panel); }
+@media (hover: hover) { .search-hit-open:hover { border-color: var(--accent); background: var(--hover); } }
+.search-hit-open:focus-visible { border-color: var(--accent); background: var(--hover); outline: none; }
 #noteBody { width: 100%; resize: vertical; font-family: var(--mono); font-size: 13px; }
 .key-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; }
 .key-info { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
