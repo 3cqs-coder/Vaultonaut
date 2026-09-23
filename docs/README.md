@@ -84,6 +84,7 @@ Most people juggle a separate tool for each of these jobs. Vaultonaut does them 
 
 - **One encrypted drive for everything.** Unlock a vault and it mounts like a normal disk. Every file is encrypted on the way to disk and decrypted on the way back, and nothing is written in the clear.
 - **A password manager and secure notes, built in.** Keep logins, payment cards, crypto recovery phrases, API keys, Wi-Fi passwords, and plain notes in the same vault. Logins show a rolling two-factor code, and an on-device check flags weak, reused, or breached passwords.
+- **Search inside your own vault.** An encrypted vault is invisible to your computer's own search, so Vaultonaut adds its own. Find files by name, or search the words inside your documents — and, when you turn it on, the text in scans and photos, recognized right on your computer. The index lives inside the vault and never leaves it.
 - **Unlock your way.** A password, a recovery key, a keyfile, Touch ID, Windows Hello, or a hardware security key — any of them opens the vault.
 - **Share without a middleman.** Grant read-only access, seal a share to one specific person, or send a single item by link. Only encrypted data ever leaves your computer, so sharing stays zero-knowledge.
 - **Team vaults.** Give each member their own sealed key slot and role, and rotate keys with one command to truly re-encrypt and revoke access.
@@ -425,7 +426,7 @@ vdisk peer-mode [auto|relay|direct]  How a peer node is reached: auto (direct wh
 vdisk status                     Show mounted vaults
 vdisk list     <name|path>       List the files in a vault without mounting it
 vdisk search   <name|path> <text>  Find files by name (open vault: no password; closed: prompts)
-vdisk search   <name|path> <text> --in   Search *inside* files by their content (needs a content index; vault mounted)
+vdisk search   <name|path> <text> --in   Search *inside* files by their content (vault mounted; refreshes the index first, or add --no-refresh to skip)
 vdisk reindex  <name|path>       Build or refresh the content-search index (vault mounted; stored in the vault)
 vdisk verify   <name|path>       Check a vault's manifest, password, and integrity
 vdisk snapshot <name|path>       Record a signed snapshot of the vault's file set
@@ -700,7 +701,13 @@ It works from a small search index that lives inside the vault. The vault must b
 
 After the first build, the index keeps itself current, so files you add stay findable without a separate step. It refreshes when you open the vault, and again the moment you run an inside-files search, and — where the operating system reports file changes — quietly in the background while the vault is open. Each refresh is incremental and runs off to the side, so it never slows down opening a vault or typing a search. You can still rebuild it yourself at any time with **Update index** in the Search window, or `vdisk reindex <vault>` on the command line; the command-line search refreshes first on its own, and `--no-refresh` skips that when you want to search the index exactly as it stands.
 
-**Reading text in scans and images.** Some documents are pictures of text — a scanned page, a photo of a receipt, a screenshot. They carry no text to search. Turn on **Read text in scans and images** in Settings and Vaultonaut recognizes the words in them, so they become searchable like any other file. It is off by default, because it is slower than reading a normal document and most vaults do not need it. Everything happens on your own computer: the one-time language file is downloaded and checksum-verified the moment you turn the feature on, and the recognition itself never uses the network. Once a vault has a content index, new scans and images are then read automatically each time you open it, so there is no extra step to remember. Recognition is skipped on documents that already contain real text, so ordinary PDFs stay fast.
+You can open a file straight from the results. Click a result, or select it with the keyboard and press Enter, and it opens in the built-in viewer described under [Viewing files in the app](#viewing-files-in-the-app). The file is decrypted in the page and shown there, never handed to another app, so it leaves no preview cache. If the vault is already open, this needs no password; if it is locked, you are asked for it once.
+
+**Reading text in scans and images.** Some files are pictures of text — a scanned page, a photo of a receipt, a screenshot. They carry no text to search on their own. Turn on **Read text in scans and images** in Settings, and Vaultonaut recognizes the words in them so they become searchable like any other file. This covers scanned PDFs and the common image types: PNG, JPEG, TIFF, BMP, and WEBP. It reads English. Photos saved in the HEIC format that many phones use, and AVIF images, are not read yet.
+
+It is off by default, because it is slower than reading a normal document and most vaults do not need it. Everything happens on your own computer. The one-time language file is downloaded and checksum-verified the moment you turn the feature on, and the recognition itself never uses the network. Once a vault has a content index, new scans and images are read automatically — each time you open the vault, and in the background while it is open — so there is no extra step to remember. Recognition is skipped on files that already contain real text, so ordinary PDFs stay fast.
+
+Recognition reads clear, straight text well, such as a scanned letter, a receipt, or a screenshot of a message. Very small, stylized, or low-contrast text may not be read — for example a decorative title laid over a photo. If a file you expect seems to be missing from the results, search for a plain word from the body of the page rather than a fancy heading.
 
 ### Read-only access and sharing
 
