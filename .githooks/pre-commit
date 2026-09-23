@@ -33,7 +33,8 @@ if ! npm run --silent sign >/dev/null 2>&1; then
 	exit 1
 fi
 
-# Stage the refreshed manifest and signature so they travel with this commit. SHA256SUMS is a release artifact and is
-# git-ignored, so it is intentionally not added here.
-git add release-manifest.json release-manifest.sig
+# Stage the refreshed manifest and BOTH signatures (classical and post-quantum) so they travel with this commit.
+# Omitting the post-quantum .sig.pq would commit a stale signature that fails verification, since re-signing rewrites
+# all three. SHA256SUMS is a release artifact and is git-ignored, so it is intentionally not added here.
+git add release-manifest.json release-manifest.sig release-manifest.sig.pq
 exit 0
