@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.1.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-23T21:19:16.467Z",
+  "generatedAt": "2026-09-23T22:44:35.126Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -437,8 +437,8 @@
     },
     {
       "path": "lib/webserver/mobileRoutes.js",
-      "sha256": "225e59cb7aa0c06ebfff357cbfdbf81d362fbe1d27034bef8a112318a738e900",
-      "size": 13632
+      "sha256": "c72aa8844c604ed62acd9d7bd977f13e4f5414a643c74ac5bdb5c9981860ee92",
+      "size": 14071
     },
     {
       "path": "lib/webserver/public/css/app.css",
@@ -542,13 +542,13 @@
     },
     {
       "path": "lib/webserver/public/mobile/app.css",
-      "sha256": "de928263a1d3fb02527140510e56065cc2738ae4ed09fa6b00a00ec0ecb295fa",
-      "size": 9900
+      "sha256": "757857e64abcb3375028ad69f712aa3475c4500b638febbbfef2d8827488f642",
+      "size": 10497
     },
     {
       "path": "lib/webserver/public/mobile/app.js",
-      "sha256": "b773471fd421146c72b6925541e56fddd97a60ffa1fc6b1f9a15afa55bc36a83",
-      "size": 50094
+      "sha256": "90eb8595dbe253af4e2b85f8484b05c252b3b7dc54b6458703e6e91431279b91",
+      "size": 54823
     },
     {
       "path": "lib/webserver/public/mobile/apple-touch-icon.png",
@@ -592,8 +592,8 @@
     },
     {
       "path": "lib/webserver/public/mobile/vendor/LICENSES.md",
-      "sha256": "1cfcefcae62a8c938c5370afbb7a8b7c52df23920ec6da229e724819a9c5679f",
-      "size": 2229
+      "sha256": "b7edc2e14c43e8f29ab218366b545e4f040d14cf54e04aad14eb5e0bf23b16cc",
+      "size": 3202
     },
     {
       "path": "lib/webserver/public/mobile/vendor/aes-js.js",
@@ -604,6 +604,16 @@
       "path": "lib/webserver/public/mobile/vendor/nacl.min.js",
       "sha256": "3ec535c004aeeb225785d8e93fb33bf99f52e399bd7dfc01969b5629baea5131",
       "size": 32110
+    },
+    {
+      "path": "lib/webserver/public/mobile/vendor/pdfjs/pdf.min.mjs",
+      "sha256": "44ec6f011027ee77791386b66c14876a5fc29e20bf0433c07c6726fff7212b72",
+      "size": 398237
+    },
+    {
+      "path": "lib/webserver/public/mobile/vendor/pdfjs/pdf.worker.min.mjs",
+      "sha256": "bd88805178a26c729db8c0107a5b630cb900ec070f4d8c7529a3e45530afd41d",
+      "size": 1417586
     },
     {
       "path": "lib/webserver/public/mobile/vendor/scrypt.js",
