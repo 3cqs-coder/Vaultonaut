@@ -43,14 +43,17 @@
     "test:all": "node lib/test/_runall.js"
   },
   "dependencies": {
+    "@hyzyla/pdfium": "^2.1.13",
     "@noble/curves": "^2.4.0",
     "archiver": "^8.0.0",
     "ejs": "^6.0.1",
     "express": "^5.2.1",
     "hash-wasm": "^4.12.0",
+    "jimp": "^1.6.1",
     "mammoth": "^1.12.3",
     "minisearch": "^7.2.0",
     "read-excel-file": "^9.3.10",
+    "tesseract.js": "^7.0.0",
     "unpdf": "^1.8.1",
     "unzipper": "^0.12.5"
   },
