@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.1.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-23T14:47:01.305Z",
+  "generatedAt": "2026-09-23T15:35:27.095Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -162,8 +162,8 @@
     },
     {
       "path": "lib/Mobile.js",
-      "sha256": "fc0168cc50ca86b1ac2e79dff3c2f34a0d7862f35582fd8d71f610918c551f11",
-      "size": 12162
+      "sha256": "a692056922e3af5d2fae3862acd9cbda6cb884e4d07d42cb80ae897871f0bdfd",
+      "size": 12209
     },
     {
       "path": "lib/Net.js",
@@ -342,8 +342,8 @@
     },
     {
       "path": "lib/Vault.js",
-      "sha256": "6ade30441819951d3fe100e953776bb570b9a88774990690001e05ebb01d933c",
-      "size": 895876
+      "sha256": "21b8dd5a0a2037314243369360c8d32d2c9ba98c7203c30d236d399bf790b755",
+      "size": 897904
     },
     {
       "path": "lib/Watchdog.js",
@@ -427,8 +427,8 @@
     },
     {
       "path": "lib/webserver/index.js",
-      "sha256": "d8c11f0739dac4ff5e792159224336126d158c3aa08138b014dea4540b02edc8",
-      "size": 173273
+      "sha256": "c760f2df9111294b7372bd33bb903b04a34342c30e2ad5e31cdcbc6742b885c6",
+      "size": 173047
     },
     {
       "path": "lib/webserver/kitView.js",
@@ -512,8 +512,8 @@
     },
     {
       "path": "lib/webserver/public/js/app.js",
-      "sha256": "03bc475a4b278bcf017e76fa52ea99f8e0cf5f7443b8ddf7c1cb2d818c1a669e",
-      "size": 357282
+      "sha256": "a78f5d3f9b19c5bba6d88b6aabd295d409924d1b9d953c8e3c96d617211da7f3",
+      "size": 359271
     },
     {
       "path": "lib/webserver/public/js/login.js",
@@ -547,8 +547,8 @@
     },
     {
       "path": "lib/webserver/public/mobile/app.js",
-      "sha256": "d480e14ee6e95f80c7cf6d9405440c1051ee6101b4801add0fb4386e59cff565",
-      "size": 45935
+      "sha256": "a7a96e87a15da5c0682e76c782447d784aad836a61c38eee9ff6d025db7c0fdd",
+      "size": 48549
     },
     {
       "path": "lib/webserver/public/mobile/apple-touch-icon.png",
