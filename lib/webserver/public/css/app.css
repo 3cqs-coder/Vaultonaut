@@ -299,12 +299,43 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
    run (onboarding) and collapse once the user has vaults, keeping the list the focus. The <summary> reuses the
    .panel-head look; drop the native disclosure marker (a right-side chevron replaces it) and make the whole bar a
    pointer target. When collapsed the summary carries no trailing margin, so the closed panel is a tidy single row. */
-.create-summary { cursor: pointer; list-style: none; user-select: none; gap: var(--sp-6); }
-.create-summary::-webkit-details-marker { display: none; }
-.create-summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: var(--radius-sm); }
+.create-summary, .dashboard-summary { cursor: pointer; list-style: none; user-select: none; gap: var(--sp-6); }
+.create-summary::-webkit-details-marker, .dashboard-summary::-webkit-details-marker { display: none; }
+.create-summary:focus-visible, .dashboard-summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: var(--radius-sm); }
 .create-chevron { flex: 0 0 auto; color: var(--muted); transition: transform var(--dur) var(--ease); }
-.create-panel[open] .create-chevron { transform: rotate(180deg); }
-.create-panel:not([open]) .create-summary { margin-bottom: 0; }
+.create-panel[open] .create-chevron, .dashboard-panel[open] .create-chevron { transform: rotate(180deg); }
+.create-panel:not([open]) .create-summary, .dashboard-panel:not([open]) .dashboard-summary { margin-bottom: 0; }
+
+/* ── Overview dashboard ──────────────────────────────────────────────────────
+   An at-a-glance status strip: a responsive grid of tiles, each carrying a severity accent so the eye lands on
+   anything wrong first. Colors come only from theme tokens, so all four themes (auto/light/dark/sepia) resolve
+   automatically. Actionable tiles are real buttons that lift on hover and take you to where that thing is managed. */
+.dashboard-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--sp-4); }
+.dtile {
+	display: flex; flex-direction: column; gap: 2px; text-align: left; width: 100%;
+	padding: var(--sp-5) var(--sp-5) var(--sp-5) calc(var(--sp-5) + 4px);
+	background: var(--panel-2); border: 1px solid var(--border); border-radius: var(--radius);
+	position: relative; overflow: hidden; font: inherit; color: var(--text);
+}
+/* The severity rail down the left edge — the single strongest visual signal of a tile's state. */
+.dtile::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--muted); }
+.dtile-good::before { background: var(--good); }
+.dtile-warn::before { background: var(--warn); }
+.dtile-error::before { background: var(--danger); }
+.dtile-info::before { background: var(--accent); }
+.dtile-neutral::before { background: var(--border); }
+/* A soft wash for the states that want the eye, so trouble is obvious without shouting. */
+.dtile-error { background: var(--danger-soft); border-color: var(--danger); }
+.dtile-warn { background: var(--warn-bg); }
+.dtile-title { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.dtile-value { font-size: 19px; font-weight: 650; letter-spacing: -.01em; line-height: 1.2; margin-top: 2px; }
+.dtile-detail { font-size: 12.5px; color: var(--faint); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+/* Actionable tiles read as buttons: a hover lift, an accent edge, a focus ring, and a corner arrow affordance. */
+.dtile-action { cursor: pointer; transition: transform var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease); }
+.dtile-action::after { content: "›"; position: absolute; top: var(--sp-4); right: var(--sp-5); color: var(--faint); font-size: 18px; line-height: 1; opacity: .5; transition: opacity var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease); }
+@media (hover: hover) { .dtile-action:hover { border-color: var(--accent); box-shadow: var(--shadow-lift); transform: translateY(-2px); } .dtile-action:hover::after { opacity: 1; transform: translateX(2px); } }
+.dtile-action:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .dtile-action { transition: none; } .dtile-action:hover { transform: none; } }
 @media (hover: hover) { .create-summary:hover .create-chevron { color: var(--text); } }
 .muted { color: var(--muted); }
 .fine { color: var(--muted); font-size: 13px; } /* fine print (e.g. the notes password-health explainer); mirrors the mobile stylesheet so the two never drift */
