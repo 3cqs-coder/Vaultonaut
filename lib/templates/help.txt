@@ -110,6 +110,7 @@ All commands:
   vdisk emergency <keypair|enroll|add-contact|remove-contact|contacts|arm|check-in|status|disarm|backstop|trustee-open|recover>   Dead-man's switch or scheduled unlock: release read access to beneficiaries on inactivity or a date (route with 'arm <vault> --contact <id> [--date <when>]')
   vdisk emergency-open <sealed-file> --key <private-key> [--signature <hex>]   Contact side: open released access with your private key (--signature opens offline)
   vdisk doctor                     Check the engine and the mount driver
+  vdisk healthcheck                Run the integrity self-check; exit 0 ok, 1 warnings, 2 errors (add --json)
   vdisk install-driver             Download and launch the mount driver installer
   vdisk open                       Open the app in your browser (starts the background service if needed)
   vdisk ui [--port 7420]           Launch the local web interface (if it is already running, says so instead of failing; add --bind <address> to expose it to the network — a password is then required; restrict callers with --allow-ip / --deny-ip; add --diagnostic-log to keep a daily log file for this run, off by default; on Windows add --supervised to auto-restart it if it ever crashes)

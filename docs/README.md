@@ -474,6 +474,7 @@ vdisk shards   <shard-file…>     Check a set of shards (how many survive, stil
 vdisk repair-shards <shard-file…>   Re-create missing/corrupted shards from the survivors
 vdisk repair-schedule <list|add|remove>   Check a shard folder set on a schedule and auto-repair
 vdisk doctor                     Check the engine and the mount driver
+vdisk healthcheck                Run the integrity self-check; exit 0 (ok), 1 (warnings), 2 (errors); add --json for a machine-readable report
 vdisk install-driver             Download and launch the mount driver installer
 vdisk open                       Open the app in your browser (starts the background service if needed)
 vdisk shortcut <create|remove|status>   Add a clickable desktop/menu launcher that opens the app
@@ -630,6 +631,22 @@ The web interface runs a small HTTP service on your own machine. Its stable, ver
 curl -sS http://127.0.0.1:7420/api/version -H 'X-Vdisk: 1'
 curl -sS http://127.0.0.1:7420/api/v1/notes-list -H 'X-Vdisk: 1' \
   -H 'Content-Type: application/json' -d '{"path":"Personal"}'
+```
+
+### Monitoring (metrics and health checks)
+
+Vaultonaut speaks the standard monitoring formats, so your existing tools can watch it without anything new to run.
+
+- `GET /metrics` returns the common text-based metrics exposition format that monitoring collectors scrape over HTTP. It reports only counts, ratios, and status — how many vaults exist, how many are unlocked, free space on the tightest volume, the self-check status, memory use, configured peers and destinations, scheduled and failed backups. It never includes a vault name, path, size, or contents, so a monitoring system learns the health of the install and nothing about what is in it.
+- `GET /health` returns a small JSON object — `{ "status": "ok" | "warn" | "error", "checks", "warnings", "errors", "findings": [ ... ] }` — and uses the HTTP status code so a plain check treats a real problem as unhealthy: `200` for ok or a warning, `503` for an error. It suits an uptime monitor, a container health check, or an orchestration liveness probe. Findings are listed by check name and severity only.
+- On the command line, `vdisk healthcheck` runs the same self-check and exits `0` (ok), `1` (warnings), or `2` (errors), so a monitoring plugin, a cron job, or a shell script can gate on the exit code. Add `--json` for a machine-readable report.
+
+Both endpoints are open to callers on this computer with no token, exactly like the rest of the loopback interface. When you deliberately bind the interface to the network, a remote scrape must present an API token (`vdisk api-token create`) as a bearer token — `Authorization: Bearer <token>` — the same tokens the rest of the API accepts.
+
+```
+curl -sS http://127.0.0.1:7420/metrics
+curl -sS http://127.0.0.1:7420/health
+vdisk healthcheck --json
 ```
 
 ## Security
