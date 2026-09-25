@@ -48,7 +48,8 @@ All commands:
   vdisk decoy <status|set|list|remove>   Advanced: pair a vault with a decoy opened by the decoy's password
   vdisk travel <on|off|status>     Before travel: hide all vaults from this app and lock them (restore with a travel password)
   vdisk rmkey    <path> <key-id>   Remove a key (unlock with a different one)
-  vdisk mount    <path>            Mount a vault as a drive (prompts for the password)
+  vdisk mount    <path>            Mount a vault as a drive (prompts for the password; --yes approves an unlock that needs approval)
+  vdisk consent-on-use <vault> [on|off]   Require approval on each unlock and record it in the vault's tamper-evident ledger
   vdisk unmount  <path|mount>      Unmount a vault (add --force if it is stuck; --recover as a last resort for a wedged drive, to avoid a restart)
   vdisk repair                     Release stale (crashed) mounts and clean up leftovers
   vdisk lock                       Lock (unmount) every mounted vault now

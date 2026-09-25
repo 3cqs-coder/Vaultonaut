@@ -417,7 +417,8 @@ vdisk emergency-access <name|path> --shares <n> --threshold <k>   Read-only inhe
 vdisk emergency <keypair|enroll|add-contact|remove-contact|contacts|arm|check-in|status|disarm|backstop|trustee-open|recover>   Dead-man's switch or scheduled unlock: release read access to beneficiaries on inactivity or a date (route with 'arm <vault> --contact <id> [--date <when>]')
 vdisk emergency-open <sealed-file> --key <private-key> [--signature <hex>]   Contact side: open released access with your private key (--signature opens offline)
 vdisk rmkey    <name|path> <id>  Remove a key (unlock with a different one)
-vdisk mount    <name|path>       Mount a vault as a drive
+vdisk mount    <name|path>       Mount a vault as a drive (--yes approves an unlock that requires approval)
+vdisk consent-on-use <name|path> [on|off]   Require approval on each unlock and record it in the tamper-evident ledger
 vdisk unmount  <name|path|mount> Unmount a vault (add --force if it is stuck, or --recover for a wedged drive that --force cannot release)
 vdisk repair                     Release stale (crashed) mounts and clean up leftovers
 vdisk lock                       Lock (unmount) every mounted vault right now
@@ -1214,6 +1215,10 @@ Every detection — and every seal, acceptance, and unseal — is written to a l
 The history is also tamper-evident in its own right. The entries form a hash chain — each one commits to the one before it, the way blocks link in a blockchain — so editing or reordering any past entry breaks the chain and is reported. The chain starts from a value tied to the vault's own identity. Both ends of it are anchored in a separate local file — the newest entry, and a count of how many old entries have aged out — so quietly deleting the most recent detections, or the oldest, no longer matches the anchor and is caught.
 
 Whenever a read-write session is active, it also stamps the current position with the vault's write-authority signature. An attacker cannot forge that checkpoint, even if they can rewrite every local file, so an attempt to roll the history back to before a detection is caught too. When you view the history, Vaultonaut first tells you whether that record is intact; if it was altered, it says so before listing the entries. This is detection, not a vault — a determined attacker with full access to your machine can still destroy a local file — but combined with the in-vault signed baseline, silently erasing the evidence of tampering is no longer easy.
+
+### Recording every unlock (approval on use)
+
+For a vault you want to watch closely, you can require your explicit approval each time it is unlocked, and have every unlock written into that same tamper-evident history. Turn on **Require approval on unlock** under **Manage** (or run `vdisk consent-on-use <vault> on`). From then on, unlocking asks you to approve first, and each approved unlock is recorded as a signed entry in the log, so the history becomes an authenticated record of every time the vault's key was actually used — not just of changes to its files. Because the entry is added by the unlock itself and signed with the vault's write authority, it cannot be forged or quietly removed, and it shows up in **Tamper check** and `vdisk tamper-log` alongside everything else. It is off by default and leaves ordinary vaults' histories uncluttered; turning it on for a sensitive vault gives you a trustworthy answer to "when was this last opened, and did I mean to?" On the command line, `--yes` approves an unlock without the prompt, for scripts. If the vault is paired with a decoy, opening the decoy is recorded only against the decoy's own history — the real vault's record is never touched, so the setting never gives a decoy away.
 
 ### Rollback protection
 
