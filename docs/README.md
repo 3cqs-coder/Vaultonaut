@@ -459,6 +459,7 @@ vdisk verify-backup <name|path>  Check a backup is complete and restorable (no p
 vdisk versions <name|path>       Browse prior versions of files kept by a backup or a mirror
 vdisk restore-version <name|path> <timestamp> <file>   Restore a file from a version, as a non-clobbering copy (add --from <backup|mirror-dest|mirror-local>)
 vdisk restore  <backup> <dest>   Restore a backed-up vault into a folder
+vdisk receive-vault <code>       Receive a vault from another machine by its serve connect code (encrypted only; --name <n>)
 vdisk mirror   <name|path> <dest> Set up a two-way mirror to a folder, sftp:<id>, or webdav:<id> and prime it
 vdisk sync     <name|path>       Sync the mirror now, both directions (the running service also does this after any unmount)
 vdisk unmirror <name|path>       Stop mirroring (the copy at the destination is left in place)
@@ -994,6 +995,8 @@ Several safeguards protect the copy you are relying on. A backup is refused when
 If a large deletion really was intentional, remove the old backup and back up fresh. The vault must be unmounted so it is copied in a settled state, and the destination is remembered for a one-click repeat.
 
 To bring a backup back, `vdisk restore <backup.vault> <folder>` copies it into place and registers it, ready to mount with its password. In the web interface, **Restore from a backup** (below the vault list) does the same in one step: pick the backed-up vault folder and where to restore it, and it is added to your list ready to open with its password. A backup on a drive you can reach is itself a working vault — you can also just add it with **Add an existing vault folder** and open it where it sits.
+
+**Moving a vault to another machine.** You can copy a whole vault to another computer over the network, with only its encrypted data ever leaving the source. On the source machine, serve the vault (`vdisk serve <vault>`, or the Serve window) and copy the connect code it prints. On the destination machine, run `vdisk receive-vault <code>` (add `--name` to choose the folder name). It copies the encrypted store across, verifies the copy is complete before trusting it, and adds the vault to that machine's list. You then open it with the *same password* — the key is derived from your password and never travels, so no key or secret is ever sent. If the copy is interrupted or the source turns out incomplete, nothing is added: a failed receive leaves no half-copied vault behind. Once the destination has the vault and you have confirmed it opens, you can remove the original from the source machine if you meant to move rather than clone it.
 
 **Is my backup still good?** A backup is only reassuring if it is actually complete, so you can check it at any time — no password needed. **Check backup** in the **Back up** window (or `vdisk verify-backup <vault>`) confirms the destination holds this same vault and that every encrypted file is present. It then tells you plainly whether the backup is complete and restorable, incomplete, a different vault, or unreachable. It works for a local folder or an off-site server.
 
