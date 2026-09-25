@@ -375,7 +375,7 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 .dev-main { flex: 1 1 auto; min-width: 0; }
 .dev-label { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dev-sub { font-size: 12.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.dev-note { font-size: 12px; color: var(--faint); margin-top: 2px; overflow-wrap: anywhere; }
+.dev-note { font-size: 12px; color: var(--muted); margin-top: 2px; overflow-wrap: anywhere; } /* --muted, not --faint: readable device text needs AA contrast */
 .dev-actions { display: flex; align-items: center; gap: var(--sp-3); flex: 0 0 auto; }
 .devices-subhead { margin: var(--sp-5) 0 var(--sp-3); font-size: 13px; color: var(--muted); }
 .devices-activity { display: flex; flex-direction: column; gap: var(--sp-1); }
@@ -386,7 +386,7 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 .dev-evt-warn .dev-evt-text::before { background: var(--warn); }
 .dev-evt-error .dev-evt-text::before { background: var(--danger); }
 .dev-evt-info .dev-evt-text::before { background: var(--accent); }
-.dev-evt-when { color: var(--faint); font-size: 12px; white-space: nowrap; flex: 0 0 auto; }
+.dev-evt-when { color: var(--muted); font-size: 12px; white-space: nowrap; flex: 0 0 auto; } /* --muted, not --faint: an event timestamp is readable content, so it needs AA contrast */
 @media (max-width: 560px) { .dev-row { flex-wrap: wrap; } .dev-actions { width: 100%; justify-content: flex-end; } }
 /* Fleet: add-a-node panel (collapsible, reuses the summary chevron). */
 .fleet-add { margin-top: var(--sp-5); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: var(--sp-3) var(--sp-4); }
@@ -414,7 +414,7 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 .dtile-warn { background: var(--warn-bg); }
 .dtile-title { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .dtile-value { font-size: 19px; font-weight: 650; letter-spacing: -.01em; line-height: 1.2; margin-top: 2px; }
-.dtile-detail { font-size: 12.5px; color: var(--faint); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.dtile-detail { font-size: 12.5px; color: var(--muted); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; } /* --muted, not --faint: the tile detail is real content (disk free, lag, counts) and must clear AA on the panel AND on the tinted warn/error tiles in every theme */
 /* Sparkline: a dependency-free inline SVG. preserveAspectRatio="none" stretches it to the tile, and non-scaling-stroke
    keeps the line crisp; colors follow the tile's severity via tokens. */
 .dspark { display: block; width: 100%; height: 26px; margin-top: 8px; }

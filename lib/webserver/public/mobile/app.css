@@ -80,7 +80,9 @@ button.ghost { background: transparent; color: var(--text); border: 1px solid va
 .tracetag { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); padding: 3px 10px; border: 1px solid var(--border); border-radius: 999px; margin-bottom: 10px; }
 .tracetag::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: 0 0 auto; }
 .tracetag.notrace { color: var(--good); }
-.tracetag.stored { color: #c98a1f; }
+/* A dark amber that clears WCAG AA on the light and sepia panels (>=4.5:1 for the 12px text); the dark theme uses a
+   lighter amber that clears AA on the dark panel. Fixed literals because the mobile palette has no amber token. */
+.tracetag.stored { color: #845400; }
 :root[data-theme="auto"] .tracetag.stored, :root[data-theme="dark"] .tracetag.stored { color: #e0a94a; }
 .crumbs { color: var(--muted); font-size: 14px; margin-bottom: 8px; word-break: break-word; }
 .crumbs a { color: var(--accent-ink); text-decoration: none; display: inline-flex; align-items: center; min-height: 40px; padding: 6px 0; } /* accent-ink (not bare --accent) so this normal-size link text clears WCAG AA 4.5:1 in light and sepia; min-height gives a reliable ~40px tap target on a phone */
