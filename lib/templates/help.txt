@@ -99,6 +99,7 @@ All commands:
   vdisk peers                      List saved peer nodes
   vdisk peer-test <id>             Check a peer is reachable and the login works
   vdisk peer-remove <id>           Remove a saved peer
+  vdisk tor-bridge [mode]          Show or set a Tor bridge for a network that blocks Tor (off | snowflake | obfs4 | meek | custom "<line>" ...)
   vdisk disperse <path> --to <dir1,dir2,...> --threshold <k>   Split a vault across folders/nodes; any k rebuild it
   vdisk reconstruct --shards <s1,s2,...> --to <folder>         Rebuild a dispersed vault from any k shards
   vdisk shards   <shard-file…>     Check a set of shards (how many survive, still recoverable?)
