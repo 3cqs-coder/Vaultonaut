@@ -89,6 +89,9 @@
 	--danger-fill: #c0362c;
 	--danger-soft: #fbe3e1;   /* soft danger tint; a plain-token fallback for a color-mix danger wash on engines without color-mix */
 	--star: #e0a400;   /* favorite-star fill; a token so a warm theme can darken it for contrast */
+	/* Vault color-tag palette: vivid, distinct accents for the per-vault trust/sensitivity tag. Defined once (they read
+	   on both light and dark card grounds) and referenced only through these tokens, never as raw values. */
+	--tag-red: #e5484d; --tag-amber: #f5a524; --tag-green: #30a46c; --tag-blue: #3b82f6; --tag-purple: #8b5cf6; --tag-slate: #64748b;
 	--shadow: 0 1px 3px rgba(16, 24, 40, .08), 0 1px 2px rgba(16, 24, 40, .06);
 	--shadow-soft: 0 1px 2px rgba(16, 24, 40, .06);
 	--shadow-lift: 0 2px 6px rgba(16, 24, 40, .07), 0 16px 36px -16px rgba(16, 24, 40, .22);
@@ -324,6 +327,38 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 /* On a narrow phone header the word is dropped to save room; the colored dot still carries the state, and the pill
    keeps its accessible name from aria-label. */
 @media (max-width: 560px) { .status-pill .status-text { display: none; } .status-pill { padding: 6px; } }
+
+/* ── Vault color tag (trust / sensitivity signal) ────────────────────────── */
+/* A tagged vault gets a colored rail down its card's left edge — the same at-a-glance device the dashboard tiles use. */
+.card[data-color] { position: relative; }
+.card[data-color]::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: var(--radius) 0 0 var(--radius); }
+.card[data-color="red"]::before { background: var(--tag-red); }
+.card[data-color="amber"]::before { background: var(--tag-amber); }
+.card[data-color="green"]::before { background: var(--tag-green); }
+.card[data-color="blue"]::before { background: var(--tag-blue); }
+.card[data-color="purple"]::before { background: var(--tag-purple); }
+.card[data-color="slate"]::before { background: var(--tag-slate); }
+.color-wrap { position: relative; display: inline-block; vertical-align: middle; }
+.color-btn { background: none; border: 0; cursor: pointer; padding: 2px 4px; line-height: 0; }
+.color-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; border: 1px solid var(--border); box-sizing: border-box; }
+.color-dot-none { background: transparent; }
+.color-dot-red { background: var(--tag-red); border-color: var(--tag-red); }
+.color-dot-amber { background: var(--tag-amber); border-color: var(--tag-amber); }
+.color-dot-green { background: var(--tag-green); border-color: var(--tag-green); }
+.color-dot-blue { background: var(--tag-blue); border-color: var(--tag-blue); }
+.color-dot-purple { background: var(--tag-purple); border-color: var(--tag-purple); }
+.color-dot-slate { background: var(--tag-slate); border-color: var(--tag-slate); }
+.color-pop { position: absolute; top: 100%; left: 0; margin-top: 4px; z-index: 6; display: flex; gap: 6px; padding: 8px; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-sm); box-shadow: var(--shadow-lift); }
+.color-sw { width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--border); cursor: pointer; padding: 0; box-sizing: border-box; }
+.color-sw-none { background: var(--panel-2); }
+.color-sw-red { background: var(--tag-red); }
+.color-sw-amber { background: var(--tag-amber); }
+.color-sw-green { background: var(--tag-green); }
+.color-sw-blue { background: var(--tag-blue); }
+.color-sw-purple { background: var(--tag-purple); }
+.color-sw-slate { background: var(--tag-slate); }
+.color-sw.on { outline: 2px solid var(--accent); outline-offset: 1px; }
+.color-sw:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 
 /* ── Devices & connections dialog ────────────────────────────────────────── */
 .devices-toolbar { display: flex; align-items: center; gap: var(--sp-4); margin: var(--sp-4) 0; }
