@@ -51,6 +51,10 @@
 					<button id="lockBtn" class="ghost" type="button" title="Forget this vault and erase any offline copy from this device">Lock</button>
 				</div>
 			</div>
+			<!-- Honest, state-aware trace indicator: "No-trace" when files are only ever decrypted in memory (the default),
+			     and "Encrypted copy on this device" once the user opts into Save offline. It reflects what THIS app writes
+			     to the device, never overclaiming about what the phone's own operating system might keep. -->
+			<div id="traceTag" class="tracetag" role="status" hidden></div>
 			<div id="crumbs" class="crumbs"></div>
 			<ul id="fileList" class="filelist"></ul>
 			<p id="browseEmpty" class="fine" hidden>This vault has no files.</p>

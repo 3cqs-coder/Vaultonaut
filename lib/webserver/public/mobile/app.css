@@ -75,6 +75,13 @@ button.ghost { background: transparent; color: var(--text); border: 1px solid va
 .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .vaultname { font-weight: 700; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tools { display: flex; gap: 8px; }
+/* Trace indicator pill. A leading dot signals the state at a glance: green = nothing written to this device, amber =
+   an encrypted copy is stored here (still unreadable without the in-memory key, and erased on Lock). */
+.tracetag { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); padding: 3px 10px; border: 1px solid var(--border); border-radius: 999px; margin-bottom: 10px; }
+.tracetag::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: 0 0 auto; }
+.tracetag.notrace { color: var(--good); }
+.tracetag.stored { color: #c98a1f; }
+:root[data-theme="auto"] .tracetag.stored, :root[data-theme="dark"] .tracetag.stored { color: #e0a94a; }
 .crumbs { color: var(--muted); font-size: 14px; margin-bottom: 8px; word-break: break-word; }
 .crumbs a { color: var(--accent-ink); text-decoration: none; display: inline-flex; align-items: center; min-height: 40px; padding: 6px 0; } /* accent-ink (not bare --accent) so this normal-size link text clears WCAG AA 4.5:1 in light and sepia; min-height gives a reliable ~40px tap target on a phone */
 .filelist { list-style: none; margin: 0; padding: 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
