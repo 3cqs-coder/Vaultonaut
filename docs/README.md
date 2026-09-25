@@ -58,6 +58,7 @@ Vaultonaut fits one person on one computer, and it scales out from there. The sa
   - [Version history](#version-history)
 - [Mirroring across places](#mirroring-across-places)
   - [Connecting your devices directly (peer-to-peer)](#connecting-your-devices-directly-peer-to-peer)
+- [Reaching a vault over Tor](#reaching-a-vault-over-tor)
 - [Splitting a vault across places](#splitting-a-vault-across-places)
 - [Emergency and inheritance access](#emergency-and-inheritance-access)
   - [A dead-man's switch](#a-dead-mans-switch)
@@ -464,7 +465,7 @@ vdisk receive-vault <code>       Receive a vault from another machine by its ser
 vdisk mirror   <name|path> <dest> Set up a two-way mirror to a folder, sftp:<id>, or webdav:<id> and prime it
 vdisk sync     <name|path>       Sync the mirror now, both directions (the running service also does this after any unmount)
 vdisk unmirror <name|path>       Stop mirroring (the copy at the destination is left in place)
-vdisk serve    <name|path>       Serve a vault as a node another machine can mirror to (encrypted only). --lan serves it directly on your local network, discovered automatically (no setup); --wan also opens a router port automatically (NAT-PMP/PCP) to reach it from anywhere, degrading to LAN-only if the router refuses; --onion reaches it over an anonymizing overlay network with no exposed address or forwarded port (needs a running Tor)
+vdisk serve    <name|path>       Serve a vault as a node another machine can mirror to (encrypted only). --lan serves it directly on your local network, discovered automatically (no setup); --wan also opens a router port automatically (NAT-PMP/PCP) to reach it from anywhere, degrading to LAN-only if the router refuses; --onion serves it over Tor with no exposed address or forwarded port (needs a running Tor, e.g. the Tor Browser). See "Reaching a vault over Tor"
                                  Add --relay <host[:port]> --token <t> (or --relay-code <code>) to reach it through a relay hub with no port forwarding
 vdisk relay                      Run a relay hub on a public host so nodes behind NAT are reachable (--token or --token-file, --port, --ports; add --host <public-host> for a one-paste relay invite code)
 vdisk peer-add <code|address>    Add a peer node to mirror to — paste its connect code, or an address (--label, --user; prompts for the password)
@@ -1091,9 +1092,24 @@ The relay hop is also encrypted end to end, so the hub relays nothing but opaque
 
 **Upgrading a relayed link to a direct one.** When both machines can reach a relay, Vaultonaut also tries to turn that relayed session into a direct one, even when neither machine has an open port and neither router will map one. It uses the relay only to introduce the two sides. The machines then open connections to each other at the same instant, so each router, having just seen an outbound connection, lets the other's in. This is a "hole punch." If it works, the vault data flows straight between the two machines and the hub carries nothing. If it cannot (some stricter networks make a direct path impossible), the sync simply keeps using the relay. It is automatic and safe by construction: the direct path runs the same pinned-certificate connection as the relay, so it only changes which route the encrypted data takes, never who is trusted or what is exposed. You do not have to do anything for this to happen.
 
-**Reaching a node over an anonymizing overlay network.** For the strongest reachability and privacy, a node can be served over an anonymizing overlay network — the kind that routes traffic through several relays so that neither side's real address is exposed and no router port has to be opened. Serve with `vdisk serve <vault> --onion`, or pick **An anonymizing overlay network** in the Serve window (it appears only when the overlay software is running). Vaultonaut asks the overlay to publish a fresh, single-session address for the node and serves behind it; the address goes into the ordinary connect code, and the other machine reaches it by that address, routing its connection through the same overlay automatically. The address is unguessable and lives only while you are serving — stopping the node removes it, so nothing is left published. Only encrypted data ever travels, as always. This path uses the overlay software already on your computer (nothing is bundled), so it is available when that software is running and simply stays hidden when it is not; a later release can fetch it for you on demand, the same way the storage engine is. It is meant for connecting nodes and desktops, not the in-browser phone viewer, which needs the overlay's own browser.
+There is also a way to reach a node with **no exposed address at all**, over Tor — see [Reaching a vault over Tor](#reaching-a-vault-over-tor) below.
 
 You can choose how much of this to use under **Peer connections** in Settings, or with `vdisk peer-mode`. **Automatic**, the default, connects directly when it can and falls back to the relay otherwise. **Relay only** always goes through the relay. **Direct only** requires a direct connection and never carries data through a relay, so a sync fails if no direct path can be made. (In Direct only mode the relay hub may still be contacted to introduce the two machines; it just never relays the data.)
+
+## Reaching a vault over Tor
+
+Vaultonaut can serve a vault to another machine **over Tor** — the free anonymity network that routes traffic through several volunteer relays so no one, at either end or in between, can see who is talking to whom. It is the most private and most reachable way to connect two machines, and it is genuinely one-command.
+
+**Why you might use it.** Ordinary ways to reach a node need *some* address: a local network, a router port, or a relay you run. Tor needs none of those. It gives your node a special `.onion` address that works from anywhere in the world without opening a single port, without revealing either machine's real IP address, and without any server in the middle that could be blocked or watched. So it is ideal for reaching your own machine from a hostile or restrictive network, for connecting two computers that are both behind strict routers, or simply when you would rather no one could even tell the connection exists.
+
+**What you need.** Tor has to be running on the machine that *serves* and on the machine that *connects*. The easiest way to have it is the **Tor Browser** — just having it open is enough; Vaultonaut will find and use it. On a server you can run the `tor` package instead. Vaultonaut does not bundle Tor today, so this option appears only when Tor is actually running; a future release will be able to fetch Tor for you on demand, the same way it fetches its storage engine, so no setup is needed at all.
+
+**How to use it.**
+
+1. On the machine with the vault, serve it over Tor: `vdisk serve <vault> --onion`, or open the **Serve** window and choose **An anonymizing overlay network (Tor)** — it appears in the list only when Tor is running. Vaultonaut asks Tor for a fresh `.onion` address, serves the encrypted vault behind it, and shows you the usual one-paste connect code (now carrying the `.onion` address).
+2. On the other machine — which also needs Tor running — add that code as a peer and mirror or receive the vault exactly as you would for any node. Vaultonaut automatically routes the connection through Tor to reach the `.onion` address; you do nothing extra.
+
+**What it protects, and its honest limits.** As with every Vaultonaut connection, only encrypted data ever travels — Tor adds *anonymity and reachability*, not secrecy, because the vault is already encrypted end to end before it leaves. The `.onion` address is unguessable and exists only while you are serving: stop the node and the address is gone, so nothing stays published. The vault's serve login still gates access on top of the address. Two honest limits: a Tor connection is slower than a direct one (traffic takes a longer path), so a first large sync can take a while; and this is for connecting **nodes and desktop apps** — the phone's in-browser viewer would need the Tor Browser on the phone, so use one of the other reach options for that. It works the same on macOS, Windows, and Linux, with nothing platform-specific to install beyond Tor itself.
 
 ## Splitting a vault across places
 
