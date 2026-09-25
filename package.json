@@ -39,6 +39,7 @@
     "doctor": "node vaultonaut.js doctor",
     "sign": "node lib/scripts/sign-release.js",
     "sign:check": "node lib/scripts/sign-release.js --check",
+    "verify:build": "node lib/scripts/verify-build.js",
     "test": "node -r ./lib/test/_setup.js lib/test/smoke.js",
     "test:all": "node lib/test/_runall.js"
   },

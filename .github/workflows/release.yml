@@ -97,6 +97,13 @@ jobs:
       - name: Run the unit suite
         shell: bash
         run: npm run test:all
+      # Gate the release on REPRODUCIBILITY: rebuild the manifest from this exact tagged source and confirm its
+      # reproducible digest matches the committed, signed manifest (and that the signature is valid). This fails the
+      # release if the signed manifest is ever out of step with the public source, and prints the digest into the log so
+      # it can be published with the release for anyone to reproduce with "npm run verify:build".
+      - name: Verify the build is reproducible
+        shell: bash
+        run: npm run verify:build
 
   build:
     needs: test

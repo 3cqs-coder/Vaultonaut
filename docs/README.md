@@ -213,6 +213,24 @@ One limit worth stating plainly: the signature covers the application's own file
 
 As a second layer, the application also checks its own files against that signed manifest each time it starts, and the web page surfaces a warning if they do not match. You can run that same check any time with `vdisk verify-self`. It reports GENUINE when every signed file matches, or ALTERED (listing the files) when one does not. Run from source rather than a signed release, it simply tells you the copy is unsigned and points you back to verifying your download. This is a helpful backstop, not a substitute for the check above: whoever could alter the files could also disable this internal check, which is exactly why verifying your download against a key you obtained independently is the reliable test.
 
+### Reproducible builds — verify it yourself
+
+The signature above proves your download matches what the maintainer signed. Reproducible builds close the remaining gap: they prove that what the maintainer signed is exactly the **public source code** — so there is no hidden difference between the code you can read and the code you run.
+
+Every signed release carries a **reproducible digest**: a single SHA-256 computed from the exact set of application files (each file's path and hash) and the version, and nothing else — no timestamps, no machine-specific details. Because it depends only on the source, anyone who checks out the same release tag and rebuilds it gets the **identical** digest. The maintainer publishes that digest with each release.
+
+To confirm a release is reproducible, clone the source at the release tag and run:
+
+```bash
+npm run verify:build
+```
+
+It rebuilds the manifest from the source in front of you, prints the reproducible digest, and reports **VERIFIED** when that digest matches the committed signed manifest *and* the signature is valid — or names exactly which files differ if not. It needs no private key and no network. Anyone can run it and get the same answer, which is the point: you do not have to take the maintainer's word for it.
+
+Put together, the two checks form an unbroken chain: `verify.js` proves your download equals the signed manifest, and `verify:build` proves the signed manifest equals the public source — so your download provably equals the public source.
+
+What this covers, stated plainly: the application's own code, which is what determines how your data is handled. It does not attempt to make the platform installer wrapper (the `.dmg`/`.msi`/`.deb` produced by the desktop bundler and stamped with an operating-system signature) bit-for-bit identical — those inevitably vary — nor the third-party packages and the bundled program runtime, which are instead pinned to fixed, independently verifiable versions as described above. The code inside is what the reproducible digest and the signature both cover.
+
 ### Checking for updates
 
 You can check whether a newer version has been published with `vdisk update-check`, or with **Check now** next to **Version** in **Settings**. The check only reads the latest published version number and compares it to the copy you are running. It never downloads or installs anything. Getting the update stays your choice, and any download you then make is verified with the signature check above before you trust it.
