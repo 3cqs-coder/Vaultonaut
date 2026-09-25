@@ -333,6 +333,7 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 .dev-dot-unknown { background: var(--faint); }
 .dev-dot-live, .dev-dot-ok { background: var(--good); }
 .dev-dot-bad { background: var(--danger); }
+.dev-dot-warn { background: var(--warn); }
 .dev-dot-testing { background: var(--warn); animation: devPulse 1s var(--ease) infinite; }
 @keyframes devPulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
 @media (prefers-reduced-motion: reduce) { .dev-dot-testing { animation: none; } }
@@ -352,6 +353,12 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 .dev-evt-info .dev-evt-text::before { background: var(--accent); }
 .dev-evt-when { color: var(--faint); font-size: 12px; white-space: nowrap; flex: 0 0 auto; }
 @media (max-width: 560px) { .dev-row { flex-wrap: wrap; } .dev-actions { width: 100%; justify-content: flex-end; } }
+/* Fleet: add-a-node panel (collapsible, reuses the summary chevron). */
+.fleet-add { margin-top: var(--sp-5); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: var(--sp-3) var(--sp-4); }
+.fleet-add > summary h4 { margin: 0; font-size: 14px; }
+.fleet-add:not([open]) > summary { margin-bottom: 0; }
+.fleet-add-body { display: flex; flex-direction: column; gap: var(--sp-3); margin-top: var(--sp-4); }
+.fleet-add-actions { display: flex; align-items: center; gap: var(--sp-4); }
 
 .dashboard-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--sp-4); }
 .dtile {
@@ -373,6 +380,17 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 .dtile-title { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .dtile-value { font-size: 19px; font-weight: 650; letter-spacing: -.01em; line-height: 1.2; margin-top: 2px; }
 .dtile-detail { font-size: 12.5px; color: var(--faint); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+/* Sparkline: a dependency-free inline SVG. preserveAspectRatio="none" stretches it to the tile, and non-scaling-stroke
+   keeps the line crisp; colors follow the tile's severity via tokens. */
+.dspark { display: block; width: 100%; height: 26px; margin-top: 8px; }
+.dspark-area { fill: var(--accent); opacity: .12; stroke: none; }
+.dspark-line { fill: none; stroke: var(--accent); stroke-width: 1.5; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+.dtile-warn .dspark-area { fill: var(--warn); }
+.dtile-warn .dspark-line { stroke: var(--warn); }
+.dtile-error .dspark-area { fill: var(--danger); }
+.dtile-error .dspark-line { stroke: var(--danger); }
+.dtile-good .dspark-area { fill: var(--good); }
+.dtile-good .dspark-line { stroke: var(--good); }
 /* Actionable tiles read as buttons: a hover lift, an accent edge, a focus ring, and a corner arrow affordance. */
 .dtile-action { cursor: pointer; transition: transform var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease); }
 .dtile-action::after { content: "›"; position: absolute; top: var(--sp-4); right: var(--sp-5); color: var(--faint); font-size: 18px; line-height: 1; opacity: .5; transition: opacity var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease); }
