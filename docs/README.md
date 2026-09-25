@@ -251,6 +251,8 @@ Then open `http://localhost:7420` in your browser.
 
 For everyday use, the page lists your vaults and shows which are mounted. From there you can:
 
+- See the whole picture at a glance — an **Overview** strip at the top of the page sums up the state of the install: system health, your vaults, disk space, backups, connections, the engine and driver, and whether an update is out. Each tile is colored by severity, so anything that needs attention stands out, and a small status marker in the header shows the overall state even when the strip is collapsed. Every tile is also a shortcut to where that thing is set up and managed.
+- Check your connections — the **Connectivity** tile opens a **Devices & connections** list of every paired device, every cloud and backup destination, and every vault you are serving. One **Check all** button confirms which are reachable right now, so you can see at a glance which nodes are online. The latest backups, mirror syncs, and system checks are listed there as recent activity.
 - Manage vaults — create, mount, unmount, reveal, add, and remove them.
 - Star your favorites — mark the vaults you use most with the star and they sort to the top of the list. A favorite that has Touch ID, Windows Hello, or a security key enrolled also gets a one-tap unlock. Vaults are still never mounted on their own; a favorite only shortens the unlock you choose to do.
 - Add files with progress — while a vault is mounted, files stream straight in with a progress bar. This also sidesteps a copy bug that some macOS driver versions have with large files.

@@ -310,6 +310,49 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
    An at-a-glance status strip: a responsive grid of tiles, each carrying a severity accent so the eye lands on
    anything wrong first. Colors come only from theme tokens, so all four themes (auto/light/dark/sepia) resolve
    automatically. Actionable tiles are real buttons that lift on hover and take you to where that thing is managed. */
+/* Header status pill — one at-a-glance verdict, always visible. A colored dot plus a word, so it never relies on color
+   alone; the whole pill is a button that opens the Overview. */
+.status-pill { display: inline-flex; align-items: center; gap: var(--sp-2); padding: 5px 12px 5px 10px; border-radius: var(--radius-pill); border: 1px solid var(--border); background: var(--panel-2); color: var(--text); font-size: 12.5px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease); }
+.status-pill .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex: 0 0 auto; }
+.status-pill.status-ok .status-dot { background: var(--good); }
+.status-pill.status-warn { border-color: var(--warn); }
+.status-pill.status-warn .status-dot { background: var(--warn); }
+.status-pill.status-error { border-color: var(--danger); background: var(--danger-soft); }
+.status-pill.status-error .status-dot { background: var(--danger); }
+@media (hover: hover) { .status-pill:hover { border-color: var(--accent); } }
+.status-pill:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* On a narrow phone header the word is dropped to save room; the colored dot still carries the state, and the pill
+   keeps its accessible name from aria-label. */
+@media (max-width: 560px) { .status-pill .status-text { display: none; } .status-pill { padding: 6px; } }
+
+/* ── Devices & connections dialog ────────────────────────────────────────── */
+.devices-toolbar { display: flex; align-items: center; gap: var(--sp-4); margin: var(--sp-4) 0; }
+.devices-list { display: flex; flex-direction: column; gap: var(--sp-2); }
+.dev-row { display: flex; align-items: center; gap: var(--sp-4); padding: var(--sp-3) var(--sp-4); border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--panel-2); }
+.dev-dot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; background: var(--faint); }
+.dev-dot-unknown { background: var(--faint); }
+.dev-dot-live, .dev-dot-ok { background: var(--good); }
+.dev-dot-bad { background: var(--danger); }
+.dev-dot-testing { background: var(--warn); animation: devPulse 1s var(--ease) infinite; }
+@keyframes devPulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) { .dev-dot-testing { animation: none; } }
+.dev-main { flex: 1 1 auto; min-width: 0; }
+.dev-label { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dev-sub { font-size: 12.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dev-note { font-size: 12px; color: var(--faint); margin-top: 2px; overflow-wrap: anywhere; }
+.dev-actions { display: flex; align-items: center; gap: var(--sp-3); flex: 0 0 auto; }
+.devices-subhead { margin: var(--sp-5) 0 var(--sp-3); font-size: 13px; color: var(--muted); }
+.devices-activity { display: flex; flex-direction: column; gap: var(--sp-1); }
+.dev-evt { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-4); padding: var(--sp-2) 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.dev-evt:last-child { border-bottom: 0; }
+.dev-evt-text::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 8px; background: var(--muted); vertical-align: middle; }
+.dev-evt-good .dev-evt-text::before { background: var(--good); }
+.dev-evt-warn .dev-evt-text::before { background: var(--warn); }
+.dev-evt-error .dev-evt-text::before { background: var(--danger); }
+.dev-evt-info .dev-evt-text::before { background: var(--accent); }
+.dev-evt-when { color: var(--faint); font-size: 12px; white-space: nowrap; flex: 0 0 auto; }
+@media (max-width: 560px) { .dev-row { flex-wrap: wrap; } .dev-actions { width: 100%; justify-content: flex-end; } }
+
 .dashboard-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--sp-4); }
 .dtile {
 	display: flex; flex-direction: column; gap: 2px; text-align: left; width: 100%;
