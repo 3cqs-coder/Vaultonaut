@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.2.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-26T01:37:03.922Z",
+  "generatedAt": "2026-09-26T02:08:05.827Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -342,8 +342,8 @@
     },
     {
       "path": "lib/TorSetup.js",
-      "sha256": "8570dcb5e472a54c8ce01b0cfac456200b6f4f74b858357d889fcba601ce87a8",
-      "size": 10868
+      "sha256": "9225fc0db778ff8789701d9007aa425554d4b584b949c206c6197d6205190c44",
+      "size": 11377
     },
     {
       "path": "lib/Travel.js",
@@ -367,8 +367,8 @@
     },
     {
       "path": "lib/Vault.js",
-      "sha256": "67602fa7ebd60731eec0472ac570f3d811db8bea0d432e9efc96420561f08097",
-      "size": 931202
+      "sha256": "6d18acb5c4d1081bd324f49cdaf08bf3108aab19a831d919bbdbe51ce3de3030",
+      "size": 932084
     },
     {
       "path": "lib/Watchdog.js",
@@ -452,8 +452,8 @@
     },
     {
       "path": "lib/webserver/index.js",
-      "sha256": "051a251cac06d906046c208a76f2c8ad9dc9e4056718cc08b4e5a5bdcf80ee59",
-      "size": 194801
+      "sha256": "91a36a0e3c2a9a15d010a98372d05ac347055a663f505407a33b138efb3b4e0c",
+      "size": 195391
     },
     {
       "path": "lib/webserver/kitView.js",
