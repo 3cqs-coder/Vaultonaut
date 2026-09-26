@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.2.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-26T03:00:45.938Z",
+  "generatedAt": "2026-09-26T17:17:01.848Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -132,8 +132,8 @@
     },
     {
       "path": "lib/Integrity.js",
-      "sha256": "9f9c847b03d4dddc7c8f562a3c7a9748a83516380193bfcdfb3b5f5dffb76766",
-      "size": 50209
+      "sha256": "44079e833a7d8a95faeb1b5121d5fd5e9112a3138a6c2f1f4c16e89b6f118486",
+      "size": 50453
     },
     {
       "path": "lib/IpMatch.js",
@@ -197,8 +197,8 @@
     },
     {
       "path": "lib/Onion.js",
-      "sha256": "c2ea6c304fad97cd5e74b0eac9ab8687e6b89b77b5def473d311498220e9cbc1",
-      "size": 30322
+      "sha256": "35d3b4204e806cb83ec717b5da74839713d07bfaa495ec0c413d35a9b4bb219d",
+      "size": 30757
     },
     {
       "path": "lib/OwnerClient.js",
@@ -242,8 +242,8 @@
     },
     {
       "path": "lib/Rclone.js",
-      "sha256": "414365e4b803ee5292bd191d2694544964fd9ca27bc62e585339cc0612c0626c",
-      "size": 59877
+      "sha256": "8284f3810cd6a8fd9e6bc3417378155c11e36bd69e71c504690c76f815ffb862",
+      "size": 60553
     },
     {
       "path": "lib/RcloneSetup.js",
@@ -292,8 +292,8 @@
     },
     {
       "path": "lib/SearchWorker.js",
-      "sha256": "58a13c51bf9866a608d223d55c61565ce44f9241184d63ae51ac70bd9d5dd735",
-      "size": 19402
+      "sha256": "8e75adc8248553eae1c1a3aa1a743ebf38d939ffc3dcff9c0ee34555d93e484d",
+      "size": 19829
     },
     {
       "path": "lib/SelfCheck.js",
@@ -537,8 +537,8 @@
     },
     {
       "path": "lib/webserver/public/js/app.js",
-      "sha256": "54e7e5fa2458bda174674d3045710213c25319b3c7783cad9d684131582362a5",
-      "size": 405095
+      "sha256": "daf1a530ca43bdb4aa9be0937b26bde9edc27474c3aaa2e2eb4b248c2c66314b",
+      "size": 405617
     },
     {
       "path": "lib/webserver/public/js/login.js",

@@ -30,7 +30,7 @@ if (tomlNew !== toml) { fs.writeFileSync(tomlPath, tomlNew); changed.push('Cargo
 const lockPath = path.join(__dirname, 'Cargo.lock');
 if (fs.existsSync(lockPath)) {
 	const lock = fs.readFileSync(lockPath, 'utf8');
-	const lockNew = lock.replace(/(name = "vaultonaut"\nversion = ")[^"]+(")/, `$1${version}$2`);
+	const lockNew = lock.replace(/(name = "vaultonaut"\r?\nversion = ")[^"]+(")/, `$1${version}$2`);
 	if (lockNew !== lock) { fs.writeFileSync(lockPath, lockNew); changed.push('Cargo.lock'); }
 }
 

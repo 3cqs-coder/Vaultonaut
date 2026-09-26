@@ -138,6 +138,9 @@ function main() {
 		// Remove the key on ANY exit, including the immediate process.exit that a failed build triggers (which
 		// would skip a finally). This guarantees the private key never lingers at the base after a build.
 		process.on('exit', () => removeSigningKey(keyAtBase));
+		// process.on('exit') does NOT fire on a signal, so a Ctrl-C (SIGINT) or a kill during the long install/build
+		// would otherwise leave the private signing key at the neutral base. Remove it on those signals too, then exit.
+		for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.on(sig, () => { try { removeSigningKey(keyAtBase); } catch (_) {} process.exit(1); });
 		console.log('Signing: using the key at ' + signing.key + ' (placed at the base only for this build).');
 	} else {
 		console.log('Signing: none (no key) — the bundle will be unsigned; pass --key <path> or place the signing key to sign.');

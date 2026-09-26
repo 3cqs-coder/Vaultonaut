@@ -39,7 +39,10 @@ function rimraf(p) { fs.rmSync(p, { recursive: true, force: true }); }
 function publishedFileList() {
 	const r = runNpm(['pack', '--dry-run', '--json'], { cwd: REPO, capture: true });
 	if (r.status !== 0) throw new Error('npm pack failed: ' + (r.stderr || (r.error && r.error.message) || ('exit ' + r.status)));
-	const j = JSON.parse(r.stdout); // npm --json prints a clean JSON array to stdout
+	// npm --json prints a JSON array to stdout, but tolerate a leading notice line (an update/funding banner some npm
+	// configurations emit) by slicing from the first '[' to the last ']' before parsing, so the file set is robust.
+	const out = r.stdout, s = out.indexOf('['), e = out.lastIndexOf(']');
+	const j = JSON.parse(s >= 0 && e > s ? out.slice(s, e + 1) : out);
 	return (j[0] && j[0].files || []).map(f => String(f.path).replace(/\\/g, '/')).sort();
 }
 
