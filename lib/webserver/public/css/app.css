@@ -146,7 +146,7 @@
 	--bg: #f4ecdf; --rail: #fbf6ec; --panel: #fbf6ec; --panel-2: #efe6d5; --hover: #eee2cd;
 	--text: #3a2f22; --muted: #715f45; --faint: #9c8c74; --border: #e2d4b8;
 	--accent: #a4641f; --accent-text: #ffffff; --accent-btn: #a4641f; --accent-ink: #94571a; --accent-soft: #f3e4cf; --accent-quiet: #e6d2b3;
-	--good: #276b43; --good-bg: #e4efdb; --warn: #955f10; --warn-bg: #f7ecd2; --warn-soft: #f7ecd2;
+	--good: #276b43; --good-bg: #e4efdb; --warn: #8a5410; --warn-bg: #f7ecd2; --warn-soft: #f7ecd2;
 	--danger: #a8231c; --danger-fill: #a8231c; --danger-soft: #f2ddd6;
 	--star: #b5791f;   /* a deeper gold that holds contrast on the cream sepia panel */
 	--shadow: 0 1px 3px rgba(90, 70, 40, .08), 0 1px 2px rgba(90, 70, 40, .06);
