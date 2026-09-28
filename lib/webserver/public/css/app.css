@@ -815,6 +815,9 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 .pick-file { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 8px; }
 .pick-fname { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pick-size { flex: none; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+/* While an add-files copy is running the browse list and places are frozen: dimmed and non-interactive. The JS handlers
+   also enforce the freeze, so this is purely the affordance that makes it look non-interactive. */
+.browse-frozen { opacity: .55; pointer-events: none; }
 .import-count { font-size: 13px; }
 .browse-item.vault { color: var(--accent-ink); font-weight: 600; }
 .vault-tag { font-size: 11px; font-weight: 600; color: #fff; background: var(--accent-btn); border-radius: 999px; padding: 1px 8px; } /* --accent-btn is the AA-tuned fill (white text clears 4.5:1); plain --accent does not for 11px text */
