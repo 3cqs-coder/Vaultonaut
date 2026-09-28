@@ -10,7 +10,7 @@
     "scan-leaks": "node scan-leaks.js",
     "clean-build": "node clean-build.js",
     "dev": "npm run sync-version && npm run prepare-sidecar && tauri dev",
-    "build": "npm run sync-version && npm run prepare-sidecar && npm run sign-bundle && tauri build && npm run scan-leaks"
+    "build": "npm run sync-version && npm run prepare-sidecar && npm run sign-bundle && node tauri-build.js && npm run scan-leaks"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.12.0"

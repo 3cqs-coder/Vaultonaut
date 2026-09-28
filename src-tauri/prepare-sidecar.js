@@ -53,7 +53,15 @@ function publishedFileList() {
 function stageRuntime() {
 	fs.mkdirSync(RUNTIME_DIR, { recursive: true });
 	const dest = path.join(RUNTIME_DIR, process.platform === 'win32' ? 'node.exe' : 'node');
-	fs.copyFileSync(process.execPath, dest);
+	// Normally the bundled interpreter is the Node running this staging step (a native single-arch binary). For the
+	// macOS universal build the release provides a pre-combined UNIVERSAL Node (both Intel and Apple Silicon slices,
+	// made with `lipo`) at VAULTONAUT_RUNTIME_NODE, so the one .app runs natively on either architecture — and, just as
+	// important, the running interpreter reports the true architecture (x64 on Intel, arm64 on Apple Silicon), so the
+	// on-demand storage engine and anonymizing-network downloads fetch the matching native build. It must be the SAME
+	// pinned version (the release builds it from that version), so the version guarantee is unchanged.
+	const provided = String(process.env.VAULTONAUT_RUNTIME_NODE || '').trim();
+	const source = (provided && fs.existsSync(provided)) ? provided : process.execPath;
+	fs.copyFileSync(source, dest);
 	if (process.platform !== 'win32') fs.chmodSync(dest, 0o755);
 	return dest;
 }

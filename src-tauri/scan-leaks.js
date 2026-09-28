@@ -19,7 +19,12 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-const targetDir = path.resolve(process.argv[2] || path.join(__dirname, 'target', 'release', 'bundle'));
+// The build output lives under target/<triple>/release when a --target was used (the macOS universal build sets
+// VAULTONAUT_TAURI_TARGET=universal-apple-darwin), else directly under target/release. Resolve the same base here so
+// the scan looks where the build actually produced the bundle and the raw binary — an explicit [dir] argument still wins.
+const TAURI_TARGET = String(process.env.VAULTONAUT_TAURI_TARGET || '').trim();
+const RELEASE_DIR = TAURI_TARGET ? path.join(__dirname, 'target', TAURI_TARGET, 'release') : path.join(__dirname, 'target', 'release');
+const targetDir = path.resolve(process.argv[2] || path.join(RELEASE_DIR, 'bundle'));
 
 // Accounts that are shared/disposable build identities, not a person. On a CI runner or a dedicated build VM the
 // login is one of these, and its name and home path appear in the workspace path by design — that is not a
@@ -95,7 +100,7 @@ function main() {
 	// Linux the installers under bundle/ are COMPRESSED, so the raw binary is the reliable place to catch a leaked
 	// build path on those platforms. The rest of target/release (its *.rlib and dep-info intermediates) is deliberately
 	// NOT scanned: it embeds the build path by design and is never shipped, so scanning it would false-positive.
-	const releaseDir = path.join(__dirname, 'target', 'release');
+	const releaseDir = RELEASE_DIR;
 	const roots = [targetDir];
 	for (const bin of ['vaultonaut', 'vaultonaut.exe']) { const p = path.join(releaseDir, bin); try { if (fs.statSync(p).isFile() && !roots.includes(p)) roots.push(p); } catch (_) {} }
 	const present = roots.filter((r) => fs.existsSync(r));

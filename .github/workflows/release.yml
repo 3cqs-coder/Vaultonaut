@@ -136,6 +136,34 @@ jobs:
         shell: bash
         run: rustup default stable   # preinstalled on the hosted runners; self-hosted runners must have rustup
 
+      # macOS ships ONE universal installer that runs natively on both Intel and Apple Silicon, built on a single
+      # Apple-Silicon runner. This does two things the universal build needs: install both Rust targets so Tauri can
+      # lipo the shell, and build a universal Node for the bundled runtime (Tauri handles the Rust binary, but the
+      # separately-bundled Node must be universal too, or the app could not launch — and must report the true
+      # architecture so the on-demand storage engine and anonymizing-network binaries download the matching native
+      # build). The Node version is the pinned one setup-node just installed (no second version to drift), both
+      # per-arch builds are checksum-verified against the official release list, and the combined binary is proven to
+      # run and report that version. This runner-based path does not depend on the retiring Intel CI images.
+      - name: Prepare the universal macOS runtime and build target
+        if: matrix.label == 'macos'
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup target add x86_64-apple-darwin aarch64-apple-darwin
+          NODE_VER="$(node -v | sed 's/^v//')"   # exactly the pinned Node from setup-node above
+          work="$RUNNER_TEMP/universal-node"; mkdir -p "$work"; cd "$work"
+          base="https://nodejs.org/dist/v$NODE_VER"
+          curl -fsSLO "$base/SHASUMS256.txt"
+          for arch in x64 arm64; do curl -fsSLO "$base/node-v$NODE_VER-darwin-$arch.tar.gz"; done
+          grep -E "  node-v$NODE_VER-darwin-(x64|arm64)\.tar\.gz$" SHASUMS256.txt | shasum -a 256 -c -
+          for arch in x64 arm64; do tar -xzf "node-v$NODE_VER-darwin-$arch.tar.gz"; done
+          lipo -create -output universal-node "node-v$NODE_VER-darwin-arm64/bin/node" "node-v$NODE_VER-darwin-x64/bin/node"
+          chmod +x universal-node
+          lipo -info universal-node
+          test "$(./universal-node --version)" = "v$NODE_VER"   # the combined binary runs and reports the pinned version
+          echo "VAULTONAUT_RUNTIME_NODE=$work/universal-node" >> "$GITHUB_ENV"
+          echo "VAULTONAUT_TAURI_TARGET=universal-apple-darwin" >> "$GITHUB_ENV"
+
       - name: Linux build dependencies (WebKitGTK etc.)
         if: matrix.label == 'linux'
         run: |
@@ -168,7 +196,7 @@ jobs:
         shell: bash
         working-directory: src-tauri
         run: |
-          APP=$(find target/release/bundle/macos -maxdepth 1 -name '*.app' | head -n1)
+          APP=$(find target -type d -path '*/release/bundle/macos/*.app' | head -n1)
           if [ -z "$APP" ]; then echo "No .app bundle found to sign"; exit 1; fi
           echo "Signing: $APP"
           codesign --force --deep --sign - --timestamp=none "$APP"
@@ -184,12 +212,14 @@ jobs:
         with:
           name: vaultonaut-${{ matrix.label }}
           if-no-files-found: error
+          # target/**/bundle covers both the host-target path (target/release/bundle on Windows and Linux) and the
+          # explicit-target path (target/universal-apple-darwin/release/bundle for the macOS universal build).
           path: |
-            src-tauri/target/release/bundle/**/*.dmg
-            src-tauri/target/release/bundle/**/*.msi
-            src-tauri/target/release/bundle/**/*.exe
-            src-tauri/target/release/bundle/**/*.deb
-            src-tauri/target/release/bundle/**/*.rpm
+            src-tauri/target/**/bundle/**/*.dmg
+            src-tauri/target/**/bundle/**/*.msi
+            src-tauri/target/**/bundle/**/*.exe
+            src-tauri/target/**/bundle/**/*.deb
+            src-tauri/target/**/bundle/**/*.rpm
 
   # When a version tag is pushed, gather every platform's installers, attach them to a GitHub Release, and PUBLISH
   # it, so the downloads are live for the public the moment the build finishes — no manual publish step. A re-run
