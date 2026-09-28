@@ -314,7 +314,7 @@ One thing is deliberately held back over a network-exposed connection: adding a 
 
 ## Desktop app
 
-Vaultonaut is also available as a native desktop app, for people who would rather double-click an icon than use the command line or a browser tab. It installs from a normal installer for your platform, shows the same interface in its own window, and bundles everything it needs to run, so there is no separate Node install. You still install the one-time mount driver for your system (see [Requirements](#requirements)), and the encryption engine still downloads on first use.
+Vaultonaut is also available as a native desktop app, for people who would rather double-click an icon than use the command line or a browser tab. It installs from a normal installer for your platform, shows the same interface in its own window, and bundles everything it needs to run, so there is no separate Node install. You still install the one-time mount driver for your system (see [Requirements](#requirements)), and the encryption engine still downloads on first use. The Mac app is a single universal build that runs natively on both Intel and Apple Silicon Macs.
 
 The desktop app is optional. The command-line install described above is unchanged, and it is what a server without a screen uses to run backups and mirroring on their own. The two are the same program underneath: the desktop app is a native window onto the same local service.
 

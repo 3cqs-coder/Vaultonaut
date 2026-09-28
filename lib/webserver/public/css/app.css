@@ -88,7 +88,7 @@
 	--danger: #c0362c;
 	--danger-fill: #c0362c;
 	--danger-soft: #fbe3e1;   /* soft danger tint; a plain-token fallback for a color-mix danger wash on engines without color-mix */
-	--star: #e0a400;   /* favorite-star fill; a token so a warm theme can darken it for contrast */
+	--star: #a86f1a;   /* favorite-star fill: a gold dark enough to clear the 3:1 graphical-contrast bar on the light panels (dark theme keeps a brighter gold below) */
 	/* Vault color-tag palette: vivid, distinct accents for the per-vault trust/sensitivity tag. Defined once (they read
 	   on both light and dark card grounds) and referenced only through these tokens, never as raw values. */
 	--tag-red: #e5484d; --tag-amber: #f5a524; --tag-green: #30a46c; --tag-blue: #3b82f6; --tag-purple: #8b5cf6; --tag-slate: #64748b;
@@ -148,7 +148,7 @@
 	--accent: #a4641f; --accent-text: #ffffff; --accent-btn: #a4641f; --accent-ink: #94571a; --accent-soft: #f3e4cf; --accent-quiet: #e6d2b3;
 	--good: #276b43; --good-bg: #e4efdb; --warn: #8a5410; --warn-bg: #f7ecd2; --warn-soft: #f7ecd2;
 	--danger: #a8231c; --danger-fill: #a8231c; --danger-soft: #f2ddd6;
-	--star: #b5791f;   /* a deeper gold that holds contrast on the cream sepia panel */
+	--star: #a86f1a;   /* a deeper gold that clears the 3:1 graphical-contrast bar on the cream sepia panels */
 	--shadow: 0 1px 3px rgba(90, 70, 40, .08), 0 1px 2px rgba(90, 70, 40, .06);
 	--shadow-soft: 0 1px 2px rgba(90, 70, 40, .06);
 	--shadow-lift: 0 2px 6px rgba(90, 70, 40, .09), 0 16px 36px -16px rgba(90, 70, 40, .26);

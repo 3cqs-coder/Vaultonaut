@@ -155,11 +155,12 @@ jobs:
           base="https://nodejs.org/dist/v$NODE_VER"
           curl -fsSLO "$base/SHASUMS256.txt"
           for arch in x64 arm64; do curl -fsSLO "$base/node-v$NODE_VER-darwin-$arch.tar.gz"; done
-          grep -E "  node-v$NODE_VER-darwin-(x64|arm64)\.tar\.gz$" SHASUMS256.txt | shasum -a 256 -c -
+          grep -E "node-v$NODE_VER-darwin-(x64|arm64)\.tar\.gz$" SHASUMS256.txt | shasum -a 256 -c -
           for arch in x64 arm64; do tar -xzf "node-v$NODE_VER-darwin-$arch.tar.gz"; done
           lipo -create -output universal-node "node-v$NODE_VER-darwin-arm64/bin/node" "node-v$NODE_VER-darwin-x64/bin/node"
           chmod +x universal-node
-          lipo -info universal-node
+          archs="$(lipo -archs universal-node)"; echo "universal-node archs: $archs"
+          echo "$archs" | grep -qw x86_64 && echo "$archs" | grep -qw arm64   # both slices must be present, or fail the build
           test "$(./universal-node --version)" = "v$NODE_VER"   # the combined binary runs and reports the pinned version
           echo "VAULTONAUT_RUNTIME_NODE=$work/universal-node" >> "$GITHUB_ENV"
           echo "VAULTONAUT_TAURI_TARGET=universal-apple-darwin" >> "$GITHUB_ENV"
