@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.2.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-28T23:36:34.802Z",
+  "generatedAt": "2026-09-29T02:39:27.578Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -197,8 +197,8 @@
     },
     {
       "path": "lib/Onion.js",
-      "sha256": "ffc6fbf2f2adad007f2fba7cbb6c337763327c6f181f06573861a9e2dfc04d54",
-      "size": 37680
+      "sha256": "d9d5c49dd7c2316748a4b65c8b7b38cf4aad0433f9f4c799e126fb94bb1728b3",
+      "size": 38137
     },
     {
       "path": "lib/OwnerClient.js",
@@ -242,8 +242,8 @@
     },
     {
       "path": "lib/Rclone.js",
-      "sha256": "8284f3810cd6a8fd9e6bc3417378155c11e36bd69e71c504690c76f815ffb862",
-      "size": 60553
+      "sha256": "c19da2d2ec30908c0fc5ec92ff510b895966d00ebd2427ce51a972cdd26aa6ec",
+      "size": 61398
     },
     {
       "path": "lib/RcloneSetup.js",
@@ -272,8 +272,8 @@
     },
     {
       "path": "lib/Relay.js",
-      "sha256": "010919bd3fbfa0d3e399be33d45c22fb70b71d14a298178e5b08f4321d324271",
-      "size": 53364
+      "sha256": "cc1ca3d9b069edb7ffa80e19362a3bca7112cc750b6e6f7f533a534bff343000",
+      "size": 53781
     },
     {
       "path": "lib/ReleaseIntegrity.js",
@@ -452,8 +452,8 @@
     },
     {
       "path": "lib/webserver/index.js",
-      "sha256": "81f897fcc3a74155a90e74a8f4709edfbdf7ffe222647b3c7276a8f681004e6f",
-      "size": 201687
+      "sha256": "5a3751448c40eb4f6cb75fe2bdc4dca2017e379e9dcb32601450856816f295fa",
+      "size": 201827
     },
     {
       "path": "lib/webserver/kitView.js",
