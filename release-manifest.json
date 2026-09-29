@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.2.0",
   "algo": "sha256",
-  "generatedAt": "2026-09-29T02:39:27.578Z",
+  "generatedAt": "2026-09-29T03:18:36.423Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -76,9 +76,9 @@
       "size": 15460
     },
     {
-      "path": "lib/DisperseWorker.js",
-      "sha256": "18f9444c79c983e4367e19de560855ac9895ff4ba5fb688b5eebb7ac4d5ca0e9",
-      "size": 11168
+      "path": "lib/DisperseProcess.js",
+      "sha256": "b7c3c4c99af7d68dd40928e40f162ac3b462c327c8c5c0d9f9067faef6605bde",
+      "size": 11785
     },
     {
       "path": "lib/DnsOrder.js",
@@ -367,8 +367,8 @@
     },
     {
       "path": "lib/Vault.js",
-      "sha256": "fd0e365ee71cad8c85ff78a573f5319ad1e3ae27fafe1399e83fb1394d721406",
-      "size": 944372
+      "sha256": "9e94a4d579b33ee17ea8e505b4e0d28ff048ce2fbb88ef241c26b13d73a6de49",
+      "size": 945446
     },
     {
       "path": "lib/Watchdog.js",
@@ -377,8 +377,8 @@
     },
     {
       "path": "lib/WorkerRun.js",
-      "sha256": "78c3bd419e231086c6c64e53bc33383830f71fdc2c966c81b36b94b41e9d032f",
-      "size": 15309
+      "sha256": "4a55a19775b1edb4b2b2d1702f9d22465048b9beb90e8b57db182042a5cabcc5",
+      "size": 17749
     },
     {
       "path": "lib/Zip.js",
