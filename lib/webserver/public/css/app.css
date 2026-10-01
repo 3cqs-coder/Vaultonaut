@@ -364,8 +364,11 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 .devices-toolbar { display: flex; align-items: center; gap: var(--sp-4); margin: var(--sp-4) 0; }
 .devices-list { display: flex; flex-direction: column; gap: var(--sp-2); }
 .dev-row { display: flex; align-items: center; gap: var(--sp-4); padding: var(--sp-3) var(--sp-4); border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--panel-2); }
-.dev-dot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; background: var(--faint); }
-.dev-dot-unknown { background: var(--faint); }
+/* --muted, not --faint: the dot is a meaningful at-a-glance status signal, so the "unknown / not checked yet" and
+   base states must clear the 3:1 non-text bar on the --panel-2 row in every theme (--faint sits below 3:1 on the
+   light and sepia grounds). The colored states below carry their own tokens. */
+.dev-dot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; background: var(--muted); }
+.dev-dot-unknown { background: var(--muted); }
 .dev-dot-live, .dev-dot-ok { background: var(--good); }
 .dev-dot-bad { background: var(--danger); }
 .dev-dot-warn { background: var(--warn); }
@@ -628,6 +631,11 @@ button { font: inherit; }
 	padding: 10px 12px; font: inherit; width: 100%;
 }
 .field textarea { resize: vertical; font-family: var(--mono); font-size: 12.5px; }
+/* Give placeholder hint text a theme token so it renders consistently and legibly on every engine (a bare
+   placeholder otherwise falls back to each engine's own gray, which is not theme-aware and is faint on the Linux
+   desktop's web view). --muted clears AA on the input background in all three themes; opacity:1 stops the engines
+   that dim placeholders by default from lowering it further. */
+.field input::placeholder, .field textarea::placeholder, input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
 /* A prose textarea (a human description, not data or a path) reads in the UI font, not the monospace data stack. */
 .field textarea.prose { font-family: inherit; font-size: 13.5px; }
 /* Break an arbitrarily long unbroken string (e.g. a vault name echoed into a label) instead of forcing the dialog to scroll sideways. */
@@ -690,7 +698,7 @@ button { font: inherit; }
 /* A disabled control must look inert, not clickable — the base .primary-btn stays fully saturated otherwise. */
 button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled { opacity: .5; cursor: not-allowed; }
 /* A visible keyboard-focus ring on the custom buttons (inputs already have one), for keyboard users. */
-.ghost-btn:focus-visible, .primary-btn:focus-visible, .link-btn:focus-visible, .copy-btn:focus-visible, .icon-btn:focus-visible, .browse-item:focus-visible, .help-nav-btn:focus-visible, .help-chip:focus-visible, .note-item:focus-visible, .mini-select:focus-visible, .arow:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ghost-btn:focus-visible, .primary-btn:focus-visible, .link-btn:focus-visible, .copy-btn:focus-visible, .icon-btn:focus-visible, .browse-item:focus-visible, .help-nav-btn:focus-visible, .help-chip:focus-visible, .note-item:focus-visible, .mini-select:focus-visible, .arow:focus-visible, .color-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .dialog::backdrop { background: rgba(6, 10, 18, .45); animation: vd-backdrop-in var(--dur) var(--ease); }
 /* A tasteful entrance: the dialog fades and rises a touch when opened, its backdrop fades in with it. Runs on the
    [open] attribute native <dialog> sets via showModal(), so it fires each time a dialog is shown. Reduced motion is

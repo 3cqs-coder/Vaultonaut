@@ -80,22 +80,24 @@ Apple Silicon Mac makes an arm64 app, so an Intel build needs an Intel Mac (or a
 downloadable artifacts. It is standard GitHub-Actions syntax:
 
 - **On GitHub:** it runs on GitHub's hosted runners — free for a public repository, including the macOS and
-  Windows runners — so tagging a release (`vX.Y.Z`) or starting it by hand builds every platform with nothing to
-  install locally.
-- **Self-hosted (Forgejo Actions, later):** the same file runs on your own runners — copy it to
-  `.forgejo/workflows/` or point Forgejo at `.github/workflows/`. Each runner needs Node (the pinned version),
-  a Rust toolchain, and the platform build dependencies listed above; macOS must be a real Mac, since it cannot
-  be virtualized.
+  Windows runners — so tagging a release (a bare version such as `1.2.0`) or starting it by hand builds every
+  platform with nothing to install locally.
+- **Self-hosted (later):** the same file runs on your own runners — copy it to your CI system's workflow
+  directory, or point that system at `.github/workflows/`. Each runner needs Node (the pinned version), a Rust
+  toolchain, and the platform build dependencies listed above; macOS must be a real Mac, since it cannot be
+  virtualized.
 
-Pushing a version tag (`vX.Y.Z`) also attaches every platform's installer to a draft GitHub Release, which you
-review and publish by hand. Nothing goes public automatically — that suits a security app, and it lets you add
-the host-independent signature and notes first. (That release step is GitHub-specific; on Forgejo, swap it for
-Forgejo's release API. The build jobs are identical on both.)
+Pushing a version tag (a bare version such as `1.2.0`) builds every platform and publishes a GitHub Release at
+that tag automatically. The installers go live for everyone the moment the build finishes — there is no manual
+publish step. Re-running the same tag replaces its installers and keeps the release published, and a prerelease
+tag (one with a hyphen, such as `1.2.0-beta`) is published but not marked the latest release. The release step
+is GitHub-specific; on a self-hosted runner, swap it for that runner's own release API, while the build jobs stay
+identical.
 
-To build without changing the version, start the workflow by hand (the "Run workflow" button, or
-`workflow_dispatch`) and leave the release tag blank: it builds every platform and uploads the installers as
-downloadable artifacts, with no tag and no version bump. Supply a release tag to also draft or refresh a release
-at that tag. Locally, `npm run clean-build` rebuilds the current code at any time, no version bump involved.
+To build without releasing, start the workflow by hand (the "Run workflow" button, or `workflow_dispatch`) and
+leave the release tag blank: it builds every platform and uploads the installers as downloadable artifacts, with
+no tag, no release, and no version bump. Locally, `npm run clean-build` rebuilds the current code at any time,
+with no version bump involved.
 
 Either way the runner's workspace path is neutral, so builds carry no personal identity, and the leak scan
 confirms it (it treats a CI/build account as non-personal). CI builds are unsigned — see below for signing.
