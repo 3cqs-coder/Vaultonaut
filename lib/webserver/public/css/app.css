@@ -275,6 +275,8 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 .notif-panel .banner.bad { box-shadow: inset 3px 0 0 var(--danger); }
 .notif-panel .banner-msg { font-weight: 700; color: var(--text); }
 .notif-panel .integrity-list { margin: 8px 0 0; padding-left: 18px; color: var(--muted); }
+/* A finding can embed a long unbreakable token (a vault's full folder path): it wraps inside the card because the base
+   .banner rule sets overflow-wrap: anywhere, which is inherited here — no panel-specific rule needed. */
 
 /* Panels: framed content blocks (the Create form, dialogs' bodies). The vaults
    list is frameless so the cards read as the page's primary content. */
@@ -393,6 +395,9 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 .devices-activity { display: flex; flex-direction: column; gap: var(--sp-1); }
 .dev-evt { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-4); padding: var(--sp-2) 0; border-bottom: 1px solid var(--border); font-size: 13px; }
 .dev-evt:last-child { border-bottom: 0; }
+/* The activity text is a flex item beside a fixed-width timestamp; let it shrink and wrap a long token (a path in an
+   event line) instead of overflowing the row — matching the sibling .dev-note. */
+.dev-evt-text { min-width: 0; overflow-wrap: anywhere; }
 .dev-evt-text::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 8px; background: var(--muted); vertical-align: middle; }
 .dev-evt-good .dev-evt-text::before { background: var(--good); }
 .dev-evt-warn .dev-evt-text::before { background: var(--warn); }
@@ -455,7 +460,10 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 	padding: 12px 14px;
 	margin-bottom: 18px;
 	border: 1px solid var(--border);
-	white-space: pre-wrap;
+	/* pre-wrap keeps the message's own line breaks; overflow-wrap additionally breaks a long unbreakable token (a path
+	   or download URL in an environment/driver message) so it never forces horizontal page scroll. overflow-wrap is
+	   inherited, so the system-notifications dropdown's finding list and heading wrap the same way with no extra rule. */
+	white-space: pre-wrap; overflow-wrap: anywhere;
 }
 .banner.ok { background: var(--good-bg); border-color: transparent; }
 .banner.warn { background: var(--warn-bg); border-color: transparent; }
@@ -851,6 +859,7 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 	background: var(--text); color: var(--bg);
 	padding: 10px 16px; border-radius: 999px; font-size: 14px; box-shadow: var(--shadow);
 	max-width: 90vw; cursor: pointer; /* every toast is click-to-dismiss */
+	overflow-wrap: anywhere; word-break: break-word; /* a sticky toast can carry a long identity or command token — wrap it rather than overflow the pill/card */
 }
 .toast.error { background: var(--danger-fill); color: #fff; }
 /* A sticky toast carries a longer "write this down" message and stays until clicked, so drop the pill shape for a
@@ -945,6 +954,10 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 	margin-top: 12px; padding: 10px 12px; border-radius: 8px;
 	border: 1px solid var(--border); background: var(--panel-2);
 	font-size: 13px; max-height: 320px; overflow-y: auto;
+	/* A result line can echo a long unbreakable token (a failed host, URL, or error string): wrap it so it stays inside
+	   the box with no horizontal scrollbar. A secret the box shows (a recovery key, a fingerprint) is nested in its own
+	   wrapping child, so this does not change those. */
+	overflow-wrap: anywhere; word-break: break-word;
 	border-left-width: 4px;
 }
 .tamper-result.ok { border-left-color: var(--good); }
@@ -1117,6 +1130,9 @@ input.switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2
 .scroll-list.short { max-height: 220px; }
 /* A left/right row (label on the left, action on the right) and a long-token wrap, both formerly inline styles. */
 .row-between { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 0; }
+/* The first cell holds a label that can be a long unbreakable token — a peer's onion or tunnel URL, an off-site host.
+   Let it shrink and wrap so it never pushes the row's action buttons off the edge of the dialog. */
+.row-between > span:first-child { min-width: 0; overflow-wrap: anywhere; }
 .break-all { word-break: break-all; }
 /* Remaining former-inline-style utilities, moved to classes because the strict CSP (style-src 'self') strips
    inline style attributes. Each is a 1:1 replacement for the style it replaced, so layout is unchanged. */
