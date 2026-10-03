@@ -254,7 +254,16 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 	display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 0 0 2px var(--panel); }
 .notif-panel { position: absolute; top: 48px; right: 0; width: 320px; max-width: 86vw; z-index: 30;
 	background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg);
-	box-shadow: var(--bevel), var(--shadow-lift); overflow: hidden; padding: var(--sp-1); }
+	box-shadow: var(--bevel), var(--shadow-lift); overflow-x: hidden; overflow-y: auto;
+	overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding: var(--sp-1);
+	/* Bound the dropdown to the viewport and scroll its contents, so a long system check (many findings) can never run
+	   off the bottom of the screen with no way to reach the rest. The vh value is the fallback; the dvh value wins where
+	   supported (it tracks the real visible height when a mobile browser's toolbars show or hide). The safe-area inset
+	   keeps the last item clear of a bottom system bar on a phone or the desktop shell. */
+	max-height: calc(100vh - 88px - env(safe-area-inset-bottom, 0px));
+	max-height: calc(100dvh - 88px - env(safe-area-inset-bottom, 0px)); }
+/* Keep the "System" label in view while the findings scroll beneath it, so the panel always reads as what it is. */
+.notif-panel .notif-head { position: sticky; top: 0; z-index: 1; background: var(--panel); }
 .notif-head { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: 10px 10px 6px; } /* --muted, not --faint: this is 11px readable text, so it needs AA contrast, which --faint (a decorative tint) does not meet */
 .notif-clear { display: flex; align-items: center; gap: 10px; padding: 12px 10px; color: var(--muted); font-size: 13px; }
 .notif-clear svg { width: 18px; height: 18px; color: var(--good); flex: 0 0 auto; }
