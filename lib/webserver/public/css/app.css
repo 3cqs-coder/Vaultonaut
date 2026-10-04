@@ -665,6 +665,16 @@ button { font: inherit; }
 /* align-items:start so a field that grows (e.g. the password strength meter appearing under one
    input) never stretches its side-by-side sibling's input to match. */
 .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
+/* Keep the two inputs in a field pair on a shared line even when one label wraps to more lines than the other (for
+   example a short "Region" beside a longer "Endpoint (S3-compatible only)"). Each field is a two-row grid (label, then
+   input); by default they top-align, so a taller label pushes its own input down and out of line with its neighbor.
+   Subgrid makes both fields share the row's label and input tracks, so labels top-align and inputs line up no matter
+   how the labels wrap. Scoped with :has so button-only rows are untouched, and behind @supports so a browser without
+   subgrid simply keeps the original top-aligned layout (still fully usable). */
+@supports (grid-template-rows: subgrid) {
+	.row:has(> .field) { grid-template-rows: auto auto; align-items: stretch; row-gap: 6px; }
+	.row:has(> .field) > .field { grid-row: span 2; grid-template-rows: subgrid; }
+}
 .checkfield { display: flex; align-items: flex-start; gap: 10px; line-height: 1.45; }
 .checkfield + .checkfield,
 .field + .checkfield { margin-top: 14px; }
