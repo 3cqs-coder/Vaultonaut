@@ -17,7 +17,8 @@ All commands:
   vdisk name     <path> ["title"]  Show or set a vault's encrypted name and description (--description "text", or --anonymize to hide the folder name; needs the password)
   vdisk cloud    <list|connect|add|remove|test>   Manage cloud storage for cloud-backed vaults
   vdisk cloud    connect <drive|dropbox|onedrive>   Sign in to a cloud account in the browser (OAuth)
-  vdisk cloud    add --type <type> [key=value …]   Add cloud storage by config (add --label <name>); use --secrets-file <path> to keep secrets off the command line
+  vdisk cloud    add --type <s3|b2|webdav|sftp> [key=value …]   Add cloud storage by config (add --label <name>); use --secrets-file <path> to keep secrets off the command line
+                 (SFTP key auth: key_file=<path> [key_file_pass=<passphrase>])
   vdisk import   <folder> [path]   Create a new vault from an existing folder (copies files in)
   vdisk notes-import <file> <vault>  Import logins/notes from a .csv or a password-manager export (.json or .1pux) into an open vault (--dry-run, --skip-duplicates, --format)
   vdisk passwd   <path>            Change a vault's password (instant; no re-encryption)
