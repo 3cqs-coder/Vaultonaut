@@ -3805,7 +3805,7 @@ dependencies = [
 
 [[package]]
 name = "vaultonaut"
-version = "1.2.0"
+version = "1.2.1"
 dependencies = [
  "libc",
  "tauri",
