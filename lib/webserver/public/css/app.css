@@ -669,11 +669,14 @@ button { font: inherit; }
    example a short "Region" beside a longer "Endpoint (S3-compatible only)"). Each field is a two-row grid (label, then
    input); by default they top-align, so a taller label pushes its own input down and out of line with its neighbor.
    Subgrid makes both fields share the row's label and input tracks, so labels top-align and inputs line up no matter
-   how the labels wrap. Scoped with :has so button-only rows are untouched, and behind @supports so a browser without
-   subgrid simply keeps the original top-aligned layout (still fully usable). */
-@supports (grid-template-rows: subgrid) {
-	.row:has(> .field) { grid-template-rows: auto auto; align-items: stretch; row-gap: 6px; }
-	.row:has(> .field) > .field { grid-row: span 2; grid-template-rows: subgrid; }
+   how the labels wrap. Scoped to the two-column width ONLY (below the breakpoint a row collapses to one column and
+   stacks, where this must not apply), with :has so button-only rows are untouched, and behind @supports so a browser
+   without subgrid simply keeps the original top-aligned layout (still fully usable). */
+@media (min-width: 861px) {
+	@supports (grid-template-rows: subgrid) {
+		.row:has(> .field) { grid-template-rows: auto auto; align-items: stretch; row-gap: 6px; }
+		.row:has(> .field) > .field { grid-row: span 2; grid-template-rows: subgrid; }
+	}
 }
 .checkfield { display: flex; align-items: flex-start; gap: 10px; line-height: 1.45; }
 .checkfield + .checkfield,
