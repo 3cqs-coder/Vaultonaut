@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.2.1",
   "algo": "sha256",
-  "generatedAt": "2026-10-04T19:53:24.853Z",
+  "generatedAt": "2026-10-04T20:25:30.858Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -17,8 +17,8 @@
     },
     {
       "path": "docs/README.md",
-      "sha256": "3cbb56a2ad04d78ae2fd3b627dae2520897b7986e852083021ad55759820cfa7",
-      "size": 235431
+      "sha256": "b64f896d4289f6f8e5286a515e342a6273990785123e0d3d7db98b41650e538b",
+      "size": 236721
     },
     {
       "path": "docs/banner.png",
