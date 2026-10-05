@@ -58,7 +58,7 @@ macOS. Two practical ways to get all of them:
 - **A continuous-integration matrix** (macOS + Windows + Linux runners). This is the least effort and the most
   private: each installer is built on a clean virtual machine, so nothing about your own computer ends up in
   the artifact.
-- **Local virtual machines** (for example with Parallels): a Windows VM builds the Windows installer and a
+- **Local virtual machines** (using any desktop hypervisor): a Windows VM builds the Windows installer and a
   Linux VM builds the Linux packages, while macOS builds natively. This keeps everything on one computer. On
   Apple Silicon the VMs are ARM, so they produce ARM builds; producing Intel (x86-64) builds for older machines
   needs an x86-64 environment (an Intel CI runner, or an x86-64 VM).

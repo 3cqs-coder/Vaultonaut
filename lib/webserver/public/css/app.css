@@ -291,7 +291,7 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 .panel.vaults-panel { background: none; border: 0; box-shadow: none; padding: 0; margin-bottom: 22px; }
 
 /* First-run welcome / empty state (shown only when there are no vaults). A calm, centred card that reassures a new
-   user and hands off to the create panel below. Reuses panel tokens; the check-list uses the semantic good colour. */
+   user and hands off to the create panel below. Reuses panel tokens; the check-list uses the semantic good color. */
 .empty-state {
 	background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg);
 	box-shadow: var(--shadow); padding: var(--sp-10) var(--sp-9);
@@ -507,7 +507,7 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 
 /* Leading identity icon — a rounded tile that says at a glance where a vault's ciphertext lives: a lock for a
    local vault, a cloud for a cloud vault. Both use the SAME accent-blue tint — the lock vs cloud GLYPH (and the
-   location text) is what tells them apart, not colour, so the palette stays on one accent. Never shrinks. */
+   location text) is what tells them apart, not color, so the palette stays on one accent. Never shrinks. */
 .vault-icon { flex: 0 0 auto; align-self: flex-start; width: 40px; height: 40px; border-radius: var(--radius-sm);
 	display: grid; place-items: center; color: var(--accent-ink); background: var(--accent-soft); }
 .vault-icon svg { width: 20px; height: 20px; }
@@ -572,9 +572,9 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 .badge.notresponding { color: var(--warn); background: var(--warn-bg); }
 
 /* Status-dot pills. The FOUR primary state badges (mounted / idle / not-responding / unreachable) each carry a
-   leading dot in their own colour, so the vault's core state reads at a glance the way a modern status pill does.
+   leading dot in their own color, so the vault's core state reads at a glance the way a modern status pill does.
    Scoped to just these four so the secondary chips (tamper-proof, member roles, mirror) stay plain text-chips. The
-   dot inherits currentColor, so it always matches the badge's own tint (idle has no colour rule → muted grey). */
+   dot inherits currentColor, so it always matches the badge's own tint (idle has no color rule → muted gray). */
 .badge.mounted, .badge.idle, .badge.notresponding, .badge.invalid { display: inline-flex; align-items: center; gap: var(--sp-3); }
 .badge.mounted::before, .badge.idle::before, .badge.notresponding::before, .badge.invalid::before {
 	content: ""; width: 6px; height: 6px; border-radius: var(--radius-pill); background: currentColor; flex: 0 0 auto;
@@ -595,7 +595,7 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 button { font: inherit; }
 /* Interactive feedback is tokenized and reduced-motion-safe (the global net zeroes these durations). Every button
    eases its hover change and dips 1px on press, so a click feels physical instead of instant; link buttons ease
-   their colour and underline on hover. */
+   their color and underline on hover. */
 /* Glossy "wet paint" primary button. The fill stays a saturated accent (a subtle darken toward --accent-strong for
    depth, both dark enough that white text keeps 4.5:1), and the shine is a bright sheen over the TOP HALF via a
    pseudo-element — not a light-to-dark wash, which reads faded. The label/icon paint above ::before, so contrast is
@@ -928,6 +928,7 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 	.star-btn { min-width: 40px; min-height: 40px; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
 	.help-nav-btn { min-width: 40px; min-height: 40px; }
 	.copy-btn { min-height: 40px; }
+	.pw-reveal { min-width: 40px; } /* the password show/hide toggle: a reliably tappable target on a phone (height already fills the field) */
 	/* The everyday row and menu actions (Keys, Remove, revoke, size) and the More-menu itself are the ones a phone
 	   user taps most and sit close to their neighbors, so grow their hit area to the same comfortable minimum to
 	   avoid mis-taps between adjacent controls. The visual text size is unchanged; only the tap target grows. */
@@ -1000,8 +1001,11 @@ input.mask { -webkit-text-security: disc; }
 	position: absolute; top: 0; right: 0; height: 100%; width: 2.4em;
 	display: inline-flex; align-items: center; justify-content: center;
 	background: none; border: 0; margin: 0; padding: 0; cursor: pointer;
-	color: var(--muted); font-size: 15px; line-height: 1; opacity: .7; border-radius: 0 6px 6px 0;
+	/* --muted at .85 clears the 3:1 non-text-contrast floor over the input background in every theme with headroom; the
+	   icon is an SVG in currentColor, so these tokens actually apply (an emoji would ignore them). */
+	color: var(--muted); line-height: 0; opacity: .85; border-radius: 0 6px 6px 0;
 }
+.pw-reveal svg { display: block; width: 18px; height: 18px; }
 .pw-reveal:hover, .pw-reveal.on { opacity: 1; color: var(--text); }
 .pw-reveal:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .pw-reveal.on { color: var(--accent); }
@@ -1229,7 +1233,7 @@ input.switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2
 	.note-item, .search-hit { min-height: 40px; padding-top: 11px; padding-bottom: 11px; }
 }
 
-/* Undercover disguise — a full-screen cover that hides the whole app behind an innocuous dim idle clock. Its colours are
+/* Undercover disguise — a full-screen cover that hides the whole app behind an innocuous dim idle clock. Its colors are
    fixed (not theme tokens) so it looks the same under every theme and carries no hint of the app underneath: a plain
    dark screen with a faint, screensaver-style clock. It sits above everything, including modal dialogs' top layer. */
 #undercover { position: fixed; inset: 0; z-index: 2147483647; display: flex; align-items: center; justify-content: center;
