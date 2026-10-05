@@ -991,6 +991,20 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
    check falls the field back to type="password" on any engine that lacks it, so the text is
    never shown in the clear. */
 input.mask { -webkit-text-security: disc; }
+/* Reveal (show/hide) toggle on a vault-password field. A relative wrapper holds the input plus an eye button pinned to
+   the field's right edge, so the field keeps its own box and the aligned input rows are unaffected. The input reserves
+   room on the right for the button. The wrapper is display:block and full width so the input fills its field as before. */
+.pw-reveal-wrap { position: relative; display: block; width: 100%; }
+.pw-reveal-wrap > input { width: 100%; padding-right: 2.6em; }
+.pw-reveal {
+	position: absolute; top: 0; right: 0; height: 100%; width: 2.4em;
+	display: inline-flex; align-items: center; justify-content: center;
+	background: none; border: 0; margin: 0; padding: 0; cursor: pointer;
+	color: var(--muted); font-size: 15px; line-height: 1; opacity: .7; border-radius: 0 6px 6px 0;
+}
+.pw-reveal:hover, .pw-reveal.on { opacity: 1; color: var(--text); }
+.pw-reveal:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.pw-reveal.on { color: var(--accent); }
 
 /* Vault version + fingerprint line in the tamper-check result */
 .tamper-fp { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--muted); }
