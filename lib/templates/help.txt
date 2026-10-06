@@ -37,6 +37,7 @@ All commands:
   vdisk member-remove <path> <member-id>   Remove a member (re-encrypts to revoke; --soft to only drop from the roster; --yes to skip the confirm)
   vdisk member-promote <path> <member-id>  Promote a member to owner (can manage membership)
   vdisk member-demote <path> <member-id>   Demote an owner back to a plain member
+  vdisk rotate-owner-key <path>            Rotate the owner key — truly cut off a demoted or removed owner (no re-encryption)
   vdisk member-add-device <path> <member-id> --to <device-public-key>   Enroll another device for a member
   vdisk member-remove-device <path> <device-id>   Revoke one device, keeping the member's others (--soft to only drop from the roster; --yes to skip the confirm)
   vdisk owner-recovery <path> --trustees <pub1,pub2,…> --threshold <k>   Split owner access so any k of the trustees can restore it
