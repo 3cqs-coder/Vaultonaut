@@ -304,7 +304,7 @@ Each sign-in is a signed challenge. The interface hands your device a fresh, sin
 
 A password must still exist to run the interface, and it stays as a fallback, so this adds a way in without removing one. A key is tied to the exact address you added it on, so add one again if you later open the interface at a different address. It needs a real name for that address — `localhost` or a hostname — so a key cannot be added when you reach the interface by a bare IP address.
 
-Changing the web password removes every enrolled key, so a password change stays a clean way to lock out prior access; re-add your key afterward. A key added by an older version used a simpler, less protected sign-in; the interface marks it so you can remove it and add it again to upgrade to the signed-challenge method above.
+Changing the web password removes every enrolled key, so a password change stays a clean way to lock out prior access; re-add your key afterward. You can also revoke every key on its own, without changing the password, from **Revoke all keys** in the Sign-in keys panel or with `vdisk sign-in-keys revoke-all` — useful if a device is lost. A key added by an older version used a simpler, less protected sign-in; the interface marks it so you can remove it and add it again to upgrade to the signed-challenge method above.
 
 Reaching the interface from another machine is a deliberate step. Run it with `vdisk ui --bind <address>` — for example `--bind 0.0.0.0` to listen on every network interface. This is allowed only after a password is set. It is then served over HTTPS with a self-signed certificate, so the login never crosses the network in the clear. Your browser will ask you to trust that certificate the first time. That certificate is created automatically and needs no external tools — it works the same on macOS, Linux, and Windows. On an untrusted network, it is still safest to reach the interface through a tunnel or VPN you already run.
 
@@ -511,6 +511,7 @@ vdisk ui       [--port 7420]     Launch the local web interface (if it is alread
 vdisk stop                       Stop the running web/background service (refuses while a vault is open; --force stops and locks open vaults)
 vdisk web-password [set|clear]   Set or clear a login for the web interface (required before --bind exposes it beyond this machine)
 vdisk api-token <create|list|revoke <id>>   Manage bearer tokens so a script or third-party app can reach the local API without a browser login (add --label <name>)
+vdisk sign-in-keys [list|revoke-all]   List the passwordless web sign-in keys (Touch ID, Windows Hello, security keys), or revoke them all at once
 vdisk autostart <install|uninstall|status>   Start the web interface automatically at login (add --bind <address> to start it reachable from other devices; a web password is then required)
 vdisk wedge-restart <on|off|status>   Restart a hung (not just crashed) service automatically (off by default)
 vdisk uninstall                  Remove the autostart and shortcut entries (never touches your data)

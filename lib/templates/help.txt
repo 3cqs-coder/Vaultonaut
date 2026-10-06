@@ -122,6 +122,7 @@ All commands:
   vdisk stop                       Stop the running web/background service (refuses while a vault is open; --force stops and locks open vaults)
   vdisk web-password [set|clear]   Set or clear the web-interface login (required before --bind exposes it beyond loopback)
   vdisk api-token <create|list|revoke <id>>   Manage bearer tokens for headless / third-party access to the local API (--label <name>)
+  vdisk sign-in-keys [list|revoke-all]   List or revoke the passwordless web sign-in keys (Touch ID, Windows Hello, security keys)
   vdisk autostart <install|uninstall|status>   Start the UI at login and add a clickable launcher (install adds both; add --bind <address> to start it reachable from other devices — a password is then required; --no-shortcut skips the launcher)
   vdisk wedge-restart <on|off|status>   Restart a HUNG (not just crashed) service automatically (off by default)
   vdisk shortcut <create|remove|status>   Add just the clickable launcher (autostart install already adds one; use this for a launcher without autostart)
