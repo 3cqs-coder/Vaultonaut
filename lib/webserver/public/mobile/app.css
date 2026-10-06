@@ -83,7 +83,11 @@ button.ghost { background: transparent; color: var(--text); border: 1px solid va
 /* A dark amber that clears WCAG AA on the light and sepia panels (>=4.5:1 for the 12px text); the dark theme uses a
    lighter amber that clears AA on the dark panel. Fixed literals because the mobile palette has no amber token. */
 .tracetag.stored { color: #845400; }
-:root[data-theme="auto"] .tracetag.stored, :root[data-theme="dark"] .tracetag.stored { color: #e0a94a; }
+/* Pinned dark always gets the lighter amber. "auto" gets it ONLY under a dark system — otherwise (auto + a LIGHT
+   system, the out-of-the-box state) the dark amber would render on the light panel at ~1.95:1 and be unreadable, so
+   auto + light correctly keeps the dark #845400 above (5.98:1). */
+:root[data-theme="dark"] .tracetag.stored { color: #e0a94a; }
+@media (prefers-color-scheme: dark) { :root[data-theme="auto"] .tracetag.stored { color: #e0a94a; } }
 .crumbs { color: var(--muted); font-size: 14px; margin-bottom: 8px; word-break: break-word; }
 .crumbs a { color: var(--accent-ink); text-decoration: none; display: inline-flex; align-items: center; min-height: 40px; padding: 6px 0; } /* accent-ink (not bare --accent) so this normal-size link text clears WCAG AA 4.5:1 in light and sepia; min-height gives a reliable ~40px tap target on a phone */
 .filelist { list-style: none; margin: 0; padding: 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
@@ -99,7 +103,7 @@ button.ghost { background: transparent; color: var(--text); border: 1px solid va
    notched phone held in landscape. */
 .viewer { position: fixed; inset: 0; background: var(--bg); z-index: 20; display: flex; flex-direction: column; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
 .viewer-bar { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--border); }
-.viewer-name { color: var(--muted); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.viewer-name { flex: 1; min-width: 0; color: var(--muted); font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } /* flex:1 + min-width:0 so a long file name truncates with an ellipsis instead of overflowing the bar (a flex item defaults to min-width:auto and refuses to shrink below its content) */
 .viewer-body { flex: 1; overflow: auto; display: flex; align-items: flex-start; justify-content: center; padding: 12px; }
 .viewer-body img { max-width: min(100%, 1200px); height: auto; }
 .viewer-body video { max-width: min(100%, 1200px); max-height: 100%; height: auto; }
