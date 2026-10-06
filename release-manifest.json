@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.3.0",
   "algo": "sha256",
-  "generatedAt": "2026-10-06T13:21:12.470Z",
+  "generatedAt": "2026-10-06T21:02:36.680Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -57,8 +57,8 @@
     },
     {
       "path": "lib/Common.js",
-      "sha256": "2151ec8c0a5ef43f7f920c9d59d2453087bb130964251b3bd3abce4065ac63f9",
-      "size": 72468
+      "sha256": "78ec66fbfd5099d9cd1757fb214b5bdba166216c24bf6d446042be4ab843febb",
+      "size": 72812
     },
     {
       "path": "lib/Decoy.js",
@@ -72,8 +72,8 @@
     },
     {
       "path": "lib/Disperse.js",
-      "sha256": "a34586104ecf629b2878ca76cafd0e0ec6107ee03584db9f0d314de4cfb7c232",
-      "size": 15721
+      "sha256": "e8e64323f896c4e4e8460845a788e0bf360397c23742cdb8ac646126e55580ea",
+      "size": 16056
     },
     {
       "path": "lib/DisperseProcess.js",
@@ -182,8 +182,8 @@
     },
     {
       "path": "lib/NotesImport.js",
-      "sha256": "1056b0de20a44459c94dd1e1ba90c156c96b50021be0a899210011aba973c635",
-      "size": 17845
+      "sha256": "c115e1f70f971d581e342e762ae670ce03881560d8b71d0566a330bc79a0cbfe",
+      "size": 19224
     },
     {
       "path": "lib/Notify.js",
@@ -192,13 +192,13 @@
     },
     {
       "path": "lib/Ocr.js",
-      "sha256": "1e951b9853129ba085b92ebcbd6346081806640ca5f42473e9090ae920fbce8a",
-      "size": 25748
+      "sha256": "2d384e7bc8c14f2b38ae333d60a40253379209a3b18ec05aa8e6b798a6cb172c",
+      "size": 28155
     },
     {
       "path": "lib/Onion.js",
-      "sha256": "7424a649e773b7699e27e96aac68e84cfa1a4cfb2726982268edb300339f3380",
-      "size": 40070
+      "sha256": "88e6b0e3f1e38590c9f6d58f7740374fe9c7c0186189dff23ffefbb6259c1450",
+      "size": 40860
     },
     {
       "path": "lib/OwnerClient.js",
@@ -267,8 +267,8 @@
     },
     {
       "path": "lib/ReedSolomon.js",
-      "sha256": "1ed3b17c8b6f4e78f7ffa57049e00ee48682d59f48a49c0a749e1c016d6993e9",
-      "size": 8819
+      "sha256": "d1df812b61d38cad1982b8570afeec516cb95c21b18cf0e98f9375fb94d1311e",
+      "size": 9472
     },
     {
       "path": "lib/Relay.js",
@@ -332,8 +332,8 @@
     },
     {
       "path": "lib/Timelock.js",
-      "sha256": "1b92e5cf8a2ca689bed9d06d1ebf7cb80dad80ef76399927c3b3c91e18b395e2",
-      "size": 19450
+      "sha256": "9613d9d958bff496d4398f44a8b5bda3e6d098b0c5ef45596cd362b7691ae28d",
+      "size": 20021
     },
     {
       "path": "lib/TimelockWorker.js",
@@ -367,8 +367,8 @@
     },
     {
       "path": "lib/Vault.js",
-      "sha256": "5430ee2e391ffa58b32412dc3d3d90d4ddc8beef7f9a5b7644be5e4f17c16a52",
-      "size": 985292
+      "sha256": "7da05830dfef16811657564200cdb17fa9a9f51c60f5932fec48ef62f38bc3f3",
+      "size": 991065
     },
     {
       "path": "lib/Watchdog.js",
@@ -377,13 +377,13 @@
     },
     {
       "path": "lib/WorkerRun.js",
-      "sha256": "4a55a19775b1edb4b2b2d1702f9d22465048b9beb90e8b57db182042a5cabcc5",
-      "size": 17749
+      "sha256": "3ff5c3e57c2c9190216808641de953896d0986a7dd2539f6a0927e855a49fe5e",
+      "size": 18559
     },
     {
       "path": "lib/Zip.js",
-      "sha256": "347780feaaafa4151eb6205aac7c97f63650d705af008d483f6c1b0ac7f45ae0",
-      "size": 20368
+      "sha256": "a39437e6518987074188e1205007bd64b6fbe9248f6aa91f01baaa3c37b9a25b",
+      "size": 20746
     },
     {
       "path": "lib/assets/logo.icns",
