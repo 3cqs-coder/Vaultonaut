@@ -426,6 +426,7 @@ vdisk members   <name|path>      List a team vault's members, roles, and devices
 vdisk member-remove <name|path> <member-id>   Remove a member (their access ends going forward; --soft to only drop from the roster, --yes to skip the confirm)
 vdisk member-promote <name|path> <member-id>   Promote a member to owner (they can manage membership)
 vdisk member-demote <name|path> <member-id>   Demote an owner back to a plain member
+vdisk rotate-owner-key <name|path>   Rotate the owner key — the true way to cut off a demoted or removed owner (keeps the current owners, no re-encryption)
 vdisk member-add-device <name|path> <member-id> --to <public-key>   Enroll another device for a member
 vdisk member-remove-device <name|path> <device-id>   Revoke one device, leaving the member's others (--soft to only drop from the roster, --yes to skip the confirm)
 vdisk owner-recovery <name|path> --trustees <pub1,pub2,...> --threshold <k>   Split owner recovery so any k of n trustees can restore ownership
@@ -845,6 +846,8 @@ That lighter "drop from the list now, re-encrypt later" option exists (`--soft`)
 **Several devices per person.** A member can use more than one device — a laptop and a phone, say — each with its own key. Enroll another device for someone with **Add device** in the Members panel (or `vdisk member-add-device <vault> <member-id> --to <the new device's public key>`); it joins under the same person with the same role. Revoking one device (**revoke device**, or `vdisk member-remove-device`) leaves their other devices working, so a lost phone does not lock the person out. Removing the person entirely is a normal member removal.
 
 **More than one owner.** Relying on a single owner is risky — if that person loses their key, no one can manage members or revoke anyone. So you can promote a trusted member to owner (**Make owner** in the Members panel, or `vdisk member-promote <vault> <member-id>`), and demote them again later. Any owner can add and remove members. Keep at least two owners for a real team.
+
+**Truly revoking an owner.** Owners share one owner key that signs the membership roster. A demote or a member removal cuts off a person's data access, but it cannot take back a copy of the owner key they may have saved, so on its own it does not stop them from signing the roster. To fully cut off a demoted or removed owner, rotate the owner key: run `vdisk rotate-owner-key <vault>` (or use the web interface). It mints a fresh owner key, keeps every current owner, and makes any old copy worthless. It does not re-encrypt the vault, so it is quick and needs no unmount. The usual order is to demote or remove the person first, then rotate. Rotating the owner key also retires any owner recovery you set up with the old key, so set that up again afterward.
 
 **Owner recovery — a safety net if the owners are lost.** You can split owner access across several trusted people so that any chosen number of them can restore it — for example, any 2 of 3, or 3 of 5. Set it up in the web interface with **Members → Owner recovery**, or with `vdisk owner-recovery <vault> --trustees <their public keys> --threshold <how many are needed>`. Each trustee's share is sealed to their own key, so it is useless to anyone else, and it travels with the vault.
 
