@@ -326,11 +326,11 @@ Closing the window behaves differently depending on whether the background servi
 
 ## How new versions are published
 
-New releases go through a few steps before they reach you, so you can trust that a download on the releases page has been built and reviewed rather than posted straight from someone's machine.
+New releases are built and published by an automated pipeline, so a download on the releases page always matches the public source rather than being posted straight from someone's machine.
 
-When a maintainer marks a new version, the full test suite runs first, and only if it passes are the desktop installers built fresh for macOS, Windows, and Linux. A build that fails its tests never becomes a release.
+Publishing a version starts with a tag. The signed manifest that proves the download is genuine is created from the source and committed before the tag is pushed (see [Verifying your download](#verifying-your-download)); the private signing key stays off the build machines and is never placed in the repository or in the pipeline. Pushing the tag runs the full test suite first, and a build that fails its tests never becomes a release. Next, a reproducibility check rebuilds the manifest from the public source and confirms it matches the committed, signed copy, so a release cannot go out with a manifest that is out of step with the code. Only then are the desktop installers built fresh for macOS, Windows, and Linux.
 
-Those installers are then gathered into a draft release. A draft is private to the maintainer and appears to no one else. Nobody sees a new version the moment a version number is set. The maintainer reviews the draft, adds the signature that proves the download is genuine (see [Verifying your download](#verifying-your-download)), and only then publishes it. So a release becomes visible on the releases page after a person has checked it and chosen to publish, not automatically.
+Those installers are published directly to the releases page, already live rather than as a draft. A prerelease tag (one with a hyphen, such as `1.3.0-beta`) is marked as a prerelease and is not shown as the latest version. There is no manual review-and-publish step.
 
 You can always confirm a release for yourself. Every published version carries the signed manifest that `verify.js` checks against the public key, and the app repeats that check each time it starts.
 

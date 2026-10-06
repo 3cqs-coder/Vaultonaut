@@ -28,7 +28,7 @@ secrets:
 services:
   relay:
     # Upgrading is a one-liner: the image is the published, version-pinned release. Set VAULTONAUT_VERSION in .env to a
-    # release (for example 1.1.0), then `docker compose pull && docker compose up -d` — the named data volumes below
+    # release (for example 1.3.0), then `docker compose pull && docker compose up -d` — the named data volumes below
     # carry every vault, key, and setting across the upgrade, and the new image verifies its own bundle on boot. Pin an
     # exact version for reproducibility; leave it at `latest` to always pull the newest. To build from source instead
     # of pulling, uncomment the `build` block and run `docker compose up -d --build`.

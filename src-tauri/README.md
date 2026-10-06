@@ -80,17 +80,17 @@ Apple Silicon Mac makes an arm64 app, so an Intel build needs an Intel Mac (or a
 downloadable artifacts. It is standard GitHub-Actions syntax:
 
 - **On GitHub:** it runs on GitHub's hosted runners — free for a public repository, including the macOS and
-  Windows runners — so tagging a release (a bare version such as `1.2.0`) or starting it by hand builds every
+  Windows runners — so tagging a release (a bare version such as `1.3.0`) or starting it by hand builds every
   platform with nothing to install locally.
 - **Self-hosted (later):** the same file runs on your own runners — copy it to your CI system's workflow
   directory, or point that system at `.github/workflows/`. Each runner needs Node (the pinned version), a Rust
   toolchain, and the platform build dependencies listed above; macOS must be a real Mac, since it cannot be
   virtualized.
 
-Pushing a version tag (a bare version such as `1.2.0`) builds every platform and publishes a GitHub Release at
+Pushing a version tag (a bare version such as `1.3.0`) builds every platform and publishes a GitHub Release at
 that tag automatically. The installers go live for everyone the moment the build finishes — there is no manual
 publish step. Re-running the same tag replaces its installers and keeps the release published, and a prerelease
-tag (one with a hyphen, such as `1.2.0-beta`) is published but not marked the latest release. The release step
+tag (one with a hyphen, such as `1.3.0-beta`) is published but not marked the latest release. The release step
 is GitHub-specific; on a self-hosted runner, swap it for that runner's own release API, while the build jobs stay
 identical.
 
