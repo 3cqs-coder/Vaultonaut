@@ -44,7 +44,7 @@
     "test:all": "node lib/test/_runall.js"
   },
   "dependencies": {
-    "@hyzyla/pdfium": "^2.1.13",
+    "@hyzyla/pdfium": "^3.0.0",
     "@noble/curves": "^2.4.0",
     "archiver": "^8.0.0",
     "ejs": "^7.0.1",
