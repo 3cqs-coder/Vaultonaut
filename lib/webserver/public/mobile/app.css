@@ -1,30 +1,10 @@
-/* Themes mirror the desktop interface: the same four choices (auto / light / dark / sepia), the same token values,
-   and the same 'vdisk-theme' storage. LIGHT is the base :root; the dark values apply under a dark system preference
-   only when the theme is "auto", and always when it is pinned "dark"; sepia is a calm warm theme. data-theme is set
-   before paint by theme-boot.js. */
+/* app.css — the phone viewer's component styles. The theme palette and the four theme choices are shared with the
+   desktop interface through css/theme.css and js/theme.js, so both surfaces stay in step. */
+/* Structural token only; every color, font, and theme choice comes from css/theme.css, the same file the
+   desktop interface loads. Keeping the palette there means the two surfaces cannot drift. data-theme is set before
+   paint by js/theme.js. */
 :root {
-	color-scheme: light; /* UA-drawn controls, scrollbars, and pickers follow the theme (see the desktop stylesheet) */
 	--radius: 12px;
-	/* LIGHT (default) */
-	--bg: #f4f6fb; --panel: #ffffff; --panel-2: #f0f2f8; --text: #1a2233; --muted: #5b6475;
-	--border: #e2e6ef; --accent: #2f6bff; --accent-text: #ffffff; --accent-btn: #2b64f2; --accent-ink: #1e56d6; --danger: #c0362c; --good: #0c6e3e;
-}
-@media (prefers-color-scheme: dark) {
-	:root[data-theme="auto"] {
-		color-scheme: dark;
-		--bg: #0e1117; --panel: #161b25; --panel-2: #1d2430; --text: #e6ebf5; --muted: #9aa4b6;
-		--border: #262e3d; --accent: #4d82ff; --accent-text: #ffffff; --accent-btn: #2f66ea; --accent-ink: #7aa2ff; --danger: #f87171; --good: #34d399;
-	}
-}
-:root[data-theme="dark"] {
-	color-scheme: dark;
-	--bg: #0e1117; --panel: #161b25; --panel-2: #1d2430; --text: #e6ebf5; --muted: #9aa4b6;
-	--border: #262e3d; --accent: #4d82ff; --accent-text: #ffffff; --accent-btn: #2f66ea; --accent-ink: #7aa2ff; --danger: #f87171; --good: #34d399;
-}
-:root[data-theme="sepia"] {
-	color-scheme: light;
-	--bg: #f4ecdf; --panel: #fbf6ec; --panel-2: #efe6d5; --text: #3a2f22; --muted: #715f45;
-	--border: #e2d4b8; --accent: #a4641f; --accent-text: #ffffff; --accent-btn: #a4641f; --accent-ink: #94571a; --danger: #a8231c; --good: #276b43;
 }
 * { box-sizing: border-box; }
 /* The `hidden` attribute must win over any class that sets `display` — otherwise `.viewer { display: flex }`

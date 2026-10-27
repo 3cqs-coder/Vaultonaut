@@ -1,20 +1,15 @@
 /* app.css — themed, responsive styling for the Vaultonaut UI.
-   Every color is a CSS custom property, and every THEME is one block that redefines the SAME token set — so a
-   component is styled once (against the tokens) and a new theme is one more block. Structural tokens (radius, the
-   mono stack, spacing) are theme-independent and live once on :root. The theme follows the system preference by
-   default (data-theme="auto") and can be pinned to light / dark / sepia (a calm warm theme) via the theme control,
-   which sets data-theme on <html>. Fonts are vendored locally (DM Sans for the UI, DM Mono for data and paths) and
-   served from /fonts, so the UI loads nothing from the network and works fully offline. To retune the look, edit the
-   tokens here; nothing below hardcodes a color. Contrast is tuned to clear WCAG AA on each theme's surfaces. */
+   Color tokens live ONCE in css/theme.css, which both this interface and the phone viewer load. Structural tokens
+   (radii, spacing, motion, fonts) live below. The theme follows the system preference by default (data-theme="auto")
+   and can be pinned to light, dark, or sepia through the shared theme control. Fonts are vendored locally (DM Sans for
+   the UI, DM Mono for data and paths) and served from /fonts, so the UI loads nothing from the network and works fully
+   offline. Nothing in a rule body hardcodes a color; CSS tests enforce that. Contrast is tuned to clear WCAG AA on each
+   theme's surfaces. */
 
 :root {
-	/* Tell the browser which theme its OWN chrome (form controls, scrollbars, date/number spinners and their
-	   popups) should render in. Without this, those UA-drawn parts stay light-mode over the dark surfaces. */
-	color-scheme: light;
-
 	/* ── Structural tokens (theme-independent) ──────────────────────────────────────────────────────────
-	   The single source of truth for spacing, radii, elevation, and motion. Colors are themed below; these
-	   are not. Every value here matches what the components ALREADY use, so adopting a token in place of a
+	   The single source of truth for spacing, radii, elevation, and motion. Colors live in css/theme.css;
+	   these do not. Every value here matches what the components ALREADY use, so adopting a token in place of a
 	   hardcoded literal is a no-op refactor, not a visual change. New UI should reach for these instead of
 	   raw px/seconds so the whole surface stays on one rhythm and can be retuned from one place. */
 
@@ -38,10 +33,10 @@
 	--sp-9: 24px;
 	--sp-10: 32px;
 
-	/* Elevation shadows are THEMED (softened on dark/sepia), so they live in each theme block below alongside
-	   the colors: --shadow / --shadow-soft are the resting shadows and --shadow-lift is the hover/active
-	   elevation the modernized cards use. They are listed here only for the reader — do not redefine them on
-	   bare :root, or the theme overrides would sit under a same-specificity duplicate. */
+	/* Elevation shadows are THEMED, so they live in css/theme.css with the colors: --shadow / --shadow-soft are
+	   the resting shadows and --shadow-lift is the hover/active elevation the modernized cards use. They are listed
+	   here only for the reader — do not redefine them on bare :root, or the theme overrides would sit under a
+	   same-specificity duplicate. */
 
 	/* Motion. Durations match the transitions already in the file (.15 / .2 / .22s, all `ease`). Using these
 	   tokens rather than literals means the reduced-motion rule below can zero every animation from one place
@@ -51,108 +46,11 @@
 	--dur-slow: .22s;
 	--ease: ease;
 
-	/* Metallic accents (theme-independent gloss). The primary button reads glossy via a bright sheen over its TOP
-	   HALF (a wet-paint look, not a light-to-dark wash). --sheen-top derives from the THEMED --workspace, so the
-	   faint "dashboard" sheen behind the floating content recolors per theme on its own. The machined-edge --bevel
-	   is themed (it lives in each theme block, since a light and a dark surface need a different highlight). */
+	/* Metallic gloss for the primary button: a bright sheen over its TOP HALF (a wet-paint look, not a
+	   light-to-dark wash). --sheen-top, which depends on the themed workspace tone, lives in css/theme.css. */
 	--metal-sheen: linear-gradient(180deg, rgba(255, 255, 255, .24) 0%, rgba(255, 255, 255, .03) 100%);
-	/* Fallback FIRST: a custom property is parsed permissively, so a color-mix() value here would be accepted even
-	   where color-mix is unsupported and would then poison the .app background at its use site. So default --sheen-top
-	   to the flat workspace tone (no sheen, but a valid background), and upgrade it to the mixed sheen only inside an
-	   @supports block below that actually tests for color-mix. */
-	--sheen-top: var(--workspace);
 
 	--mono: "DM Mono", ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-
-	/* LIGHT (default) */
-	--bg: #f4f6fb;
-	--rail: #ffffff;
-	--panel: #ffffff;
-	--panel-2: #f0f2f8;
-	--hover: #eef2fb;
-	--text: #1a2233;
-	--muted: #5b6475;   /* clears WCAG AA (>=4.5:1) on both --panel and --panel-2 */
-	--faint: #8a93a6;   /* tertiary text (paths, counts) — decorative, larger, so a lower ratio is acceptable */
-	--border: #e2e6ef;
-	--accent: #2f6bff;         /* accent for focus rings, borders, and decorative fills (needs 3:1 vs the theme bg) */
-	--accent-text: #ffffff;    /* text ON an accent fill */
-	--accent-btn: #2b64f2;     /* button-fill accent: darker than --accent so white text clears WCAG AA (4.5:1) */
-	--accent-ink: #1e56d6;     /* accent used AS small text on --panel / --accent-soft: darker so it clears 4.5:1 */
-	--accent-soft: #eaf1ff;
-	--accent-quiet: #d4e2ff;
-	--good: #0c6e3e;
-	--good-bg: #e4f6ec;
-	--warn: #8a5f00;
-	--warn-bg: #fdf3dc;
-	--warn-soft: #fdf3dc;
-	--danger: #c0362c;
-	--danger-fill: #c0362c;
-	--danger-soft: #fbe3e1;   /* soft danger tint; a plain-token fallback for a color-mix danger wash on engines without color-mix */
-	--star: #a86f1a;   /* favorite-star fill: a gold dark enough to clear the 3:1 graphical-contrast bar on the light panels (dark theme keeps a brighter gold below) */
-	/* Vault color-tag palette: vivid, distinct accents for the per-vault trust/sensitivity tag. Defined once (they read
-	   on both light and dark card grounds) and referenced only through these tokens, never as raw values. */
-	--tag-red: #e5484d; --tag-amber: #b8730a; --tag-green: #1f8a54; --tag-blue: #3b82f6; --tag-purple: #8b5cf6; --tag-slate: #64748b;
-	--shadow: 0 1px 3px rgba(16, 24, 40, .08), 0 1px 2px rgba(16, 24, 40, .06);
-	--shadow-soft: 0 1px 2px rgba(16, 24, 40, .06);
-	--shadow-lift: 0 2px 6px rgba(16, 24, 40, .07), 0 16px 36px -16px rgba(16, 24, 40, .22);
-	/* Redesign foundation (additive — consumed by the shell/button/card slices): the "cockpit" workspace tone that
-	   floating panels sit on, the extended accent set (button-gradient bottom, focus ring, glow, active-nav wash),
-	   and the machined top-edge bevel. --accent-strong stays as dark as --accent-ink so white text keeps 4.5:1. */
-	--workspace: #e3e8f2;
-	--accent-strong: #1e56d6;
-	--accent-focus: rgba(47, 107, 255, .20);
-	--accent-glow: 0 6px 20px -6px rgba(47, 107, 255, .5);
-	--accent-wash: linear-gradient(90deg, rgba(47, 107, 255, .16) 0%, rgba(47, 107, 255, .02) 100%);
-	--bevel: inset 0 1px 0 rgba(255, 255, 255, .7);
-}
-/* Upgrade the workspace sheen to the mixed tone only where color-mix is actually supported. Because --sheen-top
-   derives from the themed --workspace, this single override covers every theme; engines without color-mix keep the
-   flat-tone fallback set in :root above and still render a valid .app background. */
-@supports (background: color-mix(in oklab, red 50%, blue)) {
-	:root { --sheen-top: color-mix(in oklab, var(--workspace) 90%, #ffffff); }
-}
-
-/* DARK — shared by an explicit choice and by "auto" under a dark system preference. Kept a soft, calm dark
-   (deep slate, not near-black) so a security app reads as reassuring rather than a technical terminal. */
-@media (prefers-color-scheme: dark) {
-	:root[data-theme="auto"] {
-		color-scheme: dark;
-		--bg: #0e1117; --rail: #12161f; --panel: #161b25; --panel-2: #1d2430; --hover: #232b39;
-		--text: #e6ebf5; --muted: #9aa4b6; --faint: #6b7488; --border: #262e3d;
-		--accent: #4d82ff; --accent-text: #ffffff; --accent-btn: #2f66ea; --accent-ink: #7aa2ff; --accent-soft: #182642; --accent-quiet: #2b3a5c;
-		--good: #34d399; --good-bg: #10281f; --warn: #fbbf24; --warn-bg: #2a2211; --warn-soft: #2a2211;
-		--danger: #f87171; --danger-fill: #b91c1c; --danger-soft: #2a1414;
-		--star: #e0a400;   /* the same warm gold; redefined here so every theme sets the full token set */
-		--shadow: none; --shadow-soft: none;
-		--shadow-lift: 0 2px 8px rgba(0, 0, 0, .5), 0 20px 44px -20px rgba(0, 0, 0, .7);
-		--workspace: #0a0d13; --accent-strong: #2f66ea; --accent-focus: rgba(77, 130, 255, .22); --accent-glow: 0 6px 20px -6px rgba(77, 130, 255, .4); --accent-wash: linear-gradient(90deg, rgba(77, 130, 255, .18) 0%, rgba(77, 130, 255, .02) 100%); --bevel: inset 0 1px 0 rgba(255, 255, 255, .06);
-	}
-}
-:root[data-theme="dark"] {
-	color-scheme: dark;
-	--bg: #0e1117; --rail: #12161f; --panel: #161b25; --panel-2: #1d2430; --hover: #232b39;
-	--text: #e6ebf5; --muted: #9aa4b6; --faint: #6b7488; --border: #262e3d;
-	--accent: #4d82ff; --accent-text: #ffffff; --accent-btn: #2f66ea; --accent-ink: #7aa2ff; --accent-soft: #182642; --accent-quiet: #2b3a5c;
-	--good: #34d399; --good-bg: #10281f; --warn: #fbbf24; --warn-bg: #2a2211; --warn-soft: #2a2211;
-	--danger: #f87171; --danger-fill: #b91c1c; --danger-soft: #2a1414;
-	--star: #e0a400;   /* the same warm gold; redefined here so every theme sets the full token set */
-	--shadow: none; --shadow-soft: none;
-	--shadow-lift: 0 2px 8px rgba(0, 0, 0, .5), 0 20px 44px -20px rgba(0, 0, 0, .7);
-	--workspace: #0a0d13; --accent-strong: #2f66ea; --accent-focus: rgba(77, 130, 255, .22); --accent-glow: 0 6px 20px -6px rgba(77, 130, 255, .4); --accent-wash: linear-gradient(90deg, rgba(77, 130, 255, .18) 0%, rgba(77, 130, 255, .02) 100%); --bevel: inset 0 1px 0 rgba(255, 255, 255, .06);
-}
-/* SEPIA — a warm, low-contrast "calming" theme (paper cream + soft brown accent) for long, relaxed use. */
-:root[data-theme="sepia"] {
-	color-scheme: light;
-	--bg: #f4ecdf; --rail: #fbf6ec; --panel: #fbf6ec; --panel-2: #efe6d5; --hover: #eee2cd;
-	--text: #3a2f22; --muted: #715f45; --faint: #9c8c74; --border: #e2d4b8;
-	--accent: #a4641f; --accent-text: #ffffff; --accent-btn: #a4641f; --accent-ink: #94571a; --accent-soft: #f3e4cf; --accent-quiet: #e6d2b3;
-	--good: #276b43; --good-bg: #e4efdb; --warn: #8a5410; --warn-bg: #f7ecd2; --warn-soft: #f7ecd2;
-	--danger: #a8231c; --danger-fill: #a8231c; --danger-soft: #f2ddd6;
-	--star: #a86f1a;   /* a deeper gold that clears the 3:1 graphical-contrast bar on the cream sepia panels */
-	--shadow: 0 1px 3px rgba(90, 70, 40, .08), 0 1px 2px rgba(90, 70, 40, .06);
-	--shadow-soft: 0 1px 2px rgba(90, 70, 40, .06);
-	--shadow-lift: 0 2px 6px rgba(90, 70, 40, .09), 0 16px 36px -16px rgba(90, 70, 40, .26);
-	--workspace: #ece2d2; --accent-strong: #8a5418; --accent-focus: rgba(164, 100, 31, .20); --accent-glow: 0 6px 20px -6px rgba(164, 100, 31, .4); --accent-wash: linear-gradient(90deg, rgba(164, 100, 31, .16) 0%, rgba(164, 100, 31, .02) 100%); --bevel: inset 0 1px 0 rgba(255, 255, 255, .55);
 }
 
 /* Respect a reduced-motion preference GLOBALLY. Two layers, both cheap and cross-browser:

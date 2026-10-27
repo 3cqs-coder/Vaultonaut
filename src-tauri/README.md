@@ -41,6 +41,13 @@ npm run build
 That stages the app and the Node runtime, signs the bundle when a signing key is present (see below), and
 produces the installer under `target/release/bundle/`. Use `npm run dev` for a fast debug run while iterating.
 
+## Versioning
+
+The root `package.json` is the only place to change the version. `tauri.conf.json` reads it directly, and
+`sync-version.js` mirrors it into `Cargo.toml` and `Cargo.lock` because Cargo cannot read JSON. Both `npm run dev`
+and `npm run build` run that mirror automatically, and so do Tauri's own dev and build hooks. A direct `cargo build`
+that skipped the mirror fails in `build.rs` with the command to run, so a stale version can never reach an installer.
+
 Build every platform on the same pinned Node version (`PINNED_NODE` in `prepare-sidecar.js`).
 The bundle ships whatever Node runs the build, so each platform's installer must use the identical version to
 avoid drift. It must also be 24.7 or newer so every feature is enabled — the post-quantum seals need it. The

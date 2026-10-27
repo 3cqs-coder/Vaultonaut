@@ -17,6 +17,16 @@ const path = require('path');
 const version = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8')).version;
 if (!/^\d+\.\d+\.\d+/.test(String(version || ''))) { console.error('sync-version: package.json has no valid version.'); process.exit(1); }
 
+// The bundled app version must come from package.json, never a second literal. tauri.conf.json already points at
+// ../package.json; this guard makes that single-source rule explicit, so a future edit cannot replace it with a
+// hand-maintained version that drifts from the signed release.
+const confPath = path.join(__dirname, 'tauri.conf.json');
+const confVersion = JSON.parse(fs.readFileSync(confPath, 'utf8')).version;
+if (confVersion !== '../package.json') {
+	console.error('sync-version: tauri.conf.json must keep "version": "../package.json" (found ' + JSON.stringify(confVersion) + '). The root package.json is the only version source.');
+	process.exit(1);
+}
+
 const changed = [];
 
 // Cargo.toml: the [package] version. Only a line that STARTS with `version =` matches, so an inline dependency

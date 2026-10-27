@@ -115,6 +115,8 @@ A vault is not only for files. The same unlocked vault also works as a password 
 
 Node.js 24.7 or newer, for the command-line and from-source install described below. The desktop app bundles its own runtime, so it needs no separate Node install (see [Desktop app](#desktop-app)). Every feature works on this version, including all of Vaultonaut's post-quantum protection (see [Ready for quantum computers](#ready-for-quantum-computers)).
 
+Vaultonaut runs on 64-bit systems. The Node.js 24 runtime it uses, including the copy bundled in the desktop app, requires macOS 13.5 or newer. Windows 10 or newer and a current 64-bit Linux distribution are supported. A 32-bit system cannot run a current Node.js and is not supported.
+
 A mount driver appropriate to your system. This is the one component that cannot be bundled, because mounting a drive is done by the operating system. Vaultonaut detects whether it is present and tells you exactly what to install if it is not:
 
 - macOS — FUSE-T (needs no kernel extension and no reboot). It is strongly recommended and, for Finder copies, effectively required. It is safe to keep alongside an older kernel-extension FUSE driver if you already use one for other apps.

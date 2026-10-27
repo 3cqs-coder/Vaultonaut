@@ -120,6 +120,30 @@ function dirSizeMB(p) {
 // engine's pinned version). The build refuses to run on any other Node so a mismatched or feature-limited runtime
 // can never be shipped.
 const PINNED_NODE = '24.11.1'; // MUST be >= 24.7; every platform build must use exactly this version
+// The oldest macOS the official darwin-x64 and darwin-arm64 Node binaries run on. Both slices of Node 24.11.1 report
+// LC_BUILD_VERSION minos 13.5. The bundle must not claim to support an older macOS: the installer would succeed, then
+// the bundled interpreter would fail to start with a dyld error. tauri.conf.json carries the user-facing floor, and
+// assertTauriMacosFloor() (plus lib/test/builddrift.js) keeps it at or above this value.
+const PINNED_NODE_MACOS_MIN = '13.5';
+function versionAtLeast(actual, minimum) {
+	const a = String(actual || '').split('.').map(Number), b = String(minimum || '').split('.').map(Number);
+	for (let i = 0; i < Math.max(a.length, b.length); i++) {
+		const x = Number.isFinite(a[i]) ? a[i] : 0, y = Number.isFinite(b[i]) ? b[i] : 0;
+		if (x > y) return true;
+		if (x < y) return false;
+	}
+	return true;
+}
+// Fail the build when the declared macOS floor is below what the bundled runtime can actually start on.
+function assertTauriMacosFloor() {
+	const confPath = path.join(HERE, 'tauri.conf.json');
+	const conf = JSON.parse(fs.readFileSync(confPath, 'utf8'));
+	const declared = conf && conf.bundle && conf.bundle.macOS && conf.bundle.macOS.minimumSystemVersion;
+	if (!declared || !versionAtLeast(declared, PINNED_NODE_MACOS_MIN)) {
+		throw new Error('tauri.conf.json declares macOS ' + (declared || '(none)') + ', but the bundled Node ' + PINNED_NODE + ' requires macOS ' + PINNED_NODE_MACOS_MIN + ' or newer. Raise bundle.macOS.minimumSystemVersion.');
+	}
+	return declared;
+}
 function enforceRuntimeVersion() {
 	if (process.versions.node !== PINNED_NODE) {
 		console.error(`\nRefusing to build the desktop app on Node ${process.versions.node}. Every platform's installer must bundle`);
@@ -130,6 +154,7 @@ function enforceRuntimeVersion() {
 }
 
 function main() {
+	assertTauriMacosFloor();
 	enforceRuntimeVersion();
 	const app = stageApp();       // recreates app/ (the published files + node_modules)
 	const runtime = stageRuntime(); // then drops the runtime inside it (shipped with the bundle; pinned by version, not signed)
@@ -140,6 +165,6 @@ function main() {
 
 // Exported so a drift-guard test can assert the desktop bundle tracks the published file set without running a
 // full build. Requiring this module never performs any staging.
-module.exports = { publishedFileList, APP_DIR, RUNTIME_DIR, REPO, PINNED_NODE };
+module.exports = { publishedFileList, assertTauriMacosFloor, APP_DIR, RUNTIME_DIR, REPO, PINNED_NODE, PINNED_NODE_MACOS_MIN };
 
 if (require.main === module) main();

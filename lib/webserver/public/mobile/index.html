@@ -5,15 +5,17 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 	<meta name="theme-color" content="#0e1117">
 	<meta name="apple-mobile-web-app-capable" content="yes">
-	<!-- 'default' is readable in EVERY theme (a normal opaque bar with dark glyphs). theme-boot.js upgrades this to the
-	     edge-to-edge 'black-translucent' only when a dark theme is resolved, where white glyphs read cleanly over the
-	     dark app. Placed BEFORE theme-boot.js so the script can find and adjust it. A single static dark value here would
-	     leave an installed light/sepia home-screen app with white glyphs over a near-white bar — effectively invisible. -->
+	<!-- 'default' is readable in EVERY theme (a normal opaque bar with dark glyphs). /js/theme.js upgrades this to
+	     the edge-to-edge 'black-translucent' only when a dark theme is resolved, where white glyphs read cleanly over
+	     the dark app. Placed BEFORE /js/theme.js so the script can find and adjust it. A single static dark value here
+	     would leave an installed light/sepia home-screen app with white glyphs over a near-white bar — effectively
+	     invisible. -->
 	<meta name="apple-mobile-web-app-status-bar-style" content="default">
-	<script src="theme-boot.js"></script>
+	<script src="/js/theme.js"></script>
 	<link rel="manifest" href="manifest.webmanifest">
 	<link rel="icon" href="icon.svg" type="image/svg+xml">
 	<link rel="apple-touch-icon" href="apple-touch-icon.png">
+	<link rel="stylesheet" href="/css/theme.css">
 	<link rel="stylesheet" href="app.css">
 	<title>Vault viewer</title>
 </head>

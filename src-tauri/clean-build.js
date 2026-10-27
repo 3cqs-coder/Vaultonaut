@@ -50,9 +50,14 @@ function looksPersonal(p) {
 // at ANY depth; ambiguous names are anchored to their known top-level location so a future nested source folder
 // of the same name is not silently lost; and secrets are dropped by exact basename anywhere. The secret names
 // come from ReleaseIntegrity so the private key can never fall out of sync with the copy filter.
+//
+// The signed manifest and its two signatures are deliberately NOT in this drop list. They are public release
+// artifacts, and sign-bundle.js must find them in the neutral copy to embed and verify the maintainer's signature.
+// Dropping them made a "signed" clean build silently produce an unsigned bundle (and could leave a stray .sig.pq).
+// Only the PRIVATE key is a secret.
 const ARTIFACT_SEGMENTS = new Set(['.git', 'node_modules', 'target']);
 const ANCHORED_DIRS = new Set(['src-tauri/app', 'src-tauri/binaries', 'src-tauri/gen', 'src-tauri/.cargo', 'data', '.test-data']);
-const SECRET_BASENAMES = new Set([RI.KEY_NAME, RI.MANIFEST_NAME, RI.SIG_NAME, 'SHA256SUMS', 'SHA256SUMS.sig', '.npmrc', '.env']);
+const SECRET_BASENAMES = new Set([RI.KEY_NAME, 'SHA256SUMS', 'SHA256SUMS.sig', '.npmrc', '.env']);
 
 function copyFilter(src) {
 	const relPosix = path.relative(REPO, src).split(path.sep).join('/');
@@ -125,8 +130,10 @@ function main() {
 	// 2) Install dependencies fresh at the neutral path (so nothing is carried from a personal node_modules): the
 	//    app's runtime dependencies at the root, and the packaging tools under src-tauri.
 	console.log('\nInstalling dependencies (fresh, at the neutral path)…');
-	run(['install', '--no-audit', '--no-fund'], BASE);
-	run(['install', '--no-audit', '--no-fund'], path.join(BASE, 'src-tauri'));
+	// Match the release and Docker builds: no dependency lifecycle script runs on the machine that produces the
+	// signed artifacts. Every runtime dependency is plain JavaScript or WebAssembly and needs no install hook.
+	run(['install', '--ignore-scripts', '--no-audit', '--no-fund'], BASE);
+	run(['install', '--ignore-scripts', '--no-audit', '--no-fund'], path.join(BASE, 'src-tauri'));
 
 	// 3) If signing, place the key at the neutral base JUST for the build. The base is owner-only, the key is
 	//    written owner-only, and it is removed immediately after the build — so it is never left on a shared
