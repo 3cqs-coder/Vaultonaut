@@ -5,8 +5,8 @@
   "identifier": "com.3cqs.vaultonaut",
   "build": {
     "frontendDist": "ui-shell",
-    "beforeDevCommand": { "script": "node -e \"const fs=require('fs'),path=require('path');const f=['src-tauri/sync-version.js','sync-version.js'].find(x=>fs.existsSync(x));if(f===undefined)throw new Error('sync-version.js not found');require(path.resolve(f))\"", "wait": true },
-    "beforeBuildCommand": { "script": "node -e \"const fs=require('fs'),path=require('path');const f=['src-tauri/sync-version.js','sync-version.js'].find(x=>fs.existsSync(x));if(f===undefined)throw new Error('sync-version.js not found');require(path.resolve(f))\"" }
+    "beforeDevCommand": { "script": "node sync-version.js", "wait": true },
+    "beforeBuildCommand": { "script": "node sync-version.js" }
   },
   "app": {
     "windows": [

@@ -14,7 +14,11 @@ if (target) args.push('--target', target);
 
 const isWin = process.platform === 'win32';
 // `npm run` puts node_modules/.bin on PATH, so the local `tauri` CLI resolves. On Windows it is a .cmd shim, which
-// current Node will only spawn through a shell; the arguments are static, so this adds no injection surface.
-const r = spawnSync(isWin ? 'tauri.cmd' : 'tauri', args, { stdio: 'inherit', shell: isWin });
+// cannot be spawned directly without a shell. Invoke cmd.exe explicitly instead of passing shell:true with an args
+// array (deprecated in Node 24, and it concatenates rather than escapes those arguments). The arguments here are
+// static, but the explicit form is both warning-free and safe if this wrapper ever gains a user-provided target.
+const r = isWin
+	? spawnSync(process.env.ComSpec || 'cmd.exe', ['/d', '/s', '/c', 'tauri', ...args], { stdio: 'inherit', windowsHide: true })
+	: spawnSync('tauri', args, { stdio: 'inherit' });
 if (r.error) { console.error('Failed to run the Tauri build: ' + r.error.message); process.exit(1); }
 process.exit(r.status == null ? 1 : r.status);
