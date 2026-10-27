@@ -43,10 +43,10 @@ produces the installer under `target/release/bundle/`. Use `npm run dev` for a f
 
 ## Versioning
 
-The root `package.json` is the only place to change the version. `tauri.conf.json` reads it directly, and
-`sync-version.js` mirrors it into `Cargo.toml` and `Cargo.lock` because Cargo cannot read JSON. Both `npm run dev`
-and `npm run build` run that mirror automatically, and so do Tauri's own dev and build hooks. A direct `cargo build`
-that skipped the mirror fails in `build.rs` with the command to run, so a stale version can never reach an installer.
+The root `package.json` is the only place to change the version. `tauri.conf.json` reads it directly. The Rust crate
+keeps a fixed `0.0.0` placeholder in `Cargo.toml` and `Cargo.lock` because Cargo cannot read JSON; Tauri uses the
+`package.json` version for the app bundle, installers, and Windows version resource, so the crate version is never a
+release literal. There is no sync step and no version hook in the build.
 
 Build every platform on the same pinned Node version (`PINNED_NODE` in `prepare-sidecar.js`).
 The bundle ships whatever Node runs the build, so each platform's installer must use the identical version to

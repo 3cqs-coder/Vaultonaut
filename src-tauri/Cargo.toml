@@ -1,6 +1,9 @@
 [package]
 name = "vaultonaut"
-version = "1.3.3"
+# Not the app version. The shipped version comes from the root package.json through tauri.conf.json's
+# "version": "../package.json"; Cargo cannot read JSON, so this stays a fixed placeholder rather than a second
+# release literal. Tauri uses the package.json version for the bundle, installer metadata, and Windows resources.
+version = "0.0.0"
 description = "Vaultonaut desktop shell"
 edition = "2021"
 rust-version = "1.77"

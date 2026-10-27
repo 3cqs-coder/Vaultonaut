@@ -4,9 +4,7 @@
   "version": "../package.json",
   "identifier": "com.3cqs.vaultonaut",
   "build": {
-    "frontendDist": "ui-shell",
-    "beforeDevCommand": { "script": "node sync-version.js", "wait": true },
-    "beforeBuildCommand": { "script": "node sync-version.js" }
+    "frontendDist": "ui-shell"
   },
   "app": {
     "windows": [
