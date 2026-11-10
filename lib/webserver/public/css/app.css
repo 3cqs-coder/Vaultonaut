@@ -1233,6 +1233,12 @@ body.notes-mode #notesDialog { width: min(980px, 96vw); max-width: 96vw; max-hei
 	   the dialog's) must include the home-indicator inset. */
 	.dialog.dialog-scroll > form { padding-bottom: max(22px, env(safe-area-inset-bottom)); }
 }
+/* Touch devices: the card action row's 34px desktop height must not undercut the 40px tap target. This rule follows
+   the base card rule on purpose, so it wins the cascade; the earlier generic touch rule is overridden by that base. */
+@media (hover: none) {
+	.card .actions .primary-btn, .card .actions .ghost-btn { min-height: 40px; }
+	.notes-mode-back { min-height: 40px; display: inline-flex; align-items: center; }
+}
 @media (max-width: 620px) {
 	body.notes-mode #notesDialog { width: 100vw; max-width: 100vw; height: 100vh; height: 100dvh; max-height: 100dvh; margin: 0; border-radius: 0; }
 }
