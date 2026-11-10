@@ -1,9 +1,9 @@
 {
   "schema": "vaultonaut-release-1",
   "product": "Vaultonaut",
-  "version": "1.3.3",
+  "version": "1.4.0",
   "algo": "sha256",
-  "generatedAt": "2026-11-10T13:39:57.343Z",
+  "generatedAt": "2026-11-10T16:10:36.153Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -17,8 +17,8 @@
     },
     {
       "path": "docs/README.md",
-      "sha256": "9bd316cb40e95c70eeaefbea047e8136cdcba0111f4d5f1d3cea4f17e7efed82",
-      "size": 240716
+      "sha256": "08a91e866d2375dcd808de039c24638b551dd5ed4498abc6ed81954c9181b38b",
+      "size": 241330
     },
     {
       "path": "docs/banner.png",
@@ -52,8 +52,8 @@
     },
     {
       "path": "lib/Commands.js",
-      "sha256": "494ca05500905defe999bb428debae6ac9c78f7a17c37121c30e79f58f6d775f",
-      "size": 210830
+      "sha256": "baae60690dacfe4e613e0ce3f60ad89b78d0a2792a396a4a2bd4f7d85aaaf7df",
+      "size": 212057
     },
     {
       "path": "lib/Common.js",
@@ -367,8 +367,8 @@
     },
     {
       "path": "lib/Vault.js",
-      "sha256": "69122f7d4c8c75c803106e0c40fc464d3dff2401634f6b7efb45bbc15e380bd7",
-      "size": 1007635
+      "sha256": "dada0c09c943663d87879990f3060ec9defb5c120b2d46a014c894bf9984ece0",
+      "size": 1016549
     },
     {
       "path": "lib/Watchdog.js",
@@ -407,8 +407,8 @@
     },
     {
       "path": "lib/index.js",
-      "sha256": "7ec07c51e2d0fdd0f2a5833fa0359f5fb5f2a781e0c2ad3d46889b40d7f7e3ff",
-      "size": 14896
+      "sha256": "8ce05717726bb60facd2270360b8bf49b81b1b34af664254ad8a229dbb5a5ecf",
+      "size": 15261
     },
     {
       "path": "lib/passwordStrength.js",
@@ -432,8 +432,8 @@
     },
     {
       "path": "lib/templates/help.txt",
-      "sha256": "7c891feafe117757c5baade1b44031c9f10181e55ef30cb5e3974ff5bdd35e59",
-      "size": 19715
+      "sha256": "520b80c34819b850e80d5b5e59cb86c28bff84bda00736d45f5843f18ab5a48d",
+      "size": 19861
     },
     {
       "path": "lib/templates/notices.txt",
@@ -457,8 +457,8 @@
     },
     {
       "path": "lib/webserver/index.js",
-      "sha256": "f5a0be828099d15d80e1fec5efe1b4dc71ad86621d02b32df578973ec3b602e2",
-      "size": 213775
+      "sha256": "6ae919c7e44247848c93f122729b9ffeca7c1ce8facfe628c8e2aca2a8940fbb",
+      "size": 215939
     },
     {
       "path": "lib/webserver/kitView.js",
@@ -472,8 +472,8 @@
     },
     {
       "path": "lib/webserver/public/css/app.css",
-      "sha256": "6b497af5df34f738bcda6b35942baceca124578b0766a824e3b7f6881fb261d1",
-      "size": 99014
+      "sha256": "de37dd91dcfd1352a20759c623d2c35e6205f0c124e92ea3aa50622f9277556b",
+      "size": 104721
     },
     {
       "path": "lib/webserver/public/css/theme.css",
@@ -547,8 +547,8 @@
     },
     {
       "path": "lib/webserver/public/js/app.js",
-      "sha256": "16300e0e45abbec16266c4ac36c302fb2011fb5d84c0a2793af637f932af0d98",
-      "size": 443163
+      "sha256": "4e29b1cc962ae1a0f7912e3c78649bb482652579d655cdff47662d9408eb12ba",
+      "size": 454522
     },
     {
       "path": "lib/webserver/public/js/login.js",
@@ -676,6 +676,11 @@
       "size": 3168
     },
     {
+      "path": "lib/webserver/public/shared/notes-mode-text.js",
+      "sha256": "d8a4c6134d9bbaf5fca4b70a9c214d821b2e2f683b7cff88c2a42b069106979e",
+      "size": 1465
+    },
+    {
       "path": "lib/webserver/public/shared/safe-text.js",
       "sha256": "8cf121f619849e93d855f1544b3bf6bb4dbb9b44a76ecfa390fc1faf10840b2f",
       "size": 1908
@@ -687,8 +692,8 @@
     },
     {
       "path": "lib/webserver/public/views/index.ejs",
-      "sha256": "11e52e39fdb1769f1db81125529a0299116f4c7dd7ca7259c614b4c42880aa07",
-      "size": 135032
+      "sha256": "a485520d6b927188106a09aa15a84f946aeecee24744c34db5ea02d4da8b13c8",
+      "size": 137075
     },
     {
       "path": "lib/webserver/public/views/login.ejs",
@@ -702,7 +707,7 @@
     },
     {
       "path": "package.json",
-      "sha256": "f8e39b34094ccec7807ca5cd5fe19fbc76efcfc450b6c72e590362bc7b6f91df",
+      "sha256": "8b717f31bc31a14f0249a80aa4a1cc39c075a9e8a7d8b0c85205a583f57a8fc4",
       "size": 1869
     },
     {

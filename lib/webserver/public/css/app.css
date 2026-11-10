@@ -392,7 +392,7 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 .unreachable-msg { color: var(--muted); font-size: 13px; }
 .cards { display: grid; gap: 12px; }
 .card {
-	display: flex; align-items: center; gap: var(--sp-6);
+	display: flex; align-items: center; flex-wrap: wrap; gap: var(--sp-6);
 	background: var(--panel);
 	border: 1px solid var(--border);
 	border-radius: var(--radius-lg);
@@ -401,7 +401,7 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 	transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
 }
 @media (hover: hover) { .card:hover { border-color: var(--accent-quiet); box-shadow: var(--bevel), var(--shadow-lift); } }
-.card .info { min-width: 0; flex: 1 1 auto; }
+.card .info { min-width: 0; flex: 1 1 340px; }
 
 /* Leading identity icon — a rounded tile that says at a glance where a vault's ciphertext lives: a lock for a
    local vault, a cloud for a cloud vault. Both use the SAME accent-blue tint — the lock vs cloud GLYPH (and the
@@ -426,7 +426,11 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
    it, and the smudge is heavy enough that the characters are not legible at a glance. It never hides layout, so cards
    keep their size whether hidden or shown. */
 .blurred { filter: blur(7px); -webkit-filter: blur(7px); user-select: none; -webkit-user-select: none; pointer-events: none; transition: filter var(--dur-fast) var(--ease); }
-.card .actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+/* One consistent action row for EVERY card: the buttons sit on their own line below the name/path, starting in the
+   info column (the icon's width plus the card gap) so the first button lines up under the vault name on every card.
+   A mounted vault's six actions no longer crowd a long path or drift left of an idle card's two, and the row still
+   wraps internally on a very narrow card. */
+.card .actions { display: flex; flex: 1 0 100%; gap: 8px; flex-wrap: wrap; justify-content: flex-start; padding-left: calc(40px + var(--sp-6)); }
 
 /* Base chip look, so a badge with no modifier (a member role, a version origin, the tamper-proof/WORM chip) still
    reads as a chip rather than plain padded text. Modifier classes below (.mounted/.sealed/…) override these. */
@@ -508,6 +512,9 @@ button { font: inherit; }
 @media (hover: hover) { .link-btn:hover { color: var(--accent-ink); text-decoration: underline; } }
 .size-recheck { color: var(--muted); font-size: .9em; }
 .danger { color: var(--danger); border-color: transparent; }
+/* Card danger actions (Unmount, Remove) are ghost buttons, so give them a real danger-tinted edge; the generic
+   transparent border above stays for text-style danger links. The plain token is the fallback for older engines. */
+.ghost-btn.danger { border-color: var(--danger); border-color: color-mix(in srgb, var(--danger) 55%, var(--border)); }
 
 /* "More" menu on a vault card: a native <details> disclosure styled as a dropdown, so the occasional and
    advanced actions stay one tap away without crowding the card. No library and no positioning script. */
@@ -804,7 +811,7 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 	   actions wrap to their own full-width row below rather than stacking the icon alone above everything. */
 	.card { flex-wrap: wrap; align-items: center; }
 	.card .info { flex: 1 1 0; }
-	.card .actions { flex: 1 0 100%; justify-content: flex-start; }
+	.card .actions { flex: 1 0 100%; justify-content: flex-start; padding-left: 0; }
 	.main-top { flex-direction: column; }
 	.new-vault-btn { width: 100%; }
 	/* Hide the brand wordmark on a phone so the top-bar controls always fit beside the logo. */
@@ -831,6 +838,7 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 	   user taps most and sit close to their neighbors, so grow their hit area to the same comfortable minimum to
 	   avoid mis-taps between adjacent controls. The visual text size is unchanged; only the tap target grows. */
 	.link-btn, .ghost-btn, .primary-btn { min-height: 40px; }
+	.card .actions .primary-btn, .card .actions .ghost-btn { min-height: 40px; }
 	.more-menu .link-btn, .more > summary { min-height: 40px; display: flex; align-items: center; }
 	/* The inline path tools (copy, and the privacy-screen reveal toggle) sit right next to each other on a path line, so
 	   a phone user needs a comfortable, well-separated hit area to avoid tapping the wrong one; grow the target without
@@ -1155,3 +1163,71 @@ input.switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2
 .tl-snap-head:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
 .tl-files { margin: 2px 0 6px; padding-left: 4px; display: flex; flex-direction: column; gap: 4px; color: var(--muted); font-size: 13px; }
 .tl-files li { overflow-wrap: anywhere; }
+
+/* The two large, content-heavy dialogs (Notes and Manage) scroll INSIDE their rounded frame. The dialog owns the
+   clip and the flex column; the form is the scroll container with the same 22px inset the dialog used to have. This
+   keeps the scrollbar off the rounded edge instead of drawing a hard grey column through the corner. One shared rule
+   for both, so the two views cannot drift apart. */
+/* IMPORTANT: the base rule must NOT set display. A native <dialog> is hidden by the UA rule
+   `dialog:not([open]) { display: none }`, and an id selector that sets display would override it and leave every
+   closed dialog visible in the page flow. Only the [open] rule lays it out as a flex frame. */
+#notesDialog, #manageDialog { padding: 0; overflow: hidden; }
+#notesDialog[open], #manageDialog[open] { display: flex; flex-direction: column; }
+#notesDialog > form, #manageDialog > form { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 22px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+#notesDialog > form::-webkit-scrollbar, #manageDialog > form::-webkit-scrollbar { width: 10px; }
+#notesDialog > form::-webkit-scrollbar-track, #manageDialog > form::-webkit-scrollbar-track { background: transparent; }
+#notesDialog > form::-webkit-scrollbar-thumb, #manageDialog > form::-webkit-scrollbar-thumb { background: var(--border); border: 2px solid var(--panel); border-radius: 999px; }
+#notesDialog > form::-webkit-scrollbar-thumb:hover, #manageDialog > form::-webkit-scrollbar-thumb:hover { background: var(--faint); }
+
+/* ---------------------------------------------------------------------------
+   Focused password-manager mode (/notes)
+   The same page, note editor, and encrypted vault; only the unlock surface and the notes dialog are shown. No mount,
+   serve, or file controls are rendered over it. Tokens only, so all four themes and reduced-motion rules apply.
+   --------------------------------------------------------------------------- */
+body.notes-mode .app { display: none; }
+.notes-mode-start {
+	min-height: 100vh;
+	min-height: 100dvh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: max(20px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+	background: var(--bg);
+}
+.notes-mode-card {
+	width: min(440px, 100%);
+	background: var(--panel);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-lg);
+	padding: 26px;
+	box-shadow: var(--bevel), var(--shadow-lift);
+	display: grid;
+	gap: 14px;
+}
+.notes-mode-brand { display: flex; align-items: center; gap: 10px; }
+.notes-mode-brand h1 { font-size: 21px; margin: 0; }
+.notes-mode-card .lead { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+.notes-mode-back { justify-self: start; font-size: 13px; color: var(--accent-ink); text-decoration: none; }
+.notes-mode-back:hover { text-decoration: underline; }
+.notes-mode-card .dialog-actions { position: static; margin: 0; padding: 0; border: 0; background: none; justify-content: flex-end; }
+.notes-mode-result { margin: 0; color: var(--danger); font-size: 13px; }
+.notes-mode-card .hint { margin: 0; }
+.notes-mode-card #notesModeTheme { justify-self: start; padding: 0; }
+/* In the focused dialog the back-to-vaults action belongs apart from the item actions, at the start of the footer. */
+#notesModeHome { margin-right: auto; }
+body.notes-mode #notesDialog { width: min(980px, 96vw); max-width: 96vw; max-height: 94vh; max-height: 94dvh; margin: 3vh auto auto; }
+/* Card actions: a quieter, uniform row. The password-manager shortcut lives in Manage, so an unmounted card keeps
+   just Mount and Manage; every action shares the same height and a comfortable minimum width instead of looking like
+   a stack of differently sized blocks. */
+.card .actions { gap: 6px; }
+.card .actions .primary-btn, .card .actions .ghost-btn { display: inline-flex; align-items: center; justify-content: center; min-width: 92px; min-height: 34px; padding: 0 13px; font-size: 13.5px; text-align: center; }
+/* Both buttons are border-box, so the ghost's 1px border is INSIDE the same 34px total height. The primary keeps its
+   stock look (no added border, which would push its inset bevel inward and read as a double outline). */
+@media (max-width: 620px) {
+	/* Match the sticky footer's safe-area offset: the form is now the scroll container, so its bottom padding (not
+	   the dialog's) must include the home-indicator inset. */
+	#notesDialog > form, #manageDialog > form { padding-bottom: max(22px, env(safe-area-inset-bottom)); }
+}
+@media (max-width: 620px) {
+	body.notes-mode #notesDialog { width: 100vw; max-width: 100vw; height: 100vh; height: 100dvh; max-height: 100dvh; margin: 0; border-radius: 0; }
+}

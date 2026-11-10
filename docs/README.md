@@ -409,6 +409,7 @@ The everyday commands are `create`, `mount`, `unmount`, and `open` — everythin
 vdisk create   <name|path>       Create a new encrypted vault
 vdisk name     <path> ["title"]  Show or set a vault's encrypted name and description (--description "text", or --anonymize to hide the folder name; needs the password)
 vdisk import   <folder> [path]   Create a new vault from an existing folder (copies files in)
+vdisk notes [vault]              Open the password-manager view without mounting a drive (the password is asked for there)
 vdisk notes-import <file> <vault> Import logins and notes from a .csv or a password-manager export (.json or .1pux) into an open vault (--dry-run, --skip-duplicates, --format csv|bitwarden|1pux|auto)
 vdisk cloud    <list|connect|add|remove|test>   Manage cloud storage (then create a cloud vault with: create <name|path> --cloud <id> --remote-path <folder>)
 vdisk passwd   <name|path>       Change a vault's password (instant; no re-encryption)
@@ -825,6 +826,8 @@ A login can hold its two-factor secret, and the app shows the rolling six-digit 
 Because an item can hold passwords, its title, its fields, and its note are all encrypted a second time, on top of the vault's own encryption. The stored item is ciphertext, so the plaintext exists only for the moment the app decrypts an item to show it. This is stronger than the protection on a normal file. Even a program with access to the vault's files — a search indexer, a backup tool, another app — still cannot read your items. They are encrypted with a key derived from your vault password, so they decrypt automatically while the vault is unlocked, with no second password to enter. They also stay readable after a password change or a key rotation. Items are written straight to the encrypted store. They are saved the instant you enter them, and they work the same on macOS, Linux, and Windows, whether or not the vault is mounted as a drive.
 
 You can also read your items without mounting the vault as a drive. Choose **View files & notes** on a vault, open it in this browser, and your secure items appear there under **Secure notes**, decrypted only in the page — the same low-residue path the file viewer uses. It works on a phone through the one-time code too, so your logins and codes travel with you.
+
+For a focused password-manager view, choose **Manage → Password manager** on a vault, open the app at `/notes`, or run `vdisk notes <vault>`. It opens the same encrypted items with the vault password, without a drive, a mount driver, or admin rights. The focused view shows only your secure items; use the full interface when you want files or vault settings. The session locks after a period of inactivity and whenever you close it, and decrypted items remain only in the page's memory.
 
 Items travel with the vault through backups, mirrors, and shared copies, and because they are real files in the vault, the tamper check accounts for them like any other content.
 
