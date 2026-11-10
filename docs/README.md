@@ -652,11 +652,14 @@ The web interface runs a small HTTP service on your own machine. Its stable, ver
 - `POST /api/v1/create` — create a vault. Body: `{ "path", "password", … }`.
 - `POST /api/v1/mount` — mount a vault. Body: `{ "path", "password" }` (a password is required when the interface is exposed).
 - `POST /api/v1/unmount` — unmount a vault. Body: `{ "path" }`.
-- `POST /api/v1/notes-list` — list secure-note items in an open vault (titles only). Body: `{ "path" }`.
-- `POST /api/v1/note-get` — read one item. Body: `{ "path", "id" }`.
-- `POST /api/v1/note-save` — create or update an item (omit `id` to create). Body: `{ "path", "id"?, "title", "type", "fields", "note" }`.
-- `POST /api/v1/note-delete` — delete an item. Body: `{ "path", "id" }`.
-- `POST /api/v1/notes-import` — import logins and notes from a `.csv` or a password-manager export (`.json` or `.1pux`) into an open vault. This endpoint takes the file as the raw request body (`Content-Type: application/octet-stream`) with options in the query string: `?path=<vault>&format=<csv|bitwarden|1pux|auto>&dry=<0|1>&dedupe=<0|1>`.
+- `POST /api/v1/notes-session` — open a vault's secure items **without mounting a drive**. Body: `{ "path", "password" }` (or a `readCap` / `memberKey`; optional `ttlMinutes` from 1 to 720). Returns `{ "id", "name", "readOnly", "expiresAt" }`; the id is an opaque, process-local bearer, never a password. Sessions expire after 15 minutes idle (12 hours absolute) and are closed by the service's health tick, `Lock all`, unmounting the vault, key rotation, permanent delete, hiding the folder name, forgetting the vault, restoring over it, and shutdown.
+- `POST /api/v1/notes-session-ping` — refresh and read a session's expiry. Body: `{ "notesSession" }`.
+- `POST /api/v1/notes-session-close` — close a session now. Body: `{ "notesSession" }`.
+- `POST /api/v1/notes-list` — list secure-note items in an open vault or mount-free session (titles only). Body: `{ "path" }` or `{ "notesSession" }`.
+- `POST /api/v1/note-get` — read one item. Body: `{ "path" | "notesSession", "id" }`.
+- `POST /api/v1/note-save` — create or update an item (omit `id` to create). Body: `{ "path" | "notesSession", "id"?, "title", "type", "fields", "note" }`.
+- `POST /api/v1/note-delete` — delete an item. Body: `{ "path" | "notesSession", "id" }`.
+- `POST /api/v1/notes-import` — import logins and notes from a `.csv` or a password-manager export (`.json` or `.1pux`) into an open vault or session. This endpoint takes the file as the raw request body (`Content-Type: application/octet-stream`) with options in the query string: `?path=<vault>` or `?notesSession=<id>`, plus `format=<csv|bitwarden|1pux|auto>&dry=<0|1>&dedupe=<0|1>`.
 
 **Example.**
 
@@ -827,7 +830,7 @@ Because an item can hold passwords, its title, its fields, and its note are all 
 
 You can also read your items without mounting the vault as a drive. Choose **View files & notes** on a vault, open it in this browser, and your secure items appear there under **Secure notes**, decrypted only in the page — the same low-residue path the file viewer uses. It works on a phone through the one-time code too, so your logins and codes travel with you.
 
-For a focused password-manager view, choose **Manage → Password manager** on a vault, open the app at `/notes`, or run `vdisk notes <vault>`. It opens the same encrypted items with the vault password, without a drive, a mount driver, or admin rights. The focused view shows only your secure items; use the full interface when you want files or vault settings. The session locks after a period of inactivity and whenever you close it, and decrypted items remain only in the page's memory.
+For a focused password-manager view, choose **Manage → Password manager** on a vault, open the app at `/notes`, or run `vdisk notes <vault>`. It opens the same encrypted items with the vault password, without a drive, a mount driver, or admin rights. The focused view shows only your secure items; use the full interface when you want files or vault settings. If the vault is paired with a decoy, the decoy password opens the decoy's items here exactly as it does when mounting. The session locks after a period of inactivity and whenever you close it, and decrypted items remain only in the page's memory.
 
 Items travel with the vault through backups, mirrors, and shared copies, and because they are real files in the vault, the tamper check accounts for them like any other content.
 

@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.4.0",
   "algo": "sha256",
-  "generatedAt": "2026-11-10T16:10:36.153Z",
+  "generatedAt": "2026-11-10T17:07:07.374Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -17,8 +17,8 @@
     },
     {
       "path": "docs/README.md",
-      "sha256": "08a91e866d2375dcd808de039c24638b551dd5ed4498abc6ed81954c9181b38b",
-      "size": 241330
+      "sha256": "8450beecbe3289bf3f475fdb65e4078a82c14ffe8c1de9379e21de3e9061344a",
+      "size": 242339
     },
     {
       "path": "docs/banner.png",
@@ -367,8 +367,8 @@
     },
     {
       "path": "lib/Vault.js",
-      "sha256": "dada0c09c943663d87879990f3060ec9defb5c120b2d46a014c894bf9984ece0",
-      "size": 1016549
+      "sha256": "928b0eb623f0e0ccf371d17917ae5e7c8cd8e05853c846c6e598576b4941ff52",
+      "size": 1019858
     },
     {
       "path": "lib/Watchdog.js",
@@ -452,8 +452,8 @@
     },
     {
       "path": "lib/webserver/apiV1.js",
-      "sha256": "a3b127a6d78952705521e962bb02a03b898305065ca988ffac9275342b66b4f2",
-      "size": 1531
+      "sha256": "dbd659b6c201d16167cdfc1761cc8afeab9728ec91265e8562e5313e04b2db9b",
+      "size": 1789
     },
     {
       "path": "lib/webserver/index.js",
@@ -472,8 +472,8 @@
     },
     {
       "path": "lib/webserver/public/css/app.css",
-      "sha256": "de37dd91dcfd1352a20759c623d2c35e6205f0c124e92ea3aa50622f9277556b",
-      "size": 104721
+      "sha256": "0ab052dbe62c33d3fb0415954fa2eabae525ed8eec61f8e894c875f4180d37d4",
+      "size": 105295
     },
     {
       "path": "lib/webserver/public/css/theme.css",
@@ -547,8 +547,8 @@
     },
     {
       "path": "lib/webserver/public/js/app.js",
-      "sha256": "4e29b1cc962ae1a0f7912e3c78649bb482652579d655cdff47662d9408eb12ba",
-      "size": 454522
+      "sha256": "748cf1efbfba77b5bde2aca1266cfeebfd01a889abebf7354ce768e01fcb4525",
+      "size": 457059
     },
     {
       "path": "lib/webserver/public/js/login.js",
@@ -677,8 +677,8 @@
     },
     {
       "path": "lib/webserver/public/shared/notes-mode-text.js",
-      "sha256": "d8a4c6134d9bbaf5fca4b70a9c214d821b2e2f683b7cff88c2a42b069106979e",
-      "size": 1465
+      "sha256": "ce00e94bfca1c8d32ee7bbf40afb6e8213661d09d644169a50349f71bfec0897",
+      "size": 1669
     },
     {
       "path": "lib/webserver/public/shared/safe-text.js",
@@ -692,8 +692,8 @@
     },
     {
       "path": "lib/webserver/public/views/index.ejs",
-      "sha256": "a485520d6b927188106a09aa15a84f946aeecee24744c34db5ea02d4da8b13c8",
-      "size": 137075
+      "sha256": "398da56c409467df5c0bf5a7d00045e76c1d5225cd38b53542cbd1524e984b5a",
+      "size": 137247
     },
     {
       "path": "lib/webserver/public/views/login.ejs",

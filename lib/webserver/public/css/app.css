@@ -393,6 +393,7 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 .cards { display: grid; gap: 12px; }
 .card {
 	display: flex; align-items: center; flex-wrap: wrap; gap: var(--sp-6);
+	--vault-icon-size: 40px; /* one value drives the identity icon and the action row's indent below it */
 	background: var(--panel);
 	border: 1px solid var(--border);
 	border-radius: var(--radius-lg);
@@ -406,7 +407,7 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 /* Leading identity icon — a rounded tile that says at a glance where a vault's ciphertext lives: a lock for a
    local vault, a cloud for a cloud vault. Both use the SAME accent-blue tint — the lock vs cloud GLYPH (and the
    location text) is what tells them apart, not color, so the palette stays on one accent. Never shrinks. */
-.vault-icon { flex: 0 0 auto; align-self: flex-start; width: 40px; height: 40px; border-radius: var(--radius-sm);
+.vault-icon { flex: 0 0 auto; align-self: flex-start; width: var(--vault-icon-size); height: var(--vault-icon-size); border-radius: var(--radius-sm);
 	display: grid; place-items: center; color: var(--accent-ink); background: var(--accent-soft); }
 .vault-icon svg { width: 20px; height: 20px; }
 .card .name { font-weight: 650; display: flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap; overflow-wrap: anywhere; } /* a very long, unbroken vault name breaks/wraps instead of widening the card (worst on the ~375px column) */
@@ -430,7 +431,7 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
    info column (the icon's width plus the card gap) so the first button lines up under the vault name on every card.
    A mounted vault's six actions no longer crowd a long path or drift left of an idle card's two, and the row still
    wraps internally on a very narrow card. */
-.card .actions { display: flex; flex: 1 0 100%; gap: 8px; flex-wrap: wrap; justify-content: flex-start; padding-left: calc(40px + var(--sp-6)); }
+.card .actions { display: flex; flex: 1 0 100%; gap: 8px; flex-wrap: wrap; justify-content: flex-start; padding-inline-start: calc(var(--vault-icon-size) + var(--sp-6)); }
 
 /* Base chip look, so a badge with no modifier (a member role, a version origin, the tamper-proof/WORM chip) still
    reads as a chip rather than plain padded text. Modifier classes below (.mounted/.sealed/…) override these. */
@@ -811,7 +812,7 @@ button:disabled, .primary-btn:disabled, .ghost-btn:disabled, .link-btn:disabled 
 	   actions wrap to their own full-width row below rather than stacking the icon alone above everything. */
 	.card { flex-wrap: wrap; align-items: center; }
 	.card .info { flex: 1 1 0; }
-	.card .actions { flex: 1 0 100%; justify-content: flex-start; padding-left: 0; }
+	.card .actions { flex: 1 0 100%; justify-content: flex-start; padding-inline-start: 0; }
 	.main-top { flex-direction: column; }
 	.new-vault-btn { width: 100%; }
 	/* Hide the brand wordmark on a phone so the top-bar controls always fit beside the logo. */
@@ -1164,20 +1165,20 @@ input.switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2
 .tl-files { margin: 2px 0 6px; padding-left: 4px; display: flex; flex-direction: column; gap: 4px; color: var(--muted); font-size: 13px; }
 .tl-files li { overflow-wrap: anywhere; }
 
-/* The two large, content-heavy dialogs (Notes and Manage) scroll INSIDE their rounded frame. The dialog owns the
-   clip and the flex column; the form is the scroll container with the same 22px inset the dialog used to have. This
-   keeps the scrollbar off the rounded edge instead of drawing a hard grey column through the corner. One shared rule
-   for both, so the two views cannot drift apart. */
+/* A large, content-heavy dialog marked .dialog-scroll scrolls INSIDE its rounded frame. The dialog owns the clip and
+   the flex column; the form is the scroll container with the same 22px inset the dialog used to have. This keeps the
+   scrollbar off the rounded edge instead of drawing a hard grey column through the corner. Notes and Manage both use
+   the class, and any future long dialog can opt in with one class instead of another id-specific rule. */
 /* IMPORTANT: the base rule must NOT set display. A native <dialog> is hidden by the UA rule
    `dialog:not([open]) { display: none }`, and an id selector that sets display would override it and leave every
    closed dialog visible in the page flow. Only the [open] rule lays it out as a flex frame. */
-#notesDialog, #manageDialog { padding: 0; overflow: hidden; }
-#notesDialog[open], #manageDialog[open] { display: flex; flex-direction: column; }
-#notesDialog > form, #manageDialog > form { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 22px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
-#notesDialog > form::-webkit-scrollbar, #manageDialog > form::-webkit-scrollbar { width: 10px; }
-#notesDialog > form::-webkit-scrollbar-track, #manageDialog > form::-webkit-scrollbar-track { background: transparent; }
-#notesDialog > form::-webkit-scrollbar-thumb, #manageDialog > form::-webkit-scrollbar-thumb { background: var(--border); border: 2px solid var(--panel); border-radius: 999px; }
-#notesDialog > form::-webkit-scrollbar-thumb:hover, #manageDialog > form::-webkit-scrollbar-thumb:hover { background: var(--faint); }
+.dialog.dialog-scroll { padding: 0; overflow: hidden; }
+.dialog.dialog-scroll[open] { display: flex; flex-direction: column; }
+.dialog.dialog-scroll > form { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 22px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.dialog.dialog-scroll > form::-webkit-scrollbar { width: 10px; }
+.dialog.dialog-scroll > form::-webkit-scrollbar-track { background: transparent; }
+.dialog.dialog-scroll > form::-webkit-scrollbar-thumb { background: var(--border); border: 2px solid var(--panel); border-radius: 999px; }
+.dialog.dialog-scroll > form::-webkit-scrollbar-thumb:hover { background: var(--faint); }
 
 /* ---------------------------------------------------------------------------
    Focused password-manager mode (/notes)
@@ -1210,11 +1211,15 @@ body.notes-mode .app { display: none; }
 .notes-mode-back { justify-self: start; font-size: 13px; color: var(--accent-ink); text-decoration: none; }
 .notes-mode-back:hover { text-decoration: underline; }
 .notes-mode-card .dialog-actions { position: static; margin: 0; padding: 0; border: 0; background: none; justify-content: flex-end; }
-.notes-mode-result { margin: 0; color: var(--danger); font-size: 13px; }
+.notes-mode-result { margin: 0; color: var(--muted); font-size: 13px; }
+.notes-mode-result.bad { color: var(--danger); } /* neutral status (Opening…) stays muted; only a real error is red */
+/* A persistent, top-of-dialog read-only notice. The action-result line lives at the bottom of a long dialog, where a
+   view-only user would not see it; this one is visible immediately. */
+.notes-readonly { margin: 10px 0 0; padding: 8px 10px; border: 1px solid var(--warn); border-radius: 8px; background: var(--warn-bg); color: var(--warn); font-size: 13px; line-height: 1.45; }
 .notes-mode-card .hint { margin: 0; }
 .notes-mode-card #notesModeTheme { justify-self: start; padding: 0; }
 /* In the focused dialog the back-to-vaults action belongs apart from the item actions, at the start of the footer. */
-#notesModeHome { margin-right: auto; }
+#notesModeHome { margin-inline-end: auto; }
 body.notes-mode #notesDialog { width: min(980px, 96vw); max-width: 96vw; max-height: 94vh; max-height: 94dvh; margin: 3vh auto auto; }
 /* Card actions: a quieter, uniform row. The password-manager shortcut lives in Manage, so an unmounted card keeps
    just Mount and Manage; every action shares the same height and a comfortable minimum width instead of looking like
@@ -1226,7 +1231,7 @@ body.notes-mode #notesDialog { width: min(980px, 96vw); max-width: 96vw; max-hei
 @media (max-width: 620px) {
 	/* Match the sticky footer's safe-area offset: the form is now the scroll container, so its bottom padding (not
 	   the dialog's) must include the home-indicator inset. */
-	#notesDialog > form, #manageDialog > form { padding-bottom: max(22px, env(safe-area-inset-bottom)); }
+	.dialog.dialog-scroll > form { padding-bottom: max(22px, env(safe-area-inset-bottom)); }
 }
 @media (max-width: 620px) {
 	body.notes-mode #notesDialog { width: 100vw; max-width: 100vw; height: 100vh; height: 100dvh; max-height: 100dvh; margin: 0; border-radius: 0; }
