@@ -113,10 +113,10 @@ function extraneousFiles(dir, listedSet) {
 	return out;
 }
 function embeddedPubKey(dir) {
-	try { const m = require(path.resolve(dir, 'lib', 'releasePubKey.js')); return (m && m.pubkey) || null; } catch (_) { return null; }
+	try { const m = require(path.resolve(dir, 'lib', 'release', 'releasePubKey.js')); return (m && m.pubkey) || null; } catch (_) { return null; }
 }
 function embeddedPqPubKey(dir) {
-	try { const m = require(path.resolve(dir, 'lib', 'releasePubKey.js')); return (m && m.pqPubkey) || null; } catch (_) { return null; }
+	try { const m = require(path.resolve(dir, 'lib', 'release', 'releasePubKey.js')); return (m && m.pqPubkey) || null; } catch (_) { return null; }
 }
 
 function verifyRelease(dir, pubHexArg) {

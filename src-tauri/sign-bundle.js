@@ -26,7 +26,7 @@ const path = require('path');
 const HERE = __dirname;
 const DEFAULT_REPO = path.resolve(HERE, '..');
 const DEFAULT_APP = path.join(HERE, 'app');
-const RI = require(path.join(DEFAULT_REPO, 'lib', 'ReleaseIntegrity'));
+const RI = require(path.join(DEFAULT_REPO, 'lib', 'release', 'ReleaseIntegrity'));
 
 // Embed the committed, maintainer-signed manifest into the staged bundle and verify it matches the staged files.
 // Returns { signed:false } when nothing is committed (a pre-signing checkout — the bundle still runs, unsigned), or
@@ -48,7 +48,7 @@ async function embedSignedManifest({ appDir = DEFAULT_APP, repoDir = DEFAULT_REP
 	if (fs.existsSync(sigPqSrc)) fs.copyFileSync(sigPqSrc, path.join(appDir, RI.SIG_PQ_NAME));
 	const r = await RI.verifyInstall(appDir, { pubHex: pubHex || RI.embeddedPubKey(), pqPubHex });
 	if (!r.present) throw new Error('the manifest did not copy into ' + appDir + '.');
-	if (r.pubkey === false) throw new Error('lib/releasePubKey.js has no public key — run "node lib/scripts/sign-release.js --init".');
+	if (r.pubkey === false) throw new Error('lib/release/releasePubKey.js has no public key — run "node lib/scripts/sign-release.js --init".');
 	if (!r.signatureValid) throw new Error('the committed manifest signature does not verify against the embedded public key. Re-sign with "node lib/scripts/sign-release.js".');
 	if (!r.ok) { const e = new Error('the staged bundle does not match the committed signed manifest — the release manifest is stale. Re-sign with "node lib/scripts/sign-release.js" and commit it.'); e.details = { mismatches: r.mismatches || [], missing: r.missing || [], extraneous: r.extraneous || [] }; throw e; }
 	return { signed: true, count: r.count, version: r.version };

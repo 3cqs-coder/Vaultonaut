@@ -12,8 +12,8 @@
 
 const fs = require('fs');
 const path = require('path');
-const RcloneSetup = require('../lib/RcloneSetup');
-const Net = require('../lib/Net');
+const RcloneSetup = require('../lib/platform/RcloneSetup');
+const Net = require('../lib/net/Net');
 
 const dir = process.env.VAULTONAUT_ENGINE_DIR;
 if (!dir) { console.error('[bake-engine] VAULTONAUT_ENGINE_DIR must be set to the target directory'); process.exit(1); }

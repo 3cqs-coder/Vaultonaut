@@ -38,11 +38,11 @@ if (!process.env.UV_THREADPOOL_SIZE) process.env.UV_THREADPOOL_SIZE = '16';
 
 // Prefer IPv4 for outbound DNS FIRST, before any network-using module is required, so downloads, cloud vaults,
 // timestamp requests, and relay hops all inherit it and stay resilient on hosts with flaky IPv6 (see lib/DnsOrder).
-require('./lib/DnsOrder').prefer(process.argv);
+require('./lib/net/DnsOrder').prefer(process.argv);
 
-const ProcRegistry = require('./lib/ProcRegistry');
+const ProcRegistry = require('./lib/ops/ProcRegistry');
 const Brand = require('./lib/Brand');
-const Commands = require('./lib/Commands');
+const Commands = require('./lib/cli/Commands');
 
 ProcRegistry.installShutdownHandlers(); // clean up in-flight engine calls if interrupted
 

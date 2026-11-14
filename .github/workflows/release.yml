@@ -90,7 +90,7 @@ jobs:
         shell: bash
         run: |
           for i in 1 2 3; do
-            node -e "require('./lib/RcloneSetup').ensure().then(r=>{console.log(r.ok?'engine ready':'setup failed');process.exit(r.ok?0:1)}).catch(e=>{console.error(String(e&&e.message||e));process.exit(1)})" && exit 0
+            node -e "require('./lib/platform/RcloneSetup').ensure().then(r=>{console.log(r.ok?'engine ready':'setup failed');process.exit(r.ok?0:1)}).catch(e=>{console.error(String(e&&e.message||e));process.exit(1)})" && exit 0
             echo "engine setup attempt $i failed; retrying in 5s"; sleep 5
           done
           exit 1

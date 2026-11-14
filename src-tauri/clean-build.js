@@ -25,7 +25,7 @@ const path = require('path');
 const { runNpm } = require('./buildutil');
 
 const REPO = path.resolve(__dirname, '..');
-const RI = require(path.join(REPO, 'lib', 'ReleaseIntegrity'));
+const RI = require(path.join(REPO, 'lib', 'release', 'ReleaseIntegrity'));
 
 function defaultBase() {
 	if (process.platform === 'win32') return path.join(process.env.PUBLIC || 'C:\\Users\\Public', 'vaultonaut-build');

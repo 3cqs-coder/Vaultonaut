@@ -35,7 +35,7 @@
   "scripts": {
     "start": "node vaultonaut.js ui",
     "ui": "node vaultonaut.js ui",
-    "setup": "node -e \"require('./lib/RcloneSetup').ensure().then(r=>console.log(r.ok?'engine ready':'setup failed'))\"",
+    "setup": "node -e \"require('./lib/platform/RcloneSetup').ensure().then(r=>console.log(r.ok?'engine ready':'setup failed'))\"",
     "doctor": "node vaultonaut.js doctor",
     "sign": "node lib/scripts/sign-release.js",
     "sign:check": "node lib/scripts/sign-release.js --check",
