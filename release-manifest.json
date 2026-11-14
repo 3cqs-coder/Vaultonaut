@@ -1,9 +1,9 @@
 {
   "schema": "vaultonaut-release-1",
   "product": "Vaultonaut",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "algo": "sha256",
-  "generatedAt": "2026-11-14T01:23:04.718Z",
+  "generatedAt": "2026-11-14T15:49:41.458Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -17,8 +17,8 @@
     },
     {
       "path": "docs/README.md",
-      "sha256": "559fce8782fac3fff5592037d61ff8b1e7de0fd16ca25e51a8836f3d835f4e54",
-      "size": 242441
+      "sha256": "464866b2c36bc4f16f7acb776194623341b5e91cfeb76f9df85e7952cedcbf4e",
+      "size": 242596
     },
     {
       "path": "docs/banner.png",
@@ -402,7 +402,7 @@
     },
     {
       "path": "lib/templates/notices.txt",
-      "sha256": "aa7d731fa78d15c33149f3c6d3921fd1f2e9e40e0d4d9a4b047d72bbc6f70032",
+      "sha256": "02536854a0f35a34f3190e68fc4c322b0fba4a4fbb30fce1bd0d3be9fa609bbd",
       "size": 3227
     },
     {
@@ -462,8 +462,8 @@
     },
     {
       "path": "lib/webserver/index.js",
-      "sha256": "7ce54d0f35794d1c041bd9b279d6ca86a46de66b7dab4b5d57a9b65e762c97e7",
-      "size": 216267
+      "sha256": "3449fec83aa75a636988ea2baff516ae59323e3703c7f20ee47f9d96d202e077",
+      "size": 217149
     },
     {
       "path": "lib/webserver/kitView.js",
@@ -657,8 +657,8 @@
     },
     {
       "path": "lib/webserver/public/send/app.js",
-      "sha256": "94571e8d36a16fc7f9dfdadf845a3d39725a5bd0e70282eaf033f815b8881108",
-      "size": 7594
+      "sha256": "e38c905fa15968552262959d103f7dda226bfb114b2c0c5f1cbb80f4c71d57b5",
+      "size": 7859
     },
     {
       "path": "lib/webserver/public/send/index.html",
@@ -712,7 +712,7 @@
     },
     {
       "path": "package.json",
-      "sha256": "05a42e926786960fe00b5ead4b555d3f301595c67008e34025033e17d07f0131",
+      "sha256": "962dd52220c446644889afcc1f7aa68027e806c2b6eb11bc7d91c3420db83138",
       "size": 1878
     },
     {

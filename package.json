@@ -1,6 +1,6 @@
 {
   "name": "vaultonaut",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Simple, cross-platform, real-time encrypted virtual disks. Create a portable encrypted vault and mount it as an ordinary drive; files are encrypted and decrypted on the fly.",
   "main": "lib/index.js",
   "author": "3CQS",
@@ -53,9 +53,9 @@
     "jimp": "^1.6.1",
     "mammoth": "^1.13.0",
     "minisearch": "^7.2.0",
-    "read-excel-file": "^9.3.14",
+    "read-excel-file": "^9.3.17",
     "tesseract.js": "^7.0.0",
-    "unpdf": "^2.1.0",
+    "unpdf": "^2.2.0",
     "unzipper": "^0.12.5"
   },
   "overrides": {
