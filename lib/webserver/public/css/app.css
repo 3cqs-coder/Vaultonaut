@@ -278,7 +278,14 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 /* --muted, not --faint: the dot is a meaningful at-a-glance status signal, so the "unknown / not checked yet" and
    base states must clear the 3:1 non-text bar on the --panel-2 row in every theme (--faint sits below 3:1 on the
    light and sepia grounds). The colored states below carry their own tokens. */
+/* Leading connection-kind tile — the same accent-soft icon tile used on the cards and in the Manage rows, so the
+   device and fleet lists read as part of the same family. The reachability dot rides it as a corner pip, keeping
+   identity (the glyph) and state (the dot color) on separate, non-conflicting signals. */
+.dev-ic { position: relative; flex: 0 0 auto; width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-ink); }
+.dev-ic svg { width: 17px; height: 17px; }
 .dev-dot { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 auto; background: var(--muted); }
+/* The dot as a corner pip on the tile: a panel-2 ring (the row background) cuts it cleanly away from the glyph. */
+.dev-ic .dev-dot { position: absolute; right: -3px; bottom: -3px; width: 9px; height: 9px; border: 2px solid var(--panel-2); box-sizing: content-box; }
 .dev-dot-unknown { background: var(--muted); }
 .dev-dot-live, .dev-dot-ok { background: var(--good); }
 .dev-dot-bad { background: var(--danger); }
