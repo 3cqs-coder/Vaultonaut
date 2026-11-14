@@ -76,6 +76,8 @@ button.ghost { background: transparent; color: var(--text); border: 1px solid va
 .filelist li:active { background: var(--panel-2); }
 .filelist li:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .filelist .ic { width: 22px; text-align: center; opacity: 0.85; }
+/* Our own item SVG (uniform on every platform) sized to the row; a plain glyph/emoji still renders as text. */
+.filelist .ic svg { width: 18px; height: 18px; display: inline-block; vertical-align: -4px; }
 .filelist .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .filelist .sz { color: var(--muted); font-size: 12px; }
 /* Include the LEFT/RIGHT safe-area insets: the viewer is a fixed, full-viewport overlay, so it escapes the body's

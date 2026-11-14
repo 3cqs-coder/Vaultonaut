@@ -95,6 +95,84 @@ body {
 .app { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh;
 	background: radial-gradient(135% 90% at 50% -20%, var(--sheen-top) 0%, transparent 55%), var(--workspace); }
 
+/* ===========================================================================
+   Dashboard shell — a slim top bar over a persistent left nav rail and a
+   content area. The rail collapses to an icon-only strip (remembered per
+   browser) and becomes a slide-in drawer on a phone. Single source of truth for
+   which section is shown: each nav link carries a stable data-pane key that
+   app.js maps to a pane/renderer; the label is display text only, so a
+   translation never changes behavior. All token-driven, so it holds in every
+   theme, and nothing here blocks or allocates — it is layout and state only.
+   =========================================================================== */
+.shell-body { display: flex; flex: 1 1 auto; min-height: 0; }
+.sidebar { flex: 0 0 auto; width: 232px; display: flex; flex-direction: column;
+	background: var(--rail); border-right: 1px solid var(--border);
+	padding: 14px 12px 18px; overflow-y: auto; overflow-x: hidden;
+	transition: width var(--dur) var(--ease); }
+.side-nav { display: flex; flex-direction: column; }
+.side-group { margin-bottom: 12px; }
+.side-group-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+	color: var(--faint); padding: 6px 10px 5px; white-space: nowrap; }
+.side-link { display: flex; align-items: center; gap: 11px; width: 100%; margin-bottom: 1px;
+	padding: 9px 11px; border: 0; border-left: 3px solid transparent; border-radius: 9px;
+	background: transparent; color: var(--muted); cursor: pointer; font: inherit; font-size: 13.5px;
+	font-weight: 500; text-align: left; white-space: nowrap; text-decoration: none; }
+@media (hover: hover) { .side-link:hover { background: var(--hover); color: var(--text); } }
+.side-link.on { color: var(--accent-ink); font-weight: 600; background: var(--accent-soft);
+	border-left-color: var(--accent-btn); border-radius: 0 9px 9px 0; }
+.side-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.side-ic { width: 18px; height: 18px; flex: 0 0 auto; opacity: .9; }
+.side-link.on .side-ic { opacity: 1; }
+.side-txt { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.side-badge { margin-left: auto; min-width: 18px; height: 18px; padding: 0 5px; border-radius: var(--radius-pill);
+	background: var(--danger); color: #fff; font-size: 10.5px; font-weight: 700; line-height: 18px;
+	text-align: center; font-variant-numeric: tabular-nums; }
+.side-foot { margin-top: auto; padding-top: 10px; display: flex; }
+.side-collapse-btn { margin-left: auto; width: 30px; height: 30px; display: inline-grid; place-items: center;
+	border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; padding: 0; }
+@media (hover: hover) { .side-collapse-btn:hover { color: var(--text); border-color: var(--accent-quiet); } }
+.side-collapse-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.side-collapse-btn svg { width: 15px; height: 15px; transition: transform var(--dur) var(--ease); }
+
+/* Content area fills the space right of the rail. No outer card — the Overview panel and the vault cards are the
+   cards. A second class (.shell-main) overrides the centered-card .main used elsewhere (e.g. the notes page). */
+.content { flex: 1 1 auto; min-width: 0; overflow-y: auto; }
+.main.shell-main { max-width: 1120px; width: 100%; margin: 0 auto; padding: 26px 30px 48px;
+	background: transparent; border: 0; border-radius: 0; box-shadow: none; }
+.pane[hidden] { display: none; }
+
+/* Hamburger (phone only) and the drawer backdrop. */
+.nav-toggle { display: none; width: 38px; height: 38px; flex: 0 0 auto; place-items: center; padding: 0;
+	border: 1px solid var(--border); border-radius: 9px; background: transparent; color: var(--text); cursor: pointer; }
+.nav-toggle svg { width: 20px; height: 20px; }
+.nav-backdrop { display: none; }
+
+/* Collapsed rail — icons only, labels and group headers hidden. */
+.app.rail-collapsed .sidebar { width: 58px; padding-left: 8px; padding-right: 8px; }
+.app.rail-collapsed .side-txt, .app.rail-collapsed .side-group-label, .app.rail-collapsed .side-badge { display: none; }
+.app.rail-collapsed .side-link { justify-content: center; padding-left: 0; padding-right: 0; border-left-width: 0; border-radius: 9px; }
+.app.rail-collapsed .side-collapse-btn svg { transform: scaleX(-1); }
+
+/* Phone: the rail becomes a slide-in drawer over a dimmed backdrop. --topbar-h is measured in app.js so the drawer
+   and backdrop start below the sticky top bar at any font size. Collapse is a desktop affordance, so on a phone the
+   drawer always shows full labels. */
+@media (max-width: 860px) {
+	.nav-toggle { display: inline-grid; }
+	.sidebar { position: fixed; top: var(--topbar-h, 64px); left: 0; bottom: 0; width: min(280px, 82vw); z-index: 70;
+		transform: translateX(-100%); transition: transform var(--dur) var(--ease); box-shadow: var(--shadow-lift); }
+	.app.nav-open .sidebar { transform: none; }
+	.app.rail-collapsed .sidebar { width: min(280px, 82vw); padding-left: 12px; padding-right: 12px; }
+	.app.rail-collapsed .side-txt, .app.rail-collapsed .side-group-label { display: block; }
+	.app.rail-collapsed .side-link { justify-content: flex-start; padding: 9px 11px; border-left-width: 3px; }
+	.side-foot { display: none; }
+	.nav-backdrop { position: fixed; inset: var(--topbar-h, 64px) 0 0 0; background: rgba(6, 10, 18, .45); z-index: 65; }
+	.app.nav-open .nav-backdrop { display: block; }
+	.main.shell-main { padding: 18px 16px 40px; }
+}
+/* These two global controls moved into the left rail as nav items; the buttons stay in the DOM (hidden) so their
+   existing click handlers still run when a rail item is chosen. */
+#settingsBtn, #helpBtn { display: none; }
+
 /* Top bar: brand on the left, all the global controls (Settings, Help, notifications, refresh, theme, lock) on the
    right. Sticky so it stays put as the content scrolls; it paints its own --rail surface over the workspace. */
 .topbar { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 16px; flex: 0 0 auto;
@@ -334,6 +412,14 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 .dtile-warn .dtile-badge { background: var(--warn-bg); }
 .dtile-error .dtile-badge { background: var(--danger-soft); }
 .dtile-info .dtile-badge { background: var(--accent-soft); }
+/* The glyph is our own inline SVG (uniform on every platform), tinted to the tile's severity so colour reinforces
+   state. Each color pairs with the soft background above and clears contrast in light, dark, and sepia. */
+.dtile-ic { width: 20px; height: 20px; }
+.dtile-badge { color: var(--muted); }
+.dtile-good .dtile-badge { color: var(--good); }
+.dtile-warn .dtile-badge { color: var(--warn); }
+.dtile-error .dtile-badge { color: var(--danger); }
+.dtile-info .dtile-badge { color: var(--accent-ink); }
 /* warn/error also shift the border, so trouble is noticeable without a loud full-tile wash — and never by color alone:
    the value text and the tile's aria-label state the condition in words. */
 .dtile-error { border-color: var(--danger); }
@@ -1309,7 +1395,10 @@ body.notes-mode #notesDialog { width: min(980px, 96vw); max-width: 96vw; max-hei
 .notes-pm-listpane .note-item:hover { background: var(--hover); }
 .notes-pm-listpane .note-item.active { box-shadow: inset 3px 0 0 var(--accent-btn); }
 .notes-pm-listpane .note-item.active .note-nm { color: var(--accent-ink); }
-.note-badge { width: 34px; height: 34px; flex: none; display: grid; place-items: center; border-radius: 9px; background: var(--panel-2); font-size: 17px; }
+.note-badge { width: 34px; height: 34px; flex: none; display: grid; place-items: center; border-radius: 9px; background: var(--panel-2); color: var(--accent-ink); font-size: 17px; }
+/* Our own SVG item glyph (uniform on every platform), sized to the badge/rail tile. */
+.note-badge .vs-ic { width: 18px; height: 18px; }
+.notes-pm-navitem .notes-pm-ic .vs-ic { width: 18px; height: 18px; display: block; }
 .note-rmain { min-width: 0; flex: 1 1 auto; display: flex; flex-direction: column; }
 .notes-pm-listpane .note-nm { font-size: 13.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .note-sub { font-size: 12px; color: var(--muted); font-family: var(--mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 1px; }
