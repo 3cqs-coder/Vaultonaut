@@ -413,6 +413,20 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 .vault-icon { flex: 0 0 auto; align-self: flex-start; width: var(--vault-icon-size); height: var(--vault-icon-size); border-radius: var(--radius-sm);
 	display: grid; place-items: center; color: var(--accent-ink); background: var(--accent-soft); }
 .vault-icon svg { width: 20px; height: 20px; }
+/* The tile's TINT encodes the vault's state — the same "badge tint = state" rule the dashboard tiles follow, so the
+   two surfaces read as one system. idle keeps the base accent tint (defined above); the others swap to the matching
+   soft token with an AA-legible glyph color. State is never color-alone: the status badge states it in words and the
+   lock/cloud glyph shape carries the type. One soft token per state, so it holds in light, dark, and sepia. */
+.vault-icon.st-mounted { background: var(--good-bg); color: var(--good); }
+.vault-icon.st-notresponding { background: var(--warn-bg); color: var(--warn); }
+.vault-icon.st-invalid { background: var(--danger-soft); color: var(--danger); }
+/* A dialog header that pairs the vault's identity tile with the title and name, so a dialog opened from a card
+   continues its visual identity. The tile keeps its fixed size; the text column shrinks and wraps. */
+.dialog-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.dialog-head .vault-icon { align-self: center; }
+.dialog-head-text { min-width: 0; }
+.dialog-head-text h3 { margin: 0; }
+.dialog-head-text p { margin: 2px 0 0; overflow-wrap: anywhere; }
 .card .name { font-weight: 650; display: flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap; overflow-wrap: anywhere; } /* a very long, unbroken vault name breaks/wraps instead of widening the card (worst on the ~375px column) */
 .card .path { color: var(--muted); font-size: 12.5px; font-family: var(--mono); word-break: break-all; margin-top: 2px; }
 /* Path line: the path text plus its inline tools (copy, and the privacy-screen reveal toggle). The tools sit at the
