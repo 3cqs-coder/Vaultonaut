@@ -195,7 +195,9 @@ svg.logo { width: 30px; height: 30px; display: block; flex: 0 0 auto; border-rad
 	box-shadow: var(--shadow); padding: var(--sp-10) var(--sp-9);
 	display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--sp-5);
 }
-.empty-icon { width: 56px; height: 56px; border-radius: var(--radius); background: var(--accent-soft);
+/* The first-run hero tile is the large sibling of the identity tiles used on the cards and in the dialogs: same
+   accent-soft fill and accent-ink glyph, radius-lg so its corner ratio matches the tile family at this larger size. */
+.empty-icon { width: 56px; height: 56px; border-radius: var(--radius-lg); background: var(--accent-soft);
 	color: var(--accent-ink); display: grid; place-items: center; }
 .empty-icon svg { width: 30px; height: 30px; }
 .empty-state h2 { margin: 0; font-size: 19px; letter-spacing: -.02em; text-wrap: balance; }
