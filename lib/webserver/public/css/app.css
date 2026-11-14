@@ -1242,3 +1242,61 @@ body.notes-mode #notesDialog { width: min(980px, 96vw); max-width: 96vw; max-hei
 @media (max-width: 620px) {
 	body.notes-mode #notesDialog { width: 100vw; max-width: 100vw; height: 100vh; height: 100dvh; max-height: 100dvh; margin: 0; border-radius: 0; }
 }
+
+/* ---------------------------------------------------------------------------
+   Password-manager view: three-pane shell (rail / list / detail) for the shared
+   notes dialog. Token-driven (follows every theme), and it reuses the existing
+   editor controls inside the detail pane, so nothing about the note engine changes.
+   --------------------------------------------------------------------------- */
+.dialog.notes-pm-dialog { padding: 0; overflow: hidden; width: min(1060px, 96vw); max-width: 96vw; height: min(700px, 90vh); max-height: 90dvh; }
+.dialog.notes-pm-dialog[open] { display: flex; flex-direction: column; }
+.notes-pm { display: grid; grid-template-columns: 226px 330px minmax(0, 1fr); flex: 1 1 auto; min-height: 0; width: 100%; }
+.notes-pm > * { min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
+.notes-pm > * + * { border-left: 1px solid var(--border); }
+.notes-pm-rail { background: var(--rail); }
+
+.notes-pm-vaulthead { padding: 15px 14px 11px; border-bottom: 1px solid var(--border); flex: none; }
+.notes-pm-title { font-size: 15px; margin: 0; }
+.notes-pm-vaultname { font-size: 11.5px; margin: 2px 0 0; overflow: hidden; text-overflow: ellipsis; }
+.notes-pm-nav { padding: 8px 10px; overflow: auto; flex: 1 1 auto; }
+.notes-pm-seclabel { font-size: 10px; text-transform: uppercase; letter-spacing: .1em; color: var(--faint); padding: 8px 8px 5px; font-weight: 700; }
+.notes-pm-navitem { display: flex; align-items: center; gap: 11px; width: 100%; text-align: left; padding: 8px 10px; border: 0; border-left: 3px solid transparent; border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; font: inherit; font-size: 13.5px; font-weight: 500; margin-bottom: 1px; }
+.notes-pm-navitem .notes-pm-ic { width: 18px; text-align: center; opacity: .9; flex: none; }
+.notes-pm-navitem .notes-pm-count { margin-left: auto; font-size: 11px; color: var(--faint); font-variant-numeric: tabular-nums; }
+.notes-pm-navitem:hover { background: var(--hover); color: var(--text); }
+.notes-pm-navitem.on { color: var(--accent-ink); font-weight: 600; background: var(--accent-soft); border-left-color: var(--accent-btn); border-radius: 0 8px 8px 0; }
+.notes-pm-watch { padding: 0 10px 4px; flex: none; }
+.notes-pm-breach { font-size: 11.5px; color: var(--muted); padding: 2px 10px 4px; display: flex; gap: 6px; align-items: center; }
+.notes-pm-railfoot { border-top: 1px solid var(--border); padding: 8px 10px; flex: none; }
+
+.notes-pm-lhead { padding: 11px 12px; display: flex; gap: 9px; align-items: center; border-bottom: 1px solid var(--border); flex: none; }
+.notes-pm-search { flex: 1 1 auto; min-width: 0; background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; padding: 8px 11px; color: var(--text); font: inherit; font-size: 13px; }
+.notes-pm-add { flex: none; border: 0; background: var(--accent-btn); color: var(--accent-text); width: 34px; height: 34px; border-radius: 9px; cursor: pointer; font-size: 19px; line-height: 1; }
+
+.notes-pm-detail { background: var(--panel); }
+.notes-pm-editor { flex: 1 1 auto; overflow: auto; padding: 18px 20px; }
+.notes-pm-actions { position: static; margin: 0; border: 0; border-top: 1px solid var(--border); padding: 12px 20px; background: var(--panel); justify-content: flex-end; flex: none; }
+
+/* The item list becomes a vertical, two-line row list. The health panel keeps its own .note-item chips (scoped out). */
+.notes-pm-listpane .notes-list { display: block; flex: 1 1 auto; overflow: auto; max-height: none; margin: 0; padding: 4px 0; }
+.notes-pm-listpane .note-item { display: flex; align-items: center; gap: 11px; width: 100%; max-width: none; white-space: normal; padding: 10px 14px; border: 0; border-bottom: 1px solid var(--border); border-radius: 0; background: transparent; }
+.notes-pm-listpane .note-item:hover { background: var(--hover); }
+.notes-pm-listpane .note-item.active { box-shadow: inset 3px 0 0 var(--accent-btn); }
+.notes-pm-listpane .note-item.active .note-nm { color: var(--accent-ink); }
+.note-badge { width: 34px; height: 34px; flex: none; display: grid; place-items: center; border-radius: 9px; background: var(--panel-2); font-size: 17px; }
+.note-rmain { min-width: 0; flex: 1 1 auto; display: flex; flex-direction: column; }
+.notes-pm-listpane .note-nm { font-size: 13.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.note-sub { font-size: 12px; color: var(--muted); font-family: var(--mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 1px; }
+
+/* Narrow: stack to a single column — the rail becomes a scrollable category bar on top, then the list, then the
+   detail pane. Keeps everything reachable without a side-by-side layout the width cannot hold. */
+@media (max-width: 900px) {
+	.notes-pm { grid-template-columns: 1fr; grid-template-rows: auto minmax(140px, 1fr) auto; }
+	.notes-pm > * + * { border-left: 0; }
+	.notes-pm-rail { flex-direction: row; align-items: stretch; overflow-x: auto; border-bottom: 1px solid var(--border); }
+	.notes-pm-rail .notes-pm-vaulthead, .notes-pm-watch, .notes-pm-railfoot, .notes-pm-seclabel { display: none; }
+	.notes-pm-nav { flex-direction: row; padding: 6px; overflow-x: auto; }
+	.notes-pm-navitem { white-space: nowrap; border-left: 0; }
+	.notes-pm-navitem .notes-pm-count { display: none; }
+	.notes-pm-detail { border-top: 1px solid var(--border); }
+}
