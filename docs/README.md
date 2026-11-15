@@ -289,7 +289,7 @@ Nearly everything the command line can do is also here. Each vault has a single 
 
 - **Security** — set the vault's encrypted name and description, change its password, rotate or manage its keys, manage members of a shared vault, run the tamper check, and set up self-healing recovery data.
 - **Sharing & access** — share with a group, set up emergency access, serve the vault to your other devices, mirror it, and view its files and notes without mounting.
-- **Storage & backups** — back the vault up off-site, browse and restore earlier versions, and split it across places.
+- **Storage & backups** — back the vault up off-site, restore the whole vault in place from that backup if it is ever damaged (**Restore from backup**, which also pulls an off-site copy back for you), browse and restore earlier file versions, and split it across places.
 - **Danger zone** — remove the vault from the list (which only forgets it here), or delete it permanently.
 
 Global options and one-off maintenance live together in the **Settings** panel on the navigation rail: an idle auto-lock, lock-on-sleep, auto-timestamping, decoy and travel modes, emergency access, critical-event notifications, and **Run repair** among them. A **Lock all** action stays one click away on the rail.
@@ -488,6 +488,7 @@ vdisk verify-backup <name|path>  Check a backup is complete and restorable (no p
 vdisk versions <name|path>       Browse prior versions of files kept by a backup or a mirror
 vdisk restore-version <name|path> <timestamp> <file>   Restore a file from a version, as a non-clobbering copy (add --from <backup|mirror-dest|mirror-local>)
 vdisk restore  <backup> <dest>   Restore a backed-up vault into a folder
+vdisk restore-from-backup <name|path>   Restore a vault in place from the backup it is configured with (local or off-site)
 vdisk receive-vault <code>       Receive a vault from another machine by its serve connect code (encrypted only; --name <n>)
 vdisk mirror   <name|path> <dest> Set up a two-way mirror to a folder, sftp:<id>, or webdav:<id> and prime it
 vdisk sync     <name|path>       Sync the mirror now, both directions (the running service also does this after any unmount)
