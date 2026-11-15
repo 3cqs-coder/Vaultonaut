@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.4.1",
   "algo": "sha256",
-  "generatedAt": "2026-11-15T02:06:46.844Z",
+  "generatedAt": "2026-11-15T02:34:41.921Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -587,8 +587,8 @@
     },
     {
       "path": "lib/webserver/public/mobile/app.js",
-      "sha256": "d1239344327bb9b3a4b1d3fd9d69c2d0cac74725bdd9017a09df58c6e381bfd2",
-      "size": 61836
+      "sha256": "fcfc947da852a1467cca17f17bc5d8fca3f31430ea8b1e034a86638ca01a6b1a",
+      "size": 61926
     },
     {
       "path": "lib/webserver/public/mobile/apple-touch-icon.png",
@@ -697,8 +697,8 @@
     },
     {
       "path": "lib/webserver/public/views/index.ejs",
-      "sha256": "755a084ae3f5b7ba3456ccb0c5c3c7cdd27772709539505ff881209f597d1c5a",
-      "size": 142838
+      "sha256": "ea93d1374902f156b06e7c5f39bf50b92bdec28e54f274a97c0961701d0b8922",
+      "size": 143395
     },
     {
       "path": "lib/webserver/public/views/login.ejs",
