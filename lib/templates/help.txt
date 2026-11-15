@@ -92,6 +92,7 @@ All commands:
   vdisk restore-version <path> <timestamp> <file>   Restore a file from a version, as a non-clobbering copy (add --from <backup|mirror-dest|mirror-local>)
   vdisk restore  <backup> <dest>   Restore a backed-up vault into a folder
   vdisk restore-from-backup <path> Restore a vault in place from the backup it is configured with (local or off-site)
+  vdisk restore-drill <path>       Prove its backup restores and opens, against a throwaway copy (--deep reads every file)
   vdisk receive-vault <code>       Receive a vault from another machine by its serve connect code (encrypted only; --name <n>)
   vdisk mirror   <path> <dest>     Set up a two-way mirror to a folder, sftp:<id>, or webdav:<id> and prime it
   vdisk sync     <path>            Sync the mirror now, both directions (also runs on unmount)
