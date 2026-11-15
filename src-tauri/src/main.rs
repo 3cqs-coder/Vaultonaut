@@ -496,42 +496,31 @@ fn request_quit_confirmation<R: tauri::Runtime>(handle: tauri::AppHandle<R>, sha
     });
 }
 
-// On Linux the interface runs inside a WebKitGTK WebView, whose DMABUF-based accelerated-compositing renderer
-// fails on a wide range of GPU + driver + compositor combinations (NVIDIA especially, and many Wayland setups):
-// the GTK window paints its background color but the WebView surface never composites, so the app shows a blank
-// dark window instead of the interface or the loading splash. It often appears only on a RELAUNCH, once the
-// driver/compositor state differs from the very first run — which is exactly the "black screen when you reopen it"
-// report. Disabling the DMABUF renderer makes the WebView paint reliably on every Linux machine; the small loss of
-// rendering acceleration is irrelevant for this simple interface. NVIDIA's explicit-sync path is disabled too — it
-// is free and heads off a related Wayland crash. This is Linux-only, so macOS (WKWebView) and Windows (WebView2)
-// are untouched. WebKitGTK reads these only from the environment and offers no command-line or config equivalent
-// (the same reason the FUSE-T library path is set via the environment), so this is a deliberate, documented
-// exception to the project's configure-by-argument rule — and only a DEFAULT: an advanced user who sets either
-// variable themselves keeps their choice, so a future driver that prefers the accelerated path can opt back in.
+// On Linux the interface runs inside a WebKitGTK WebView whose DMABUF-based accelerated-compositing renderer fails on
+// a wide range of GPU + driver + compositor combinations (NVIDIA especially, and many Wayland setups): the GTK window
+// paints its background color but the WebView surface never composites, so the app shows a blank dark window instead
+// of the interface or the loading splash — the "stays black until it loads" report. We set, only when the user has not
+// already set them (so anyone on a working accelerated path can opt back in), the WebKitGTK renderer defaults that make
+// the WebView paint in software and therefore reliably on any machine:
+//   • WEBKIT_DISABLE_DMABUF_RENDERER — the common NVIDIA/Wayland black-screen fix.
+//   • WEBKIT_DISABLE_COMPOSITING_MODE — the stronger escalation: GPU compositing off entirely, so the WebView renders
+//     in software and paints on ANY GPU/driver/compositor. The cost is a little acceleration, irrelevant here.
+//   • __NV_DISABLE_EXPLICIT_SYNC — free, and heads off a related NVIDIA/Wayland crash.
+// WebKitGTK reads these from the environment only (no command-line or config equivalent), and this must run BEFORE any
+// WebView is created so the choice is in effect for the very first paint, including the loading splash. Linux-only, so
+// macOS (WKWebView) and Windows (WebView2) are untouched.
+//
+// Deliberately NOT set: LIBGL_ALWAYS_SOFTWARE and GDK_BACKEND=x11. They were added earlier, cumulatively, on the
+// assumption that more forcing could only help — but they were never confirmed to fix the black screen, and forcing
+// the whole GL stack to llvmpipe (LIBGL_ALWAYS_SOFTWARE) or GTK onto XWayland (GDK_BACKEND=x11) can itself stop a
+// WebView surface from ever presenting, which matches the symptom where only the late navigation to the backend paints
+// while every early splash paint stays black. A sibling desktop build on this exact WebKitGTK/Tauri stack paints its
+// splash correctly on Linux with just the three flags above and neither of these two, so we match that known-good set.
 #[cfg(target_os = "linux")]
 fn tune_linux_webview() {
     for (key, value) in [
         ("WEBKIT_DISABLE_DMABUF_RENDERER", "1"),
-        // Escalation for the machines where disabling only the DMABUF renderer is NOT enough: turn off WebKitGTK's
-        // GPU compositing entirely so the WebView renders in software. Software rendering paints on any GPU / driver /
-        // compositor combination, which is what makes the black-window-on-relaunch case reliably go away; the small
-        // loss of acceleration does not matter for this simple interface. Still a default an advanced user can override.
         ("WEBKIT_DISABLE_COMPOSITING_MODE", "1"),
-        // Final escalation for the machines where even disabling compositing leaves the WebView black — the window
-        // background paints but the page content (the static splash, then the interface) never appears. This
-        // forces the whole GL stack to Mesa's software rasterizer, so WebKitGTK draws its content through a path that
-        // does not depend on the GPU driver or the Wayland/X compositor at all. It is the most reliable way to make the
-        // content paint everywhere; the cost is only rendering speed, which is irrelevant for this simple interface.
-        // A default an advanced user can still override to keep hardware acceleration on a machine that renders fine.
-        ("LIBGL_ALWAYS_SOFTWARE", "1"),
-        // Wayland fallback for the remaining machines where the render-path forcing above still leaves a black window:
-        // some Wayland compositor + WebKitGTK combinations never present the WebView surface at all, and there is no
-        // rendering flag that fixes it. Asking GDK to use its X11 backend routes the app through XWayland, a mature and
-        // widely compatible path that presents reliably where the native Wayland surface does not. XWayland ships with
-        // effectively every desktop Linux install, so this is safe as a default; its only cost is slightly softer output
-        // under fractional scaling. It remains a default an advanced user can override (set GDK_BACKEND=wayland) to keep
-        // the native Wayland surface on a machine that already renders correctly.
-        ("GDK_BACKEND", "x11"),
         ("__NV_DISABLE_EXPLICIT_SYNC", "1"),
     ] {
         if std::env::var_os(key).is_none() {
