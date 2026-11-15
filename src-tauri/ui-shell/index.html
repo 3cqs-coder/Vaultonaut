@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Vaultonaut</title>
     <style>
-      /* The startup splash. The real Linux black-window fix is in the shell (it re-navigates the webview once, after
-         the surface is mapped, to force WebKitGTK's missed first paint) — NOT the removal of animation, so a spinner is
-         fine here. The window's own backgroundColor matches this body, so the first frame is the brand dark, never a
-         black void. Reduced motion is honored. */
+      /* The startup splash: a self-contained static page (inline style + inline SVG, no scripts, no network) so the
+         webview paints it instantly, on its own, until the shell navigates the window to the running backend. The
+         window's own backgroundColor matches this body, so the first frame is the brand dark, never a black void.
+         Reduced motion is honored. */
       :root { color-scheme: light dark; }
       html, body { height: 100%; margin: 0; }
       body {

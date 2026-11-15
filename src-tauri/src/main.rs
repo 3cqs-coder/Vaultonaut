@@ -13,10 +13,10 @@
 // Node is an ordinary background process with no Dock presence. Keeping it inside `app/` also means the bundle's
 // signed manifest covers the interpreter itself.
 
-use std::net::{TcpListener, TcpStream};
+use std::net::TcpStream;
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
-use std::sync::atomic::{AtomicBool, AtomicU16, Ordering};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
@@ -64,47 +64,6 @@ static ATTACHED: AtomicBool = AtomicBool::new(false);
 // The per-launch token, shared with the backend, that gates the loopback mount-count probe used by the quit
 // confirmation. Set once at launch; read from both the window-close and the app-quit handlers.
 static QUIT_TOKEN: std::sync::OnceLock<String> = std::sync::OnceLock::new();
-// The ephemeral loopback port that serves the splash over HTTP on Linux (see start_splash_server). 0 until bound.
-static SPLASH_PORT: AtomicU16 = AtomicU16::new(0);
-// Linux only: set once the startup outcome is decided (the interface is shown, or the error state). It stops the
-// splash re-paint loop (nudge_repaint) so a late navigation can never land on top of what the window should now show.
-// Unread on macOS and Windows, where the loop never runs.
-static SPLASH_DONE: AtomicBool = AtomicBool::new(false);
-
-// Serve the splash page over plain loopback HTTP. WHY: on Linux, WebKitGTK reliably PAINTS an http navigation, but on
-// many GPU / driver / VM (virtio_gpu) combinations it never paints the window's initial CUSTOM-PROTOCOL (tauri://)
-// load — the window stays black until the app navigates to the http backend seconds later, which is the first thing
-// that actually paints. So during that wait we navigate the window to THIS http-served copy of the same splash, which
-// takes the identical proven-to-paint path. A trivial one-response server on an ephemeral 127.0.0.1 port (no config,
-// cannot clash); it serves the compile-time-embedded splash to any request and lives for the process. Linux-only: on
-// macOS and Windows the tauri:// splash paints fine, so nothing binds and nothing navigates.
-fn start_splash_server() {
-    use std::io::Write;
-    if !cfg!(target_os = "linux") {
-        return;
-    }
-    let listener = match TcpListener::bind("127.0.0.1:0") {
-        Ok(l) => l,
-        Err(_) => return, // never block startup on the splash helper
-    };
-    if let Ok(addr) = listener.local_addr() {
-        SPLASH_PORT.store(addr.port(), Ordering::SeqCst);
-    }
-    std::thread::spawn(move || {
-        let body = include_str!("../ui-shell/index.html");
-        let resp = format!(
-            "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: {}\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n{}",
-            body.len(),
-            body
-        );
-        for stream in listener.incoming() {
-            if let Ok(mut s) = stream {
-                let _ = s.write_all(resp.as_bytes()); // one static page for any request; the query is irrelevant
-                let _ = s.flush();
-            }
-        }
-    });
-}
 
 // The running Node backend, shared between the readiness thread and the exit handler.
 type SharedChild = Arc<Mutex<Option<Child>>>;
@@ -279,11 +238,6 @@ fn wait_for_server(port: u16, timeout: Duration, token: &str, child: &SharedChil
 fn show_outcome<R: tauri::Runtime>(handle: &tauri::AppHandle<R>, ready: bool) {
     let h = handle.clone();
     let _ = handle.run_on_main_thread(move || {
-        // Stop the Linux splash re-paint loop BEFORE changing what the window shows, so a late splash navigation
-        // cannot land on top of the interface or the error state. Set here — on the main thread, ahead of the
-        // navigate/eval below — so it is ordered against the loop's own main-thread navigations and no clobber can
-        // race in. A no-op on macOS and Windows, where the loop never runs.
-        SPLASH_DONE.store(true, Ordering::SeqCst);
         if let Some(window) = h.get_webview_window("main") {
             if ready {
                 if let Ok(url) = format!("http://127.0.0.1:{}", UI_PORT).parse() {
@@ -299,56 +253,6 @@ fn show_outcome<R: tauri::Runtime>(handle: &tauri::AppHandle<R>, ready: bool) {
     });
 }
 
-// LINUX-ONLY first-paint fix. On WebKit2GTK (seen on virtio_gpu VMs and other setups) the webview never paints the
-// window's initial CUSTOM-PROTOCOL (tauri://) load — the splash stays black until the app navigates to the http
-// backend seconds later, which is the first thing that actually paints. So during that wait we navigate the window to
-// the HTTP-served copy of the splash (start_splash_server), taking that same proven-to-paint http path. A few attempts
-// across the first couple of seconds cover a slow surface map on a VM, and each stops once the readiness thread has
-// already shown the real interface. Gated to Linux and compiles to nothing on macOS/Windows, so their (working)
-// tauri:// splash is untouched. A resize does NOT trigger a paint on the affected setups, and neither does a custom-
-// protocol navigation — only an http one does. See Tauri issues #7021 and #13157 and the Tauri Linux graphics guide.
-fn nudge_repaint<R: tauri::Runtime>(handle: &tauri::AppHandle<R>) {
-    // The bug is WebKitGTK-specific, so this only runs on Linux — but the body stays compiled on every platform
-    // (a runtime `cfg!` guard, not `#[cfg]`) so the cross-platform build always type-checks this code, rather than
-    // it silently only ever being verified on a Linux CI leg.
-    if !cfg!(target_os = "linux") {
-        return;
-    }
-    let port = SPLASH_PORT.load(Ordering::SeqCst);
-    if port == 0 {
-        return; // the http splash server did not bind — nothing to navigate to
-    }
-    let h = handle.clone();
-    std::thread::spawn(move || {
-        // Re-navigate the window to the HTTP-served splash until the readiness thread decides the outcome — the
-        // interface, or the error state (either sets SPLASH_DONE). An http navigation is the mechanism WebKitGTK
-        // actually paints here, so repeating it until the app takes over covers ANY surface-map delay on any machine,
-        // including a slow first launch that downloads the runtime, rather than racing a fixed timeout that a slower
-        // box (or an emulated one) simply outruns. Back off from a tight initial cadence to a slow heartbeat so the
-        // number of reloads stays small, and stop the instant the outcome is set so a late navigation can never land
-        // on top of the interface. A 180s cap bounds the loop if the outcome is somehow never decided.
-        let start = Instant::now();
-        let mut delay = 300u64;
-        loop {
-            std::thread::sleep(Duration::from_millis(delay));
-            if SPLASH_DONE.load(Ordering::SeqCst) || start.elapsed() > Duration::from_secs(180) {
-                break;
-            }
-            let h2 = h.clone();
-            let _ = h.run_on_main_thread(move || {
-                if SPLASH_DONE.load(Ordering::SeqCst) {
-                    return; // the interface (or error state) is already up — do not navigate over it
-                }
-                if let Some(win) = h2.get_webview_window("main") {
-                    if let Ok(url) = format!("http://127.0.0.1:{}/", port).parse() {
-                        let _ = win.navigate(url);
-                    }
-                }
-            });
-            delay = (delay * 2).min(2500); // 0.3s, 0.9s, 2.1s, 4.5s, then a ~2.5s heartbeat for a long first launch
-        }
-    });
-}
 
 // Ask the backend to stop cleanly (it drains writes and locks each vault on the way out), wait up to `grace` for it to
 // exit, then force it down if it has not. The clean-stop request is cross-platform: on Unix, SIGTERM (its handler runs
@@ -572,11 +476,11 @@ fn main() {
                 cmd.creation_flags(0x08000000); // CREATE_NO_WINDOW
             }
 
-            // Force the WebKitGTK first paint (Linux only) as soon as the window exists — BEFORE and independent of the
-            // backend spawn below, so the splash paints during the startup wait even if the backend is slow to come up.
-            // Start the loopback HTTP splash server first so the port is bound before the navigation reads it.
-            start_splash_server();
-            nudge_repaint(app.handle());
+            // The window loads the bundled splash (ui-shell/index.html) via the app's own asset protocol and shows it
+            // on its own until the readiness thread navigates it to the running backend (show_outcome). No Linux repaint
+            // machinery: the earlier loopback-HTTP re-navigation ran ONLY on Linux and, by churning the webview away
+            // from the just-loaded splash, kept the window black there (while macOS/Windows, which skipped it, painted
+            // fine) — a sibling build on the same WebKitGTK/Tauri stack paints its bundled splash with no such code.
 
             let handle = app.handle().clone();
             match cmd.spawn() {
