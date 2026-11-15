@@ -64,6 +64,10 @@ static ATTACHED: AtomicBool = AtomicBool::new(false);
 // The per-launch token, shared with the backend, that gates the loopback mount-count probe used by the quit
 // confirmation. Set once at launch; read from both the window-close and the app-quit handlers.
 static QUIT_TOKEN: std::sync::OnceLock<String> = std::sync::OnceLock::new();
+// This shell process's own token for single-window coordination with its backend (set once at startup). It is NOT the
+// per-launch ready token: an attaching shell and the headless service hold different ready tokens, so the window claim
+// is keyed on this independent per-shell value instead.
+static SHELL_TOKEN: std::sync::OnceLock<String> = std::sync::OnceLock::new();
 
 // The running Node backend, shared between the readiness thread and the exit handler.
 type SharedChild = Arc<Mutex<Option<Child>>>;
@@ -207,6 +211,96 @@ fn probe_ready(port: u16, timeout: Duration) -> Option<String> {
         }
     }
     Some(String::from_utf8_lossy(&buf).into_owned())
+}
+
+// POST to a loopback /__shell-* single-window coordination endpoint, with the shell's own token in a header, and
+// return the response body (or None on any failure). Same bounded raw-HTTP approach as probe_ready — the shell
+// already speaks loopback HTTP to its backend, so coordinating one window needs no extra crate or per-OS IPC.
+fn shell_post(port: u16, path: &str, token: &str, timeout: Duration) -> Option<String> {
+    use std::io::{Read, Write};
+    let mut stream = TcpStream::connect(("127.0.0.1", port)).ok()?;
+    stream.set_read_timeout(Some(timeout)).ok()?;
+    stream.set_write_timeout(Some(timeout)).ok()?;
+    let req = format!(
+        "POST {} HTTP/1.0\r\nHost: 127.0.0.1\r\nx-vaultonaut-shell: {}\r\nContent-Length: 0\r\nConnection: close\r\n\r\n",
+        path, token
+    );
+    stream.write_all(req.as_bytes()).ok()?;
+    let mut buf: Vec<u8> = Vec::new();
+    let mut chunk = [0u8; 1024];
+    loop {
+        match stream.read(&mut chunk) {
+            Ok(0) => break,
+            Ok(n) => { buf.extend_from_slice(&chunk[..n]); if buf.len() > 8192 { break; } }
+            Err(_) => break,
+        }
+    }
+    Some(String::from_utf8_lossy(&buf).into_owned())
+}
+
+// Single-window coordination. Before showing the window, claim it from the backend (the one authority for this
+// instance — its port + data dir). If another shell already owns the window, raise THAT one and exit instead of
+// opening a duplicate; otherwise show our window and keep the claim alive with a heartbeat that also carries a later
+// focus request from a second launch. A genuinely separate instance has its own backend, so it is unaffected. A
+// coordination failure never blocks the window — we fall through to showing it.
+fn show_window_or_defer<R: tauri::Runtime>(handle: &tauri::AppHandle<R>) {
+    let token = SHELL_TOKEN.get().cloned().unwrap_or_default();
+    let claimed = if token.is_empty() {
+        true
+    } else {
+        match shell_post(UI_PORT, "/__shell-claim", &token, Duration::from_millis(2000)) {
+            // Whitespace-stripped so the match survives any JSON reshaping — claimed unless the backend explicitly said false.
+            Some(resp) => !resp.split_whitespace().collect::<String>().contains("\"claimed\":false"),
+            None => true, // coordination unreachable → show rather than block the user's window
+        }
+    };
+    // Not claimed means another window of this instance is already up — ask it to come forward and exit without a
+    // duplicate. Only safe to exit outright when we did NOT start the backend (ATTACHED): in the Ready case we own the
+    // backend, so never exit-and-orphan it — show our window instead (and in Ready a fresh claim never fails anyway).
+    if !claimed && ATTACHED.load(Ordering::SeqCst) {
+        let _ = shell_post(UI_PORT, "/__shell-focus", "", Duration::from_millis(2000));
+        std::process::exit(0);
+    }
+    show_outcome(handle, true);
+    start_shell_heartbeat(handle.clone());
+}
+
+// Keep this shell's window-ownership claim alive, and act on a focus request a second launch left for us. The claim
+// expires if this heartbeat stops (the shell crashed), so a later launch is never permanently blocked.
+fn start_shell_heartbeat<R: tauri::Runtime>(handle: tauri::AppHandle<R>) {
+    let token = match SHELL_TOKEN.get() { Some(t) => t.clone(), None => return };
+    std::thread::spawn(move || loop {
+        std::thread::sleep(Duration::from_millis(2000));
+        let resp = match shell_post(UI_PORT, "/__shell-heartbeat", &token, Duration::from_millis(2000)) {
+            Some(r) => r.split_whitespace().collect::<String>(), // whitespace-stripped so the JSON match is reshaping-proof
+            None => continue, // transient (backend momentarily unreachable) — keep trying
+        };
+        if resp.contains("\"focus\":true") {
+            // A second launch asked us to come forward.
+            let h = handle.clone();
+            let _ = handle.run_on_main_thread(move || {
+                if let Some(win) = h.get_webview_window("main") {
+                    let _ = win.unminimize();
+                    let _ = win.show();
+                    let _ = win.set_focus();
+                }
+            });
+        }
+        // We lost ownership — we stalled past the backend's TTL (e.g. sleep/resume) and may have been displaced by a
+        // second launch. Reclaim: for the shell that STARTED the backend this always wins (it is the primary window),
+        // so two windows never persist. If the reclaim still fails, another window genuinely owns it and we are the
+        // redundant ATTACHED one — raise that window and exit rather than linger as a duplicate.
+        if resp.contains("\"owner\":false") {
+            let reclaimed = match shell_post(UI_PORT, "/__shell-claim", &token, Duration::from_millis(2000)) {
+                Some(r) => !r.split_whitespace().collect::<String>().contains("\"claimed\":false"),
+                None => true,
+            };
+            if !reclaimed && ATTACHED.load(Ordering::SeqCst) {
+                let _ = shell_post(UI_PORT, "/__shell-focus", "", Duration::from_millis(2000));
+                std::process::exit(0);
+            }
+        }
+    });
 }
 
 // Wait for OUR backend to start serving — proven by the readiness endpoint echoing the per-launch token, NOT merely
@@ -458,6 +552,7 @@ fn main() {
             // before navigating the trusted window, so a foreign process squatting the loopback port is never shown.
             let ready_tok = ready_token();
             let _ = QUIT_TOKEN.set(ready_tok.clone()); // so the quit-confirmation probe can authenticate to the backend
+            let _ = SHELL_TOKEN.set(ready_token()); // a fresh, independent token identifying THIS shell for window coordination
             let mut cmd = Command::new(&node);
             cmd.arg(&entry)
                 .arg("ui")
@@ -466,6 +561,10 @@ fn main() {
                 .arg("--desktop")
                 .arg("--ready-token")
                 .arg(&ready_tok)
+                // Tell our backend which shell started it, so it treats THIS shell as the rightful primary window for
+                // single-window coordination (a reclaim after a stall always wins over a second launch).
+                .arg("--shell-token")
+                .arg(SHELL_TOKEN.get().cloned().unwrap_or_default())
                 .stdin(Stdio::piped()); // kept open so the shell can send a cross-platform "quit" line on shutdown (see stop_backend)
             let (out, err) = backend_log_stdio();
             cmd.stdout(out).stderr(err);
@@ -516,14 +615,17 @@ fn main() {
                     let wait_tok = ready_tok.clone();
                     std::thread::spawn(move || {
                         match wait_for_server(UI_PORT, STARTUP_TIMEOUT, &wait_tok, &shared) {
-                            // Our own backend is serving — show it and take ownership of its shutdown, as before.
-                            Startup::Ready => show_outcome(&handle, true),
+                            // Our own backend is serving — show it (or, if a window of this instance is already up,
+                            // raise that one and exit) and take ownership of its shutdown, as before.
+                            Startup::Ready => show_window_or_defer(&handle),
                             // A trusted instance (the login/background service) is already running. Show THAT instance
                             // and mark attached, so a close leaves it running instead of draining and locking it. Our
                             // spawned child has already exited (it told us to attach), so there is nothing to stop.
+                            // Still claim the single window first: a second desktop launch over a service (or over an
+                            // open window) must raise the existing window, not stack a duplicate.
                             Startup::Attach => {
                                 ATTACHED.store(true, Ordering::SeqCst);
-                                show_outcome(&handle, true);
+                                show_window_or_defer(&handle);
                             }
                             // Neither came up in time. Show the error state, and never leave an orphan holding the
                             // port: if the backend is alive but never bound, stop it now. No-op if it already exited.
@@ -574,6 +676,11 @@ fn main() {
                 // Last-resort backstop: if the app ever exits without going through the responsive path, stop the
                 // backend here so vaults are still locked and in-flight writes flush. Short grace — runs on the main thread.
                 tauri::RunEvent::Exit => {
+                    // Give up this shell's single-window claim promptly so closing then immediately reopening gets a
+                    // window at once (rather than waiting out the heartbeat TTL). Best-effort; the TTL covers a crash.
+                    if let Some(tok) = SHELL_TOKEN.get() {
+                        let _ = shell_post(UI_PORT, "/__shell-release", tok, Duration::from_millis(1000));
+                    }
                     // In attached mode we never started the backend, so there is nothing of ours to stop — and we must
                     // not touch the background service the user started at login.
                     if !ATTACHED.load(Ordering::SeqCst) {
