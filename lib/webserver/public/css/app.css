@@ -673,11 +673,18 @@ button { font: inherit; }
 .field { display: grid; gap: 6px; }
 .field.grow { min-width: 0; }
 .field > span { font-size: 13px; color: var(--muted); }
+/* Form controls sit on the ELEVATED panel surface (not the page --bg they used to share, which made them melt into
+   the background), with a subtle theme-aware lift — so a field reads as a distinct, tappable control on a pane and
+   still separates cleanly from a white dialog card via its border. One surface for every text control, matching the
+   already-elevated .sf-input / .identity-verify input, so the whole app has one input look. */
 .field input, .field select, .field textarea {
-	background: var(--bg); color: var(--text);
+	background: var(--panel); color: var(--text);
 	border: 1px solid var(--border); border-radius: 8px;
 	padding: 10px 12px; font: inherit; width: 100%;
+	box-shadow: var(--shadow-soft);
+	transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
 }
+@media (hover: hover) { .field input:hover, .field select:hover, .field textarea:hover { border-color: var(--faint); } }
 .field textarea { resize: vertical; font-family: var(--mono); font-size: 12.5px; }
 /* Give placeholder hint text a theme token so it renders consistently and legibly on every engine (a bare
    placeholder otherwise falls back to each engine's own gray, which is not theme-aware and is faint on the Linux
@@ -1128,7 +1135,7 @@ textarea.sf-input { width: 100%; flex-basis: 100%; resize: vertical; font: 13px/
 .key-id { color: var(--muted); font-size: 11px; font-family: var(--mono); }
 
 /* Header auto-lock selector */
-.mini-select { background: var(--panel-2); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 7px 8px; font: inherit; font-size: 12.5px; cursor: pointer; }
+.mini-select { background: var(--panel); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 7px 8px; font: inherit; font-size: 12.5px; cursor: pointer; box-shadow: var(--shadow-soft); transition: border-color var(--dur-fast); }
 @media (hover: hover) { .mini-select:hover { border-color: var(--accent); } }
 
 /* Settings dialog: preferences and actions grouped by purpose, each row a name + one-line description + its control. */
