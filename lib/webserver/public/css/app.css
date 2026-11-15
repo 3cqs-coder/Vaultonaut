@@ -136,7 +136,9 @@ body {
 
 /* Content area fills the space right of the rail. No outer card — the Overview panel and the vault cards are the
    cards. A second class (.shell-main) overrides the centered-card .main used elsewhere (e.g. the notes page). */
-.content { flex: 1 1 auto; min-width: 0; overflow-y: auto; }
+/* The content area uses the lighter page background (not the heavier --workspace, which used to only peek around the
+   old centered card), so the section panes and the cards on them read on a clean, bright surface in every theme. */
+.content { flex: 1 1 auto; min-width: 0; overflow-y: auto; background: var(--bg); }
 .main.shell-main { max-width: 1120px; width: 100%; margin: 0 auto; padding: 26px 30px 48px;
 	background: transparent; border: 0; border-radius: 0; box-shadow: none; }
 .pane[hidden] { display: none; }
