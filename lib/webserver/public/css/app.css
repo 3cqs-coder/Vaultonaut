@@ -142,8 +142,10 @@ body {
    its content-area role, overriding the centered-card .main used elsewhere (e.g. the notes page). */
 .main.shell-main { flex: 1 1 auto; min-width: 0; overflow-y: auto; background: var(--bg);
 	max-width: none; width: auto; margin: 0; padding: 26px 30px 48px; border: 0; border-radius: 0; box-shadow: none; }
-/* Each pane caps its content to a readable width and centers it, while the background fills edge to edge. */
-.pane { max-width: 1120px; margin-inline: auto; }
+/* Each pane caps its content to a readable width and centers it, while the background fills edge to edge. The env
+   banner sits above the panes (visible on every section when active), so it shares the same cap and centering. */
+.pane, .main.shell-main > #env { max-width: 1120px; margin-inline: auto; }
+.main.shell-main > #env:not([hidden]) { margin-bottom: 18px; }
 .pane[hidden] { display: none; }
 /* Settings is a form, so cap it at a comfortable reading width rather than letting its rows stretch the full content
    width. Its leading heading (moved in from the former dialog) takes the same size as the other panes' page titles. */
