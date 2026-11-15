@@ -136,12 +136,21 @@ body {
 
 /* Content area fills the space right of the rail. No outer card — the Overview panel and the vault cards are the
    cards. A second class (.shell-main) overrides the centered-card .main used elsewhere (e.g. the notes page). */
-/* The content area uses the lighter page background (not the heavier --workspace, which used to only peek around the
-   old centered card), so the section panes and the cards on them read on a clean, bright surface in every theme. */
-.content { flex: 1 1 auto; min-width: 0; overflow-y: auto; background: var(--bg); }
-.main.shell-main { max-width: 1120px; width: 100%; margin: 0 auto; padding: 26px 30px 48px;
-	background: transparent; border: 0; border-radius: 0; box-shadow: none; }
+/* The content area fills the space right of the rail, scrolls, and paints the lighter PAGE background (not the heavier
+   --workspace, which used to only peek around the old centered card and otherwise reads as a flat gray). Panes and the
+   cards on them then sit on a clean, bright surface in every theme. The element carries both class names; this rule is
+   its content-area role, overriding the centered-card .main used elsewhere (e.g. the notes page). */
+.main.shell-main { flex: 1 1 auto; min-width: 0; overflow-y: auto; background: var(--bg);
+	max-width: none; width: auto; margin: 0; padding: 26px 30px 48px; border: 0; border-radius: 0; box-shadow: none; }
+/* Each pane caps its content to a readable width and centers it, while the background fills edge to edge. */
+.pane { max-width: 1120px; margin-inline: auto; }
 .pane[hidden] { display: none; }
+/* Settings is a form, so cap it at a comfortable reading width rather than letting its rows stretch the full content
+   width. Its leading heading (moved in from the former dialog) takes the same size as the other panes' page titles. */
+#pane-settings { max-width: 680px; }
+#pane-settings > h3:first-of-type, #pane-guide .help-title { font-size: 22px; font-weight: 650; letter-spacing: -.02em; }
+/* Cap the guide's reading width so documentation lines stay comfortable on a wide screen; the search bar spans. */
+#pane-guide .help-body { max-width: 860px; }
 
 /* Hamburger (phone only) and the drawer backdrop. */
 .nav-toggle { display: none; width: 38px; height: 38px; flex: 0 0 auto; place-items: center; padding: 0;
