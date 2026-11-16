@@ -68,28 +68,28 @@
 @media (prefers-color-scheme: dark) {
 	:root[data-theme="auto"] {
 		color-scheme: dark;
-		--bg: #0e1117; --rail: #12161f; --panel: #161b25; --panel-2: #1d2430; --hover: #232b39;
-		--text: #e6ebf5; --muted: #9aa4b6; --faint: #6b7488; --border: #262e3d;
+		--bg: #0c0c0e; --rail: #121214; --panel: #161618; --panel-2: #1d1d20; --hover: #242427;
+		--text: #ededf0; --muted: #a0a0a9; --faint: #6e6e78; --border: #2a2a2e;
 		--accent: #4d82ff; --accent-text: #ffffff; --accent-btn: #2f66ea; --accent-ink: #7aa2ff; --accent-soft: #182642; --accent-quiet: #2b3a5c;
 		--good: #34d399; --good-bg: #10281f; --warn: #fbbf24; --warn-bg: #2a2211; --warn-soft: #2a2211;
 		--danger: #f87171; --danger-fill: #b91c1c; --danger-soft: #2a1414;
 		--star: #e0a400;   /* the same warm gold; redefined here so every theme sets the full token set */
 		--shadow: none; --shadow-soft: none;
 		--shadow-lift: 0 2px 8px rgba(0, 0, 0, .5), 0 20px 44px -20px rgba(0, 0, 0, .7);
-		--workspace: #0a0d13; --accent-strong: #2f66ea; --accent-focus: rgba(77, 130, 255, .22); --accent-glow: 0 6px 20px -6px rgba(77, 130, 255, .4); --accent-wash: linear-gradient(90deg, rgba(77, 130, 255, .18) 0%, rgba(77, 130, 255, .02) 100%); --bevel: inset 0 1px 0 rgba(255, 255, 255, .06);
+		--workspace: #09090b; --accent-strong: #2f66ea; --accent-focus: rgba(77, 130, 255, .22); --accent-glow: 0 6px 20px -6px rgba(77, 130, 255, .4); --accent-wash: linear-gradient(90deg, rgba(77, 130, 255, .18) 0%, rgba(77, 130, 255, .02) 100%); --bevel: inset 0 1px 0 rgba(255, 255, 255, .06);
 	}
 }
 :root[data-theme="dark"] {
 	color-scheme: dark;
-	--bg: #0e1117; --rail: #12161f; --panel: #161b25; --panel-2: #1d2430; --hover: #232b39;
-	--text: #e6ebf5; --muted: #9aa4b6; --faint: #6b7488; --border: #262e3d;
+	--bg: #0c0c0e; --rail: #121214; --panel: #161618; --panel-2: #1d1d20; --hover: #242427;
+	--text: #ededf0; --muted: #a0a0a9; --faint: #6e6e78; --border: #2a2a2e;
 	--accent: #4d82ff; --accent-text: #ffffff; --accent-btn: #2f66ea; --accent-ink: #7aa2ff; --accent-soft: #182642; --accent-quiet: #2b3a5c;
 	--good: #34d399; --good-bg: #10281f; --warn: #fbbf24; --warn-bg: #2a2211; --warn-soft: #2a2211;
 	--danger: #f87171; --danger-fill: #b91c1c; --danger-soft: #2a1414;
 	--star: #e0a400;   /* the same warm gold; redefined here so every theme sets the full token set */
 	--shadow: none; --shadow-soft: none;
 	--shadow-lift: 0 2px 8px rgba(0, 0, 0, .5), 0 20px 44px -20px rgba(0, 0, 0, .7);
-	--workspace: #0a0d13; --accent-strong: #2f66ea; --accent-focus: rgba(77, 130, 255, .22); --accent-glow: 0 6px 20px -6px rgba(77, 130, 255, .4); --accent-wash: linear-gradient(90deg, rgba(77, 130, 255, .18) 0%, rgba(77, 130, 255, .02) 100%); --bevel: inset 0 1px 0 rgba(255, 255, 255, .06);
+	--workspace: #09090b; --accent-strong: #2f66ea; --accent-focus: rgba(77, 130, 255, .22); --accent-glow: 0 6px 20px -6px rgba(77, 130, 255, .4); --accent-wash: linear-gradient(90deg, rgba(77, 130, 255, .18) 0%, rgba(77, 130, 255, .02) 100%); --bevel: inset 0 1px 0 rgba(255, 255, 255, .06);
 }
 /* SEPIA — a warm, low-contrast "calming" theme (paper cream + soft brown accent) for long, relaxed use. */
 :root[data-theme="sepia"] {
