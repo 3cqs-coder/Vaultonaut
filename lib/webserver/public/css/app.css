@@ -641,9 +641,12 @@ button { font: inherit; }
 @media (hover: hover) { .link-btn:hover { color: var(--accent-ink); text-decoration: underline; } }
 .size-recheck { color: var(--muted); font-size: .9em; }
 .danger { color: var(--danger); border-color: transparent; }
-/* Card danger actions (Unmount, Remove) are ghost buttons, so give them a real danger-tinted edge; the generic
-   transparent border above stays for text-style danger links. The plain token is the fallback for older engines. */
-.ghost-btn.danger { border-color: var(--danger); border-color: color-mix(in srgb, var(--danger) 55%, var(--border)); }
+/* Card danger actions (Unmount, Remove) are ghost buttons with a danger-tinted edge AND their OWN fill token, so the
+   regular secondary fill (--btn-2-bg) can go lighter for presence without lightening a danger button to where the red
+   label loses contrast — the danger fill is tuned per theme to keep --danger text at WCAG AA. The plain border token is
+   the fallback for older engines; hover keeps the danger edge rather than flipping to the accent color. */
+.ghost-btn.danger { border-color: var(--danger); border-color: color-mix(in srgb, var(--danger) 55%, var(--border)); background: var(--btn-danger-bg); }
+@media (hover: hover) { .ghost-btn.danger:hover { background: var(--btn-danger-hover); border-color: var(--danger); border-color: color-mix(in srgb, var(--danger) 70%, var(--border)); } }
 
 /* "More" menu on a vault card: a native <details> disclosure styled as a dropdown, so the occasional and
    advanced actions stay one tap away without crowding the card. No library and no positioning script. */
