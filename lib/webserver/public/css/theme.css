@@ -79,7 +79,7 @@
 		--good: #34d399; --good-bg: #10281f; --warn: #fbbf24; --warn-bg: #2a2211; --warn-soft: #2a2211;
 		--danger: #f87171; --danger-fill: #b91c1c; --danger-soft: #2a1414;
 		--star: #e0a400;   /* the same warm gold; redefined here so every theme sets the full token set */
-		--btn-2-bg: #2e2e33; --btn-2-border: #44444c; --btn-2-hover: #3a3a41;   /* raised secondary-button surface, clearly lighter than the --panel card */
+		--btn-2-bg: #313137; --btn-2-border: #52525e; --btn-2-hover: #3a3a41;   /* raised secondary-button surface, clearly lighter than the --panel card */
 		--shadow: none; --shadow-soft: none;
 		--shadow-lift: 0 2px 8px rgba(0, 0, 0, .5), 0 20px 44px -20px rgba(0, 0, 0, .7);
 		--workspace: #09090b; --accent-strong: #2f66ea; --accent-focus: rgba(77, 130, 255, .22); --accent-glow: 0 6px 20px -6px rgba(77, 130, 255, .4); --accent-wash: linear-gradient(90deg, rgba(77, 130, 255, .18) 0%, rgba(77, 130, 255, .02) 100%); --bevel: inset 0 1px 0 rgba(255, 255, 255, .06);
@@ -93,7 +93,7 @@
 	--good: #34d399; --good-bg: #10281f; --warn: #fbbf24; --warn-bg: #2a2211; --warn-soft: #2a2211;
 	--danger: #f87171; --danger-fill: #b91c1c; --danger-soft: #2a1414;
 	--star: #e0a400;   /* the same warm gold; redefined here so every theme sets the full token set */
-	--btn-2-bg: #2e2e33; --btn-2-border: #44444c; --btn-2-hover: #3a3a41;   /* raised secondary-button surface, clearly lighter than the --panel card */
+	--btn-2-bg: #313137; --btn-2-border: #52525e; --btn-2-hover: #3a3a41;   /* raised secondary-button surface, clearly lighter than the --panel card */
 	--shadow: none; --shadow-soft: none;
 	--shadow-lift: 0 2px 8px rgba(0, 0, 0, .5), 0 20px 44px -20px rgba(0, 0, 0, .7);
 	--workspace: #09090b; --accent-strong: #2f66ea; --accent-focus: rgba(77, 130, 255, .22); --accent-glow: 0 6px 20px -6px rgba(77, 130, 255, .4); --accent-wash: linear-gradient(90deg, rgba(77, 130, 255, .18) 0%, rgba(77, 130, 255, .02) 100%); --bevel: inset 0 1px 0 rgba(255, 255, 255, .06);
