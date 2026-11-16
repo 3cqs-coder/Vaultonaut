@@ -631,8 +631,11 @@ button { font: inherit; }
 .primary-btn { position: relative; overflow: hidden; background: linear-gradient(180deg, var(--accent-btn) 0%, var(--accent-strong) 100%); color: var(--accent-text); border: none; border-radius: 8px; padding: 9px 16px; cursor: pointer; font-weight: 600; box-shadow: var(--bevel), var(--accent-glow); transition: filter var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease); }
 .primary-btn::before { content: ""; position: absolute; inset: 0 0 48% 0; background: var(--metal-sheen); pointer-events: none; }
 @media (hover: hover) { .primary-btn:hover { filter: brightness(1.05); } }
-.ghost-btn { background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; cursor: pointer; transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease); }
-@media (hover: hover) { .ghost-btn:hover { border-color: var(--accent); background: var(--hover); } }
+/* Secondary button: a filled, slightly-raised surface with a clear edge so it reads as a tappable control on a
+   same-colored card in every theme (a transparent fill made it melt into the card, worst in dark). It stays below
+   the solid-accent primary in the hierarchy; its tokens are per-theme and --text on them clears WCAG AA. */
+.ghost-btn { background: var(--btn-2-bg); color: var(--text); border: 1px solid var(--btn-2-border); border-radius: 8px; padding: 8px 12px; cursor: pointer; box-shadow: var(--shadow-soft); transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease); }
+@media (hover: hover) { .ghost-btn:hover { border-color: var(--accent); background: var(--btn-2-hover); } }
 .primary-btn:active, .ghost-btn:active { transform: translateY(1px); }
 .link-btn { background: none; border: none; color: var(--accent-ink); cursor: pointer; padding: 8px 4px; transition: color var(--dur-fast) var(--ease); }
 @media (hover: hover) { .link-btn:hover { color: var(--accent-ink); text-decoration: underline; } }
