@@ -30,6 +30,10 @@ All of the product's real logic stays in the Node application. The shell holds n
     Other distributions ship the same libraries under their own package names (for example
     `webkit2gtk4.1-devel` on Fedora).
 
+## App identifier
+
+The one app identifier is `com.vaultonaut.app`, set in `tauri.conf.json`. The Android and iOS configs inherit it, and the generated projects use it. Do not set a per-platform identifier. If you change it, regenerate `gen/android` and `gen/apple` so the installed application ID and bundle ID stay in step.
+
 ## Building
 
 From this directory:

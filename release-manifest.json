@@ -3,7 +3,7 @@
   "product": "Vaultonaut",
   "version": "1.5.0",
   "algo": "sha256",
-  "generatedAt": "2026-11-17T18:56:54.342Z",
+  "generatedAt": "2026-11-17T22:29:41.145Z",
   "files": [
     {
       "path": "CONTRIBUTING.md",
@@ -17,8 +17,8 @@
     },
     {
       "path": "docs/README.md",
-      "sha256": "705c36376bdd43eb6d1fc52a23fde6149acdde19ac24b6ea61efc761ddb7e12f",
-      "size": 243369
+      "sha256": "e4ac4945c5b2fb4762f136ecdceedcc8abd7e62ca38d068a56b336713239e31e",
+      "size": 244120
     },
     {
       "path": "docs/banner.png",
@@ -147,8 +147,8 @@
     },
     {
       "path": "lib/net/Cert.js",
-      "sha256": "60b12f3c2ee166a3bc145523948ac81757e051f0dc27c6fcd7f6a9ad71d29ee4",
-      "size": 12422
+      "sha256": "1a1e85cbabe74915cc3a5227cfc8fc59a4e98a6570027fc902ff6a797657408a",
+      "size": 12773
     },
     {
       "path": "lib/net/DnsOrder.js",
@@ -169,6 +169,11 @@
       "path": "lib/net/IpMatch.js",
       "sha256": "81722db5ac08e105614f50a9050683570f63ce44a4c3b834e7025eb75160d679",
       "size": 9114
+    },
+    {
+      "path": "lib/net/LanAddresses.js",
+      "sha256": "a4a22d766aaf8833f4176abc3930c9790d1e465c1b334e4a153eccc58e3f7b75",
+      "size": 3231
     },
     {
       "path": "lib/net/LanDiscovery.js",
@@ -462,8 +467,8 @@
     },
     {
       "path": "lib/webserver/index.js",
-      "sha256": "69c622f6f155dd68db1c830387ae940100c56d1990247f6decdf38233a2662c8",
-      "size": 234295
+      "sha256": "5c5389de73e0d6bdf32e15b0e549c0ad507ba013286485193fd666b597ae0992",
+      "size": 234834
     },
     {
       "path": "lib/webserver/kitView.js",
@@ -552,8 +557,8 @@
     },
     {
       "path": "lib/webserver/public/js/app.js",
-      "sha256": "726950505b05c8c0e925127b7a3c10b3554cb84a4f32ece47f0a77a88be8247f",
-      "size": 489623
+      "sha256": "d2052879d715601670c8e8c35e5259e53609163b5482e83fee28472cb436c75d",
+      "size": 491299
     },
     {
       "path": "lib/webserver/public/js/login.js",
@@ -702,13 +707,13 @@
     },
     {
       "path": "lib/webserver/public/shared/ui-strings.js",
-      "sha256": "a919af9a929aaac591a58317107ea9ec84658aeabcba421ac1fb339213782e8a",
-      "size": 3164
+      "sha256": "7018834687c0196076735fbb856b66cee5706858fbcdc643fdf258a451b64686",
+      "size": 4483
     },
     {
       "path": "lib/webserver/public/views/index.ejs",
-      "sha256": "b4662464e71bd7f0210c9b3e9ff9756125ecea6575cd0b8ee2e3f64311f3c2d8",
-      "size": 147155
+      "sha256": "94e0741b7eefaefc0dd10b17f1a2de96a7b86306c06a09bde42159624ae5913b",
+      "size": 147359
     },
     {
       "path": "lib/webserver/public/views/login.ejs",
